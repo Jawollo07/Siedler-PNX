@@ -5,7 +5,7 @@ Stand: 11.09.2026
 ## Phase 0 – Foundation ✅
 
 - [x] Neues PowerNukkitX Repository initialisieren
-- [x] Gradle/Java-21 Grundstruktur
+- [x] Maven/Java-21 Grundstruktur
 - [x] Plugin-Lifecycle (`SiedlerPlugin`)
 - [x] zentrale Manager-Struktur
 - [x] SQLite Storage-Grundlage
@@ -148,4 +148,4 @@ Stand: 11.09.2026
 
 ## Aktueller Fokus
 
-**Als Nächstes:** Phase 1 – ein sauberes, versioniertes Datenmodell und die gemeinsamen Services, danach Teams. Dadurch bauen alle späteren Systeme auf derselben stabilen Player-ID-, Team- und Persistenzbasis auf.
+**Als Nächstes:** Phase 1 – ein sauberes, versioniertes Datenmodell und die gemeinsamen Services, danach Teams. Der Build läuft jetzt über Maven und verwendet die offizielle PowerNukkitX-Maven-Koordinate `org.powernukkitx:server:3.0.4` als `provided` dependency.
