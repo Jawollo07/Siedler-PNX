@@ -1,8 +1,8 @@
 package de.mcjj.siedler.command;
 
-import cn.nukkit.command.Command;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.utils.TextFormat;
+import org.powernukkitx.command.Command;
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.utils.TextFormat;
 import de.mcjj.siedler.SiedlerPlugin;
 
 /** Base /siedler command used as the migration entry point. */

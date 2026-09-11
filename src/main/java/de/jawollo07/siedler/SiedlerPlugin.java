@@ -1,8 +1,8 @@
 package de.mcjj.siedler;
 
-import cn.nukkit.plugin.PluginBase;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.TextFormat;
+import org.powernukkitx.plugin.PluginBase;
+import org.powernukkitx.utils.Config;
+import org.powernukkitx.utils.TextFormat;
 import de.mcjj.siedler.command.SiedlerCommand;
 import de.mcjj.siedler.core.SiedlerManager;
 import de.mcjj.siedler.storage.StorageManager;
@@ -52,13 +52,6 @@ public final class SiedlerPlugin extends PluginBase {
         }
         getLogger().info(TextFormat.RED + "Siedler 2.0 disabled.");
         instance = null;
-    }
-
-    private void saveDefaultConfig() {
-        if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
-            getLogger().warning("Could not create plugin data directory.");
-        }
-        saveResource("config.yml");
     }
 
     public Config getConfig() {
