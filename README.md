@@ -12,7 +12,7 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 
 ### Initial foundation
 
-- Java 21 / **Maven** project
+- Java 21 / **Gradle** project
 - PowerNukkitX plugin descriptor
 - central `SiedlerPlugin` lifecycle
 - central `SiedlerManager`
@@ -54,7 +54,7 @@ The systems from Siedler 1.x will be migrated in dependency order:
 
 ## PowerNukkitX target
 
-The project targets **PowerNukkitX 3.0.4** / API **3.0.4**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Maven as a `provided` dependency because the server provides it at runtime.
+The project targets **PowerNukkitX 3.0.4** / API **3.0.4**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Gradle as a `compileOnly` dependency because the server provides it at runtime.
 
 If exact server-version compatibility changes, the dependency and compatibility notes will be updated together with the code.
 
@@ -73,13 +73,13 @@ SQLite is the planned default storage backend. Persistent data is designed aroun
 
 ## Build
 
-Requires **JDK 21** and **Maven**.
+Requires **JDK 21** and **Gradle**.
 
 ```bash
-mvn clean package
+gradle clean build
 ```
 
-The plugin JAR is produced under `target/`, with the main artifact named `Siedler-2.0.jar`.
+The plugin JAR is produced under `build/libs/`, with the main artifact named `Siedler-2.0.jar`.
 
 ## Migration reference
 
