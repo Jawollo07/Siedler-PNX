@@ -1,7 +1,7 @@
-package de.mcjj.siedler.core;
+package de.jawollo07.siedler.core;
 
-import de.mcjj.siedler.SiedlerPlugin;
-import de.mcjj.siedler.storage.StorageManager;
+import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.storage.StorageManager;
 
 /** Coordinates shared services used by Siedler gameplay modules. */
 public final class SiedlerManager {

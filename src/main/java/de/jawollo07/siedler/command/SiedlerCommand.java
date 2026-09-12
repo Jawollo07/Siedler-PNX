@@ -1,9 +1,9 @@
-package de.mcjj.siedler.command;
+package de.jawollo07.siedler.command;
 
 import org.powernukkitx.command.Command;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.utils.TextFormat;
-import de.mcjj.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.SiedlerPlugin;
 
 /** Base /siedler command used as the migration entry point. */
 public final class SiedlerCommand extends Command {

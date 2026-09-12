@@ -1,11 +1,11 @@
-package de.mcjj.siedler;
+package de.jawollo07.siedler;
 
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
-import de.mcjj.siedler.command.SiedlerCommand;
-import de.mcjj.siedler.core.SiedlerManager;
-import de.mcjj.siedler.storage.StorageManager;
+import de.jawollo07.siedler.command.SiedlerCommand;
+import de.jawollo07.siedler.core.SiedlerManager;
+import de.jawollo07.siedler.storage.StorageManager;
 
 import java.io.File;
 
