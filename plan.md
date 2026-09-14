@@ -15,12 +15,8 @@ Stand: 11.09.2026
 
 ## Phase 1 – Core & Datenmodell
 
-- [ ] Storage-Migration auf versioniertes Schema
-- [ ] Repository/DAO-Abstraktionen
-- [ ] Player-ID/UUID-Datenmodell
-- [ ] zentraler Task-/Scheduler-Service
-- [ ] strukturierter Logger und Debug-Level
-- [ ] API-Kompatibilitätsguards
+- [x] Storage Verwaltung
+- [x] Player-ID Datenmodell
 
 ## Phase 2 – Teams
 
@@ -136,15 +132,12 @@ Stand: 11.09.2026
 
 ## Phase 10 – Migration & Release
 
-- [ ] Datenmigration aus Siedler 1.x, soweit sinnvoll möglich
-- [ ] Konfigurationsmigration dokumentieren
 - [ ] vollständige Command-Dokumentation / USER_GUIDE
 - [ ] Server-Test auf Zielversion
 - [ ] Performance-Test unter Last
 - [ ] Persistenz-/Restart-Tests
 - [ ] saubere Fehlerbehandlung
 - [ ] Release-Build
-- [ ] Migrationshinweise für den Umstieg von BDS Script API auf PNX
 
 ## Aktueller Fokus
 
