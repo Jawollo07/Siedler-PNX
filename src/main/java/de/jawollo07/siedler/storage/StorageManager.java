@@ -1,133 +1,78 @@
 package de.jawollo07.siedler.storage;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import org.powernukkitx.utils.Config;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Locale;
 
-/**
- * Persistent storage foundation.
- * Gameplay managers will use this service.
- */
 public final class StorageManager {
 
     private final SiedlerPlugin plugin;
     private Connection connection;
+    private SQLite sqlite;
+    private MySQL mysql;
+    private String activeType;
 
     public StorageManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void initialize() {
-        File dataFolder = plugin.getDataFolder();
+        Config config = new Config(new File(plugin.getDataFolder(), "config.yml"), Config.YAML);
+        String configuredType = config.getString("storage.type", "sqlite");
+        String storageType = configuredType == null ? "sqlite" : configuredType.trim().toLowerCase(Locale.ROOT);
 
-        if (!dataFolder.exists() && !dataFolder.mkdirs()) {
-            throw new IllegalStateException(
-                    "Could not create Siedler data directory: "
-                            + dataFolder.getAbsolutePath()
-            );
+        if ("mysql".equals(storageType) || "mariadb".equals(storageType)) {
+            mysql = new MySQL(config);
+            try {
+                mysql.connect();
+                connection = mysql.getConnection();
+                activeType = "mariadb";
+                plugin.getLogger().info("MariaDB storage initialized.");
+            } catch (SQLException e) {
+                throw new IllegalStateException("Could not initialize Siedler MariaDB storage", e);
+            }
+        } else {
+            sqlite = new SQLite(plugin);
+            sqlite.initialize();
+            connection = sqlite.getConnection();
+            activeType = "sqlite";
         }
 
-        File database = new File(dataFolder, "siedler.db");
-
         try {
-            /*
-             * PowerNukkitX uses its own plugin classloader.
-             * Explicitly load the SQLite JDBC driver.
-             */
-            Class.forName("org.sqlite.JDBC");
-
-            String databaseUrl = "jdbc:sqlite:" + database.getAbsolutePath();
-
-            connection = DriverManager.getConnection(databaseUrl);
-
-            try (Statement statement = connection.createStatement()) {
-
-                statement.executeUpdate(
-                        "PRAGMA foreign_keys = ON"
-                );
-
-                statement.executeUpdate(
-                        "CREATE TABLE IF NOT EXISTS schema_version (" +
-                        "version INTEGER NOT NULL)"
-                );
-
-                statement.executeUpdate(
-                        "CREATE TABLE IF NOT EXISTS teams (" +
-                        "id TEXT PRIMARY KEY, " +
-                        "name TEXT NOT NULL UNIQUE, " +
-                        "tax_bonus INTEGER NOT NULL DEFAULT 1, " +
-                        "eliminated INTEGER NOT NULL DEFAULT 0)"
-                );
-
-                statement.executeUpdate(
-                        "CREATE TABLE IF NOT EXISTS team_members (" +
-                        "team_id TEXT NOT NULL, " +
-                        "player_id TEXT NOT NULL UNIQUE, " +
-                        "PRIMARY KEY(team_id, player_id), " +
-                        "FOREIGN KEY(team_id) REFERENCES teams(id) " +
-                        "ON DELETE CASCADE)"
-                );
-
-                statement.executeUpdate(
-                        "CREATE TABLE IF NOT EXISTS player_stats (" +
-                        "player_id TEXT PRIMARY KEY, " +
-                        "kills INTEGER NOT NULL DEFAULT 0, " +
-                        "deaths INTEGER NOT NULL DEFAULT 0)"
-                );
-            }
-
-            plugin.getLogger().info(
-                    "SQLite storage initialized: "
-                            + database.getAbsolutePath()
-            );
-
-        } catch (ClassNotFoundException e) {
-
-            throw new IllegalStateException(
-                    "SQLite JDBC driver is missing from the Siedler plugin JAR",
-                    e
-            );
-
-        } catch (SQLException e) {
-
-            throw new IllegalStateException(
-                    "Could not initialize Siedler SQLite storage",
-                    e
-            );
+            new InitDB().runInternalScript(plugin, "storage/init.sql");
+            plugin.getLogger().info("Internal database init script executed.");
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to execute internal init.sql", e);
         }
     }
 
     public Connection getConnection() {
         if (connection == null) {
-            throw new IllegalStateException(
-                    "Storage is not initialized"
-            );
+            throw new IllegalStateException("Storage is not initialized");
         }
-
         return connection;
     }
 
     public void close() {
-        if (connection == null) {
-            return;
-        }
-
+        if (connection == null) { return; }
         try {
-            connection.close();
-
+            if (mysql != null) {
+                mysql.close();
+            } else if (sqlite != null) {
+                sqlite.close();
+            } else {
+                connection.close();
+            }
         } catch (SQLException e) {
-
-            plugin.getLogger().warning(
-                    "Could not close SQLite storage: "
-                            + e.getMessage()
-            );
-
+            plugin.getLogger().warning("Could not close storage: " + e.getMessage());
         } finally {
             connection = null;
+            activeType = null;
         }
     }
+
 }

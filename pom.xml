@@ -9,7 +9,7 @@
     <!-- Project -->
     <groupId>de.jawollo07</groupId>
     <artifactId>siedler</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Siedler</name>
@@ -77,21 +77,34 @@
 
         <!--
             SQLite JDBC Driver.
-
-            KEIN provided!
-
-            Wird durch Maven Shade in das Plugin-JAR integriert.
         -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.50.3.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.10</version>
+        </dependency>
     </dependencies>
 
     <!-- Build -->
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java/de/jawollo07/siedler/storage</directory>
+                <includes>
+                    <include>init.sql</include>
+                </includes>
+                <targetPath>storage</targetPath>
+            </resource>
+        </resources>
 
         <plugins>
 

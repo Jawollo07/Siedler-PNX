@@ -6,6 +6,7 @@ import org.powernukkitx.utils.TextFormat;
 import de.jawollo07.siedler.command.SiedlerCommand;
 import de.jawollo07.siedler.core.SiedlerManager;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.storage.InitDB;
 
 import java.io.File;
 
@@ -37,7 +38,6 @@ public final class SiedlerPlugin extends PluginBase {
         config = new Config(new File(getDataFolder(), "config.yml"), Config.YAML);
         storage = new StorageManager(this);
         storage.initialize();
-
         siedlerManager = new SiedlerManager(this, storage);
         getServer().getCommandMap().register("siedler", new SiedlerCommand(this));
 
@@ -52,10 +52,6 @@ public final class SiedlerPlugin extends PluginBase {
         }
         getLogger().info(TextFormat.RED + "Siedler 2.0 disabled.");
         instance = null;
-    }
-
-    public Config getConfig() {
-        return config;
     }
 
     public StorageManager getStorage() {

@@ -3,7 +3,14 @@
 
 storage:
   type: sqlite
+sqlite:
   database: siedler.db
+mysql:
+  host: localhost
+  port: 3306
+  database: siedler
+  username: root
+  password: ""
 
 teams:
   max-teams: 4
