@@ -73,13 +73,13 @@ SQLite is the planned default storage backend. Persistent data is designed aroun
 
 ## Build
 
-Requires **JDK 21** and **Gradle**.
+Requires **JDK 21** and **Maven**.
 
 ```bash
-gradle clean build
+mvn clean package
 ```
 
-The plugin JAR is produced under `build/libs/`, with the main artifact named `Siedler-2.0.jar`.
+The plugin JAR is produced under `target/`, with the main artifact named `siedler-{version}-SNAPSHOT.jar`.
 
 ## Migration reference
 
