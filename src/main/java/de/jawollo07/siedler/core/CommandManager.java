@@ -1,4 +1,4 @@
-package de.jawollo07.siedler.command;
+package de.jawollo07.siedler.core;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import org.powernukkitx.command.Command;

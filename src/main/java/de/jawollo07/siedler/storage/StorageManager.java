@@ -15,7 +15,6 @@ public final class StorageManager {
     private SQLite sqlite;
     private MySQL mysql;
     private String activeType;
-
     public StorageManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
     }
@@ -43,10 +42,10 @@ public final class StorageManager {
         }
 
         try {
-            new InitDB().runInternalScript(plugin, "storage/init.sql");
-            plugin.getLogger().info("Internal database init script executed.");
+            new InitDB().initDatabase();
+            plugin.getLogger().info("Database schema ensured and upgraded automatically.");
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to execute internal init.sql", e);
+            throw new IllegalStateException("Failed to initialize or upgrade the database schema", e);
         }
     }
 

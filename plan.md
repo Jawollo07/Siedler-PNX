@@ -20,10 +20,10 @@ Stand: 11.09.2026
 
 ## Phase 2 – Teams
 
-- [ ] TeamManager
-- [ ] Team-Erstellung/Löschen
-- [ ] Team-Mitglieder und stabile Player-IDs
-- [ ] Teamfarben/Anzeige
+- [x] TeamManager
+- [x] Team-Erstellung/Löschen
+- [x] Team-Mitglieder und stabile Player-IDs
+- [x] Teamfarben/Anzeige
 - [ ] Teamchat
 - [ ] Diplomatie: allied / neutral / enemy
 - [ ] Team-Eliminierung

@@ -1,9 +1,10 @@
 package de.jawollo07.siedler;
 
-import de.jawollo07.siedler.command.CommandManager;
+import de.jawollo07.siedler.core.CommandManager;
 import de.jawollo07.siedler.command.SiedlerCommand;
 import de.jawollo07.siedler.core.SiedlerManager;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.team.TeamCommand;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
@@ -88,6 +89,7 @@ public final class SiedlerPlugin extends PluginBase {
      */
     private void registerCommands() {
         commandManager.register(new SiedlerCommand(this));
+        commandManager.register(new TeamCommand());
 
         // Example:
         // commandManager.register(new ExampleCommand(this));

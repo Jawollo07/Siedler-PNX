@@ -36,8 +36,10 @@ CREATE TABLE IF NOT EXISTS teams (
     eliminated INTEGER NOT NULL DEFAULT 0,
     elimination_block TEXT,
 
-    created_at INTEGER NOT NULL,
+    created_at BIGINT NOT NULL,
 
+    balance INTEGER NOT NULL DEFAULT 0,
+    
     CHECK (tax_bonus >= 1),
     CHECK (eliminated IN (0, 1))
 );
@@ -54,8 +56,8 @@ CREATE TABLE IF NOT EXISTS players (
 
     eliminated INTEGER NOT NULL DEFAULT 0,
 
-    first_join INTEGER NOT NULL,
-    last_seen INTEGER NOT NULL,
+    first_join BIGINT NOT NULL,
+    last_seen BIGINT NOT NULL,
 
     FOREIGN KEY (team_id)
         REFERENCES teams(id)
@@ -103,7 +105,7 @@ CREATE TABLE IF NOT EXISTS team_bonus_sources (
     amount INTEGER NOT NULL DEFAULT 1,
     permanent INTEGER NOT NULL DEFAULT 1,
 
-    created_at INTEGER NOT NULL,
+    created_at BIGINT NOT NULL,
 
     UNIQUE (team_id, source_type, source_id),
 
@@ -131,7 +133,7 @@ CREATE TABLE IF NOT EXISTS claims (
     max_x INTEGER NOT NULL,
     max_z INTEGER NOT NULL,
 
-    created_at INTEGER NOT NULL,
+    created_at BIGINT NOT NULL,
 
     FOREIGN KEY (team_id)
         REFERENCES teams(id)
@@ -160,9 +162,9 @@ CREATE TABLE IF NOT EXISTS outposts (
 
     owner_team_id TEXT,
 
-    captured_at INTEGER,
+    captured_at BIGINT,
 
-    created_at INTEGER NOT NULL,
+    created_at BIGINT NOT NULL,
 
     FOREIGN KEY (owner_team_id)
         REFERENCES teams(id)
@@ -178,9 +180,9 @@ CREATE TABLE IF NOT EXISTS outposts (
 CREATE TABLE IF NOT EXISTS token_rounds (
     id TEXT PRIMARY KEY,
 
-    started_at INTEGER NOT NULL,
+    started_at BIGINT NOT NULL,
 
-    completed_at INTEGER,
+    completed_at BIGINT,
 
     completed INTEGER NOT NULL DEFAULT 0,
 
@@ -206,8 +208,8 @@ CREATE TABLE IF NOT EXISTS tokens (
 
     defeated INTEGER NOT NULL DEFAULT 0,
 
-    spawned_at INTEGER NOT NULL,
-    defeated_at INTEGER,
+    spawned_at BIGINT NOT NULL,
+    defeated_at BIGINT,
 
     FOREIGN KEY (round_id)
         REFERENCES token_rounds(id)
