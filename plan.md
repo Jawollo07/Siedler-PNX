@@ -1,14 +1,51 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 11.09.2026
+Stand: 15.09.2026
+
+## Versionsschema
+
+Die Versionsnummer ist direkt an die Phasen dieses Plans gekoppelt:
+
+```text
+PHASE.FEATURE.PATCH
+```
+
+- **PHASE** – entspricht der aktuellen Phase des Migrationsplans.
+- **FEATURE** – nummeriert größere abgeschlossene Meilensteine innerhalb der Phase.
+- **PATCH** – Bugfixes, Korrekturen und kleine technische Änderungen ohne neuen Meilenstein.
+- Während der Entwicklung wird die Versionsnummer mit `-SNAPSHOT` ergänzt.
+- Eine neue Phase startet grundsätzlich mit `X.0.0-SNAPSHOT`.
+- Ein neuer funktionaler Meilenstein erhöht die mittlere Zahl: `X.0.0 → X.1.0`.
+- Ein reiner Fix erhöht die letzte Zahl: `X.1.0 → X.1.1`.
+
+Damit beschreibt die Versionsnummer jederzeit, **wo das Projekt im Migrationsplan steht**. Die Versionsnummer muss nicht für jeden einzelnen Checkbox-Punkt geändert werden; zusammengehörige Punkte können einen gemeinsamen Meilenstein bilden.
+
+### Phasen-Zuordnung
+
+| Version | Phase |
+|---|---|
+| `0.x.x` | Foundation |
+| `1.x.x` | Core & Datenmodell |
+| `2.x.x` | Teams |
+| `3.x.x` | Claims |
+| `4.x.x` | Economy & Taxes |
+| `5.x.x` | Monster, Tokens & Outposts |
+| `6.x.x` | Soldiers |
+| `7.x.x` | Market & Traders |
+| `8.x.x` | Essentials & Statistics |
+| `9.x.x` | Minefield |
+| `10.x.x` | Migration & Release |
+
+Der erste stabile Gesamt-Release ist damit `10.0.0`.
 
 ## Phase 0 – Foundation ✅
 
 - [x] Neues PowerNukkitX Repository initialisieren
-- [x] Gradle/Java-21 Grundstruktur
+- [x] Java-21 Grundstruktur mit Maven
 - [x] Plugin-Lifecycle (`SiedlerPlugin`)
 - [x] zentrale Manager-Struktur
 - [x] SQLite Storage-Grundlage
+- [x] MariaDB JDBC-Unterstützung
 - [x] Konfiguration
 - [x] `/siedler` Basiscommand
 - [x] README und Plan anlegen
@@ -29,6 +66,18 @@ Stand: 11.09.2026
 - [ ] Team-Eliminierung
 - [ ] permanenter Spectator nach Tod eines eliminierten Spielers
 - [ ] konfigurierbarer Eliminierungsblock
+
+### Versionsmeilensteine Phase 2
+
+- `2.0.0` – TeamManager-Grundlage
+- `2.1.0` – Team-Erstellung und -Löschung
+- `2.2.0` – Team-Mitglieder und stabile Player-IDs
+- `2.3.0` – Teamfarben und Anzeige
+- `2.4.0` – Teamchat
+- `2.5.0` – Diplomatie
+- `2.6.0` – Team-Eliminierung
+- `2.7.0` – permanenter Spectator nach Eliminierung
+- `2.8.0` – konfigurierbarer Eliminierungsblock
 
 ## Phase 3 – Claims
 
@@ -139,6 +188,12 @@ Stand: 11.09.2026
 - [ ] saubere Fehlerbehandlung
 - [ ] Release-Build
 
-## Aktueller Fokus
+## Aktueller Stand
 
-**Als Nächstes:** Phase 1 – ein sauberes, versioniertes Datenmodell und die gemeinsamen Services, danach Teams. Der Build läuft über **Maven** mit Java 21 und verwendet die offizielle PowerNukkitX-Koordinate `org.powernukkitx:server:3.0.4`.
+**Aktuelle Planphase:** Phase 2 – Teams
+
+Die Foundation und die grundlegenden Core-/Datenmodell-Arbeiten sind abgeschlossen. In Phase 2 sind TeamManager, Team-Erstellung/Löschung, Team-Mitglieder mit stabilen Player-IDs sowie Teamfarben/Anzeige umgesetzt.
+
+Der nächste noch offene funktionale Meilenstein ist **`2.4.0` – Teamchat**.
+
+Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
