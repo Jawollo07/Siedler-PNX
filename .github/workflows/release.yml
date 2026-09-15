@@ -51,28 +51,39 @@ jobs:
           echo "Version: $VERSION"
           echo "Planphase: $PHASE"
 
-      - name: Validate branch for plan phase
+      - name: Validate release branch
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           PHASE="${{ steps.version.outputs.phase }}"
+          REQUIRED_BRANCH="beta"
 
-          git fetch origin beta main --quiet
-
-          if (( PHASE < 10 )); then
-            echo "Version $VERSION gehört zu beta."
-            if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/beta"; then
-              echo "Fehler: Versionen unter 10.0.0 müssen aus dem beta-Branch veröffentlicht werden."
-              exit 1
-            fi
-          else
-            echo "Version $VERSION gehört zu main."
-            if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/main"; then
-              echo "Fehler: Versionen ab 10.0.0 müssen aus dem main-Branch veröffentlicht werden."
-              exit 1
-            fi
+          if (( PHASE >= 10 )); then
+            REQUIRED_BRANCH="main"
           fi
+
+          echo "Version $VERSION benötigt Branch $REQUIRED_BRANCH."
+          echo "Getaggter Commit: $GITHUB_SHA"
+
+          # Ein Tag kann unmittelbar vor dem Push des Branches erstellt werden.
+          # Deshalb geben wir dem Branch bis zu 60 Sekunden Zeit, den Commit zu erreichen.
+          for attempt in {1..12}; do
+            git fetch origin "$REQUIRED_BRANCH" --quiet
+
+            if git merge-base --is-ancestor "$GITHUB_SHA" "origin/$REQUIRED_BRANCH"; then
+              echo "OK: $GITHUB_SHA ist in origin/$REQUIRED_BRANCH enthalten."
+              exit 0
+            fi
+
+            if (( attempt < 12 )); then
+              echo "Commit noch nicht in origin/$REQUIRED_BRANCH – warte 5 Sekunden (Versuch $attempt/12)."
+              sleep 5
+            fi
+          done
+
+          echo "Fehler: Version $VERSION muss aus dem Branch $REQUIRED_BRANCH veröffentlicht werden."
+          exit 1
 
       - name: Set Maven version from Git tag
         if: startsWith(github.ref, 'refs/tags/v')
