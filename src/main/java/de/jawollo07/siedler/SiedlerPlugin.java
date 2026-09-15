@@ -12,7 +12,7 @@ import org.powernukkitx.utils.TextFormat;
 import java.io.File;
 
 /**
- * Main entry point for Siedler 2.0.
+ * Main entry point for Siedler.
  *
  * <p>The plugin uses managers to keep the main plugin class clean and
  * separates command registration, game logic and storage handling.</p>
@@ -67,7 +67,7 @@ public final class SiedlerPlugin extends PluginBase {
         registerCommands();
 
         getLogger().info(
-                TextFormat.GREEN + "Siedler 2.0 enabled."
+                TextFormat.GREEN + "Siedler enabled."
         );
 
         getLogger().info(
@@ -102,7 +102,7 @@ public final class SiedlerPlugin extends PluginBase {
         }
 
         getLogger().info(
-                TextFormat.RED + "Siedler 2.0 disabled."
+                TextFormat.RED + "Siedler disabled."
         );
 
         instance = null;
