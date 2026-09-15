@@ -1,28 +1,35 @@
 package de.jawollo07.siedler;
 
-import org.powernukkitx.plugin.PluginBase;
-import org.powernukkitx.utils.Config;
-import org.powernukkitx.utils.TextFormat;
+import de.jawollo07.siedler.command.CommandManager;
 import de.jawollo07.siedler.command.SiedlerCommand;
 import de.jawollo07.siedler.core.SiedlerManager;
 import de.jawollo07.siedler.storage.StorageManager;
-import de.jawollo07.siedler.storage.InitDB;
+import org.powernukkitx.plugin.PluginBase;
+import org.powernukkitx.utils.Config;
+import org.powernukkitx.utils.TextFormat;
 
 import java.io.File;
 
 /**
  * Main entry point for Siedler 2.0.
  *
- * <p>The old Bedrock Script API implementation is intentionally not copied
- * one-to-one. Siedler 2.0 uses native PowerNukkitX services and persistent
- * storage behind managers, allowing gameplay systems to be migrated safely.</p>
+ * <p>The plugin uses managers to keep the main plugin class clean and
+ * separates command registration, game logic and storage handling.</p>
  */
 public final class SiedlerPlugin extends PluginBase {
+
     private static SiedlerPlugin instance;
+
     private Config config;
     private StorageManager storage;
     private SiedlerManager siedlerManager;
+    private CommandManager commandManager;
 
+    /**
+     * Returns the currently loaded Siedler plugin instance.
+     *
+     * @return plugin instance
+     */
     public static SiedlerPlugin getInstance() {
         return instance;
     }
@@ -35,14 +42,55 @@ public final class SiedlerPlugin extends PluginBase {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        config = new Config(new File(getDataFolder(), "config.yml"), Config.YAML);
+
+        config = new Config(
+                new File(getDataFolder(), "config.yml"),
+                Config.YAML
+        );
+
+        /*
+         * Initialize storage.
+         */
         storage = new StorageManager(this);
         storage.initialize();
-        siedlerManager = new SiedlerManager(this, storage);
-        getServer().getCommandMap().register("siedler", new SiedlerCommand(this));
 
-        getLogger().info(TextFormat.GREEN + "Siedler 2.0 enabled.");
-        getLogger().info(TextFormat.GRAY + "Native PowerNukkitX foundation initialized.");
+        /*
+         * Initialize core managers.
+         */
+        siedlerManager = new SiedlerManager(this, storage);
+
+        /*
+         * Initialize and register commands.
+         */
+        commandManager = new CommandManager(this);
+        registerCommands();
+
+        getLogger().info(
+                TextFormat.GREEN + "Siedler 2.0 enabled."
+        );
+
+        getLogger().info(
+                TextFormat.GRAY + "Native PowerNukkitX foundation initialized."
+        );
+
+        getLogger().info(
+                TextFormat.GRAY + "Registered "
+                        + commandManager.size()
+                        + " command(s)."
+        );
+    }
+
+    /**
+     * Registers all commands used by Siedler.
+     *
+     * <p>To add a new command, simply add another
+     * {@code commandManager.register(...)} call here.</p>
+     */
+    private void registerCommands() {
+        commandManager.register(new SiedlerCommand(this));
+
+        // Example:
+        // commandManager.register(new ExampleCommand(this));
     }
 
     @Override
@@ -50,15 +98,47 @@ public final class SiedlerPlugin extends PluginBase {
         if (storage != null) {
             storage.close();
         }
-        getLogger().info(TextFormat.RED + "Siedler 2.0 disabled.");
+
+        getLogger().info(
+                TextFormat.RED + "Siedler 2.0 disabled."
+        );
+
         instance = null;
     }
 
+    /**
+     * Returns the plugin configuration.
+     *
+     * @return configuration
+     */
+    public Config getConfig() {
+        return config;
+    }
+
+    /**
+     * Returns the storage manager.
+     *
+     * @return storage manager
+     */
     public StorageManager getStorage() {
         return storage;
     }
 
+    /**
+     * Returns the Siedler manager.
+     *
+     * @return Siedler manager
+     */
     public SiedlerManager getSiedlerManager() {
         return siedlerManager;
+    }
+
+    /**
+     * Returns the command manager.
+     *
+     * @return command manager
+     */
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 }
