@@ -8,23 +8,24 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 🚧 **Foundation initialized – migration in progress.**
 
-The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin instead of performing a direct JavaScript-to-Java translation.
+The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
-### Initial foundation
+### Current foundation
 
-- Java 21 / **Gradle** project
+- Java 21 / **Maven** project
 - PowerNukkitX plugin descriptor
-- central `SiedlerPlugin` lifecycle
-- central `SiedlerManager`
+- Central `SiedlerPlugin` lifecycle
+- Central `SiedlerManager`
 - SQLite persistence foundation
-- initial `/siedler` command
-- configurable gameplay defaults
-- architecture prepared for independent gameplay managers
+- MariaDB JDBC support
+- Initial `/siedler` command
+- Configurable gameplay defaults
+- Architecture prepared for independent gameplay managers
 
 ## Target architecture
 
 ```text
-src/main/java/de/mcjj/siedler/
+src/main/java/de/jawollo07/siedler/
 ├── SiedlerPlugin.java
 ├── core/
 ├── storage/
@@ -54,13 +55,13 @@ The systems from Siedler 1.x will be migrated in dependency order:
 
 ## PowerNukkitX target
 
-The project targets **PowerNukkitX 3.0.4** / API **3.0.4**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Gradle as a `compileOnly` dependency because the server provides it at runtime.
+The project targets **PowerNukkitX 3.0.4-SNAPSHOT** / API **3.0.x**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Maven as a `provided` dependency because the server provides it at runtime.
 
 If exact server-version compatibility changes, the dependency and compatibility notes will be updated together with the code.
 
 ## Persistence
 
-SQLite is the planned default storage backend. Persistent data is designed around stable player UUID/ID values rather than player names wherever the server API provides a stable identifier.
+SQLite is the default local storage backend, with MariaDB JDBC support available for database-backed deployments. Persistent data is designed around stable player UUID/ID values rather than player names wherever the server API provides a stable identifier.
 
 ## Development principles
 
@@ -68,7 +69,7 @@ SQLite is the planned default storage backend. Persistent data is designed aroun
 - Managers/services with clear responsibilities instead of one large main class.
 - Persistent state must survive restarts.
 - Gameplay rules should be configurable.
-- Existing Siedler 1.x behavior is the functional reference, while Siedler 2.0 may improve implementation details where PNX provides better native facilities.
+- Existing Siedler 1.x behavior is the functional reference, while Siedler 2.0 may improve implementation details where PowerNukkitX provides better native facilities.
 - README and `plan.md` are kept synchronized with the implementation.
 
 ## Build
@@ -79,8 +80,8 @@ Requires **JDK 21** and **Maven**.
 mvn clean package
 ```
 
-The plugin JAR is produced under `target/`, with the main artifact named `siedler-{version}-SNAPSHOT.jar`.
+The plugin JAR is produced under `target/`. The current Maven project version is `2.0.2-SNAPSHOT`, so the resulting artifact is named `siedler-2.0.2-SNAPSHOT.jar`.
 
 ## Migration reference
 
-The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonus, token monsters, outpost capture, monster raids, soldiers (infantry/archer/cavalry), soldier AI, market/traders, homes/TPA, persistent ender/team chests, player statistics, anti-AFK and the minefield/control system.
+The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonus, token monsters, outpost capture, monster raids, soldiers (infantry/archer/cavalry), soldier AI, market/traders, homes/TPA, persistent ender/team chests, player statistics, anti-AFK, and the minefield/control system.
