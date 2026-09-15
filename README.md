@@ -6,21 +6,55 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Foundation initialized – migration in progress.**
+🚧 **Phase 2 – Teams: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
-### Current foundation
+### Current implementation
 
 - Java 21 / **Maven** project
 - PowerNukkitX plugin descriptor
 - Central `SiedlerPlugin` lifecycle
-- Central `SiedlerManager`
+- Central manager structure
 - SQLite persistence foundation
 - MariaDB JDBC support
 - Initial `/siedler` command
 - Configurable gameplay defaults
-- Architecture prepared for independent gameplay managers
+- TeamManager
+- Team creation and deletion
+- Team membership with stable player IDs
+- Team colors / display data
+
+## Versioning
+
+Project versions are coupled to the migration plan using:
+
+```text
+PHASE.FEATURE.PATCH
+```
+
+- **PHASE** identifies the current migration phase.
+- **FEATURE** identifies a functional milestone inside that phase.
+- **PATCH** is reserved for bugfixes and small non-feature changes.
+- Development versions use the `-SNAPSHOT` suffix.
+- Each new migration phase starts at `X.0.0-SNAPSHOT`.
+- The first stable complete release is planned as **`10.0.0`**.
+
+Example for the Teams phase:
+
+| Version | Milestone |
+|---|---|
+| `2.0.0` | TeamManager foundation |
+| `2.1.0` | Team creation/deletion |
+| `2.2.0` | Team members + stable player IDs |
+| `2.3.0` | Team colors/display |
+| `2.4.0` | Team chat |
+| `2.5.0` | Diplomacy |
+| `2.6.0` | Team elimination |
+| `2.7.0` | Permanent spectator after elimination |
+| `2.8.0` | Configurable elimination block |
+
+The version is therefore a progress indicator for the migration plan, not an independent semantic-versioning roadmap.
 
 ## Target architecture
 
@@ -30,7 +64,7 @@ src/main/java/de/jawollo07/siedler/
 ├── core/
 ├── storage/
 ├── command/
-├── teams/
+├── team/
 ├── claims/
 ├── economy/
 ├── monsters/
@@ -40,7 +74,7 @@ src/main/java/de/jawollo07/siedler/
 └── mines/
 ```
 
-The systems from Siedler 1.x will be migrated in dependency order:
+The systems from Siedler 1.x are migrated in dependency order:
 
 1. Core + persistence
 2. Teams + player identity + diplomacy
@@ -52,6 +86,8 @@ The systems from Siedler 1.x will be migrated in dependency order:
 8. Essentials + inventories + statistics
 9. Mines + control system
 10. Migration, compatibility and release hardening
+
+The detailed checklist and current progress are maintained in [`plan.md`](plan.md).
 
 ## PowerNukkitX target
 
@@ -71,6 +107,7 @@ SQLite is the default local storage backend, with MariaDB JDBC support available
 - Gameplay rules should be configurable.
 - Existing Siedler 1.x behavior is the functional reference, while Siedler 2.0 may improve implementation details where PowerNukkitX provides better native facilities.
 - README and `plan.md` are kept synchronized with the implementation.
+- Version milestones follow `plan.md`.
 
 ## Build
 
@@ -80,8 +117,12 @@ Requires **JDK 21** and **Maven**.
 mvn clean package
 ```
 
-The plugin JAR is produced under `target/`. The current Maven project version is `2.0.2-SNAPSHOT`, so the resulting artifact is named `siedler-2.0.2-SNAPSHOT.jar`.
+The plugin JAR is produced under `target/`. The current Maven project version is **`2.2.0-SNAPSHOT`**.
 
 ## Migration reference
 
 The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonus, token monsters, outpost capture, monster raids, soldiers (infantry/archer/cavalry), soldier AI, market/traders, homes/TPA, persistent ender/team chests, player statistics, anti-AFK, and the minefield/control system.
+
+## Next milestone
+
+The next planned feature milestone is **`2.4.0 – Teamchat`**, followed by diplomacy and the remaining team-elimination mechanics. See [`plan.md`](plan.md) for the complete roadmap.
