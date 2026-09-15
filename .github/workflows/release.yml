@@ -2,6 +2,9 @@ name: Build & Release
 
 on:
   push:
+    branches:
+      - beta
+      - main
     tags:
       - 'v*.*.*'
   workflow_dispatch:
@@ -10,13 +13,15 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    name: Build & Release
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v4
@@ -25,12 +30,55 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Determine build version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          fi
+
+          if [[ ! "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-SNAPSHOT)?$ ]]; then
+            echo "Ungültige Version: $VERSION"
+            exit 1
+          fi
+
+          PHASE="${BASH_REMATCH[1]}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "phase=$PHASE" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+          echo "Planphase: $PHASE"
+
+      - name: Validate branch for plan phase
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PHASE="${{ steps.version.outputs.phase }}"
+
+          git fetch origin beta main --quiet
+
+          if (( PHASE < 10 )); then
+            echo "Version $VERSION gehört zu beta."
+            if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/beta"; then
+              echo "Fehler: Versionen unter 10.0.0 müssen aus dem beta-Branch veröffentlicht werden."
+              exit 1
+            fi
+          else
+            echo "Version $VERSION gehört zu main."
+            if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/main"; then
+              echo "Fehler: Versionen ab 10.0.0 müssen aus dem main-Branch veröffentlicht werden."
+              exit 1
+            fi
+          fi
+
       - name: Set Maven version from Git tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
           mvn --batch-mode versions:set \
-            -DnewVersion="$VERSION" \
+            -DnewVersion="${{ steps.version.outputs.version }}" \
             -DgenerateBackupPoms=false
 
       - name: Build with Maven
@@ -42,12 +90,32 @@ jobs:
           ls -lah target/
           test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
 
+      - name: Upload beta build artifact
+        if: github.ref == 'refs/heads/beta'
+        uses: actions/upload-artifact@v4
+        with:
+          name: siedler-beta-${{ steps.version.outputs.version }}
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            target/*.jar \
-            --title "$GITHUB_REF_NAME" \
-            --generate-notes
+          VERSION="${{ steps.version.outputs.version }}"
+          PHASE="${{ steps.version.outputs.phase }}"
+
+          if (( PHASE < 10 )); then
+            gh release create "$GITHUB_REF_NAME" \
+              target/*.jar \
+              --title "$GITHUB_REF_NAME (Beta)" \
+              --prerelease \
+              --generate-notes
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              target/*.jar \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi
