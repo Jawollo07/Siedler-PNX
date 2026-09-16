@@ -106,6 +106,29 @@ public class TeamManager {
         }
     }
 
+    public Team getTeamByPlayer(String playerName) throws SQLException {
+        if (playerName == null || playerName.isBlank()) {
+            return null;
+        }
+
+        String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, "
+                + "t.elimination_block, t.created_at, t.balance "
+                + "FROM players p "
+                + "JOIN teams t ON t.id = p.team_id "
+                + "WHERE p.last_name = ?";
+
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, playerName.trim());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return null;
+                }
+                return mapTeam(resultSet);
+            }
+        }
+    }
+
     public boolean deleteTeam(String name) throws SQLException {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Team name must not be blank");
