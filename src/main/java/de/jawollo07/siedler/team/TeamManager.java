@@ -2,6 +2,7 @@ package de.jawollo07.siedler.team;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
+import org.powernukkitx.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,9 +13,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class TeamManager {
+    private final SiedlerPlugin plugin;
     private final StorageManager storage;
 
     public TeamManager(SiedlerPlugin plugin) {
+        this.plugin = plugin;
         this.storage = plugin.getStorage();
     }
 
@@ -158,11 +161,39 @@ public class TeamManager {
         }
 
         Team team = getTeamByName(teamName);
-        String sql = "UPDATE players SET team_id = ? WHERE last_name = ?";
+        Player onlinePlayer = plugin.getServer().getOnlinePlayers().values().stream()
+                .filter(player -> player.getName().equalsIgnoreCase(playerName.trim()))
+                .findFirst()
+                .orElse(null);
+        if (onlinePlayer == null) {
+            throw new SQLException("Player must be online before being added to a team.");
+        }
+
+        String playerId = onlinePlayer.getUniqueId().toString();
+        long now = System.currentTimeMillis();
+        String upsertPlayerSql = "UPDATE players SET last_name = ?, last_seen = ? WHERE id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(upsertPlayerSql)) {
+            statement.setString(1, onlinePlayer.getName());
+            statement.setLong(2, now);
+            statement.setString(3, playerId);
+            if (statement.executeUpdate() == 0) {
+                String insertPlayerSql = "INSERT INTO players (id, last_name, first_join, last_seen) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement insertStatement = storage.getConnection()
+                        .prepareStatement(insertPlayerSql)) {
+                    insertStatement.setString(1, playerId);
+                    insertStatement.setString(2, onlinePlayer.getName());
+                    insertStatement.setLong(3, now);
+                    insertStatement.setLong(4, now);
+                    insertStatement.executeUpdate();
+                }
+            }
+        }
+
+        String sql = "UPDATE players SET team_id = ? WHERE id = ?";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, team.id());
-            statement.setString(2, playerName.trim());
+            statement.setString(2, playerId);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Adding player to team failed.");

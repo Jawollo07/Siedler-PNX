@@ -60,8 +60,8 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [x] TeamManager
 - [x] Team-Erstellung/Löschen
 - [x] Team-Mitglieder und stabile Player-IDs
-- [ ] Teamchat
-- [ ] Diplomatie: allied / neutral / enemy
+- [x] Teamchat
+- [x] Diplomatie: allied / neutral / enemy
 - [ ] Team-Eliminierung
 - [ ] permanenter Spectator nach Tod eines eliminierten Spielers
 - [ ] konfigurierbarer Eliminierungsblock

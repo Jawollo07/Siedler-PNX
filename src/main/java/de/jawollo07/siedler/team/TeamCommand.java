@@ -12,6 +12,7 @@ public final class TeamCommand extends Command {
     public TeamCommand() {
         super("team", "Manage teams", "/team");
         this.plugin = SiedlerPlugin.getInstance();
+        setPermission("siedler.command.team");
     }
     public String help(CommandSender sender) {
         sender.sendMessage("§6§lSiedler 2.0 §7- §fTeam Management");
@@ -53,6 +54,8 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamCreateCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.create");
+            setPermission("siedler.admin");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {
@@ -76,6 +79,8 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamDeleteCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.delete");
+            setPermission("siedler.admin");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
@@ -102,6 +107,8 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamAddCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.add");
+            setPermission("siedler.admin");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {
@@ -129,6 +136,8 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamRemoveCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.remove");
+            setPermission("siedler.admin");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
@@ -155,6 +164,9 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamListCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.list");
+            setPermission("siedler.admin");
+            setPermission("siedler.basic");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             try {
@@ -179,6 +191,9 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamInfoCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.info");
+            setPermission("siedler.admin");
+            setPermission("siedler.basic");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
@@ -210,6 +225,8 @@ public final class TeamCommand extends Command {
         private final SiedlerPlugin plugin;
         public TeamSetColorCommand(SiedlerPlugin plugin) {
             this.plugin = plugin;
+            setPermission("siedler.command.team.setcolor");
+            setPermission("siedler.admin");
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {

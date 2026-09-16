@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     player_id TEXT NOT NULL,
     player_name TEXT NOT NULL,
     world TEXT NOT NULL,
+    target TEXT NOT NULL,
     x REAL NOT NULL,
     y REAL NOT NULL,
     z REAL NOT NULL,
@@ -101,6 +102,25 @@ CREATE TABLE IF NOT EXISTS team_diplomacy (
         ON DELETE CASCADE,
 
     CHECK (team_id != other_team_id),
+    CHECK (relation IN ('allied', 'neutral', 'enemy'))
+);
+
+CREATE TABLE IF NOT EXISTS team_relation_logs (
+    id TEXT PRIMARY KEY,
+    team_id TEXT NOT NULL,
+    other_team_id TEXT NOT NULL,
+    relation TEXT NOT NULL DEFAULT 'neutral',
+    action TEXT NOT NULL DEFAULT 'set_relation',
+    created_at BIGINT NOT NULL,
+
+    FOREIGN KEY (team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (other_team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE,
+
     CHECK (relation IN ('allied', 'neutral', 'enemy'))
 );
 

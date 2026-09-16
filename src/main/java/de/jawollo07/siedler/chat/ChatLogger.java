@@ -13,7 +13,7 @@ public class ChatLogger {
         this.storageManager = storageManager;
     }
     private final SiedlerPlugin plugin = SiedlerPlugin.getInstance();
-    public boolean saveChatMessage(String playerID, String playerName, String world,
+    public boolean saveChatMessage(String playerID, String playerName, String world, String target, 
                                    double x, double y, double z, String message) {
         try {
             long now = System.currentTimeMillis();
@@ -36,19 +36,20 @@ public class ChatLogger {
                 }
             }
 
-            String sql = "INSERT INTO chat_messages "
-                    + "(id, player_id, player_name, world, x, y, z, message, created_at) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO chat_messages "
+                    + "(id, player_id, player_name, world, target, x, y, z, message, created_at) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = storageManager.getConnection().prepareStatement(sql)) {
                 preparedStatement.setString(1, UUID.randomUUID().toString());
                 preparedStatement.setString(2, playerID);
                 preparedStatement.setString(3, playerName);
                 preparedStatement.setString(4, world);
-                preparedStatement.setDouble(5, x);
-                preparedStatement.setDouble(6, y);
-                preparedStatement.setDouble(7, z);
-                preparedStatement.setString(8, message);
-                preparedStatement.setLong(9, now);
+                preparedStatement.setString(5, target);
+                preparedStatement.setDouble(6, x);
+                preparedStatement.setDouble(7, y);
+                preparedStatement.setDouble(8, z);
+                preparedStatement.setString(9, message);
+                preparedStatement.setLong(10, now);
                 preparedStatement.executeUpdate();
             }
             return true;

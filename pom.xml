@@ -9,11 +9,11 @@
     <!-- Project -->
     <groupId>de.jawollo07</groupId>
     <artifactId>siedler</artifactId>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
     <packaging>jar</packaging>
 
     <name>Siedler</name>
-    <description>Siedler 2.3.0 - PowerNukkitX Plugin</description>
+    <description>Siedler 2.4.0 - PowerNukkitX Plugin</description>
 
     <!-- Java -->
     <properties>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.powernukkitx</groupId>
             <artifactId>server</artifactId>
-            <version>3.0.4-SNAPSHOT</version>
+            <version>3.0.5-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
