@@ -2,9 +2,6 @@ name: Build & Release
 
 on:
   push:
-    branches:
-      - beta
-      - main
     tags:
       - 'v*.*.*'
   workflow_dispatch:
