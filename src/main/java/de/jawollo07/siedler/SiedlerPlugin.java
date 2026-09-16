@@ -1,8 +1,9 @@
 package de.jawollo07.siedler;
 
-import de.jawollo07.siedler.core.CommandManager;
 import de.jawollo07.siedler.command.SiedlerCommand;
+import de.jawollo07.siedler.core.CommandManager;
 import de.jawollo07.siedler.core.SiedlerManager;
+import de.jawollo07.siedler.listener.ChatListener;
 import de.jawollo07.siedler.storage.StorageManager;
 import de.jawollo07.siedler.team.TeamCommand;
 import org.powernukkitx.plugin.PluginBase;
@@ -15,7 +16,8 @@ import java.io.File;
  * Main entry point for Siedler 2.0.
  *
  * <p>The plugin uses managers to keep the main plugin class clean and
- * separates command registration, game logic and storage handling.</p>
+ * separates command registration, game logic, storage handling and
+ * event listeners.</p>
  */
 public final class SiedlerPlugin extends PluginBase {
 
@@ -26,11 +28,6 @@ public final class SiedlerPlugin extends PluginBase {
     private SiedlerManager siedlerManager;
     private CommandManager commandManager;
 
-    /**
-     * Returns the currently loaded Siedler plugin instance.
-     *
-     * @return plugin instance
-     */
     public static SiedlerPlugin getInstance() {
         return instance;
     }
@@ -49,22 +46,18 @@ public final class SiedlerPlugin extends PluginBase {
                 Config.YAML
         );
 
-        /*
-         * Initialize storage.
-         */
         storage = new StorageManager(this);
         storage.initialize();
 
-        /*
-         * Initialize core managers.
-         */
         siedlerManager = new SiedlerManager(this, storage);
 
-        /*
-         * Initialize and register commands.
-         */
         commandManager = new CommandManager(this);
         registerCommands();
+
+        getServer().getPluginManager().registerEvents(
+                new ChatListener(this),
+                this
+        );
 
         getLogger().info(
                 TextFormat.GREEN + "Siedler 2.0 enabled."
@@ -79,14 +72,12 @@ public final class SiedlerPlugin extends PluginBase {
                         + commandManager.size()
                         + " command(s)."
         );
+
+        getLogger().info(
+                TextFormat.GRAY + "Registered chat listener."
+        );
     }
 
-    /**
-     * Registers all commands used by Siedler.
-     *
-     * <p>To add a new command, simply add another
-     * {@code commandManager.register(...)} call here.</p>
-     */
     private void registerCommands() {
         commandManager.register(new SiedlerCommand(this));
         commandManager.register(new TeamCommand());
@@ -108,38 +99,18 @@ public final class SiedlerPlugin extends PluginBase {
         instance = null;
     }
 
-    /**
-     * Returns the plugin configuration.
-     *
-     * @return configuration
-     */
     public Config getConfig() {
         return config;
     }
 
-    /**
-     * Returns the storage manager.
-     *
-     * @return storage manager
-     */
     public StorageManager getStorage() {
         return storage;
     }
 
-    /**
-     * Returns the Siedler manager.
-     *
-     * @return Siedler manager
-     */
     public SiedlerManager getSiedlerManager() {
         return siedlerManager;
     }
 
-    /**
-     * Returns the command manager.
-     *
-     * @return command manager
-     */
     public CommandManager getCommandManager() {
         return commandManager;
     }
