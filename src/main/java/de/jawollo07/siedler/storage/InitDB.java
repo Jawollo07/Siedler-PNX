@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class InitDB {
-    private static final int CURRENT_SCHEMA_VERSION = 2;
+    private static final int CURRENT_SCHEMA_VERSION = 3;
 
     public void initDatabase() {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
@@ -28,8 +28,14 @@ public class InitDB {
         int version = getSchemaVersion(connection);
 
         if (version < CURRENT_SCHEMA_VERSION) {
-            migrateV1ToV2(connection);
-            setSchemaVersion(connection, CURRENT_SCHEMA_VERSION);
+            if (version < 2) {
+                migrateV1ToV2(connection);
+                setSchemaVersion(connection, 2);
+            }
+            if (version < 3) {
+                migrateV2ToV3(connection);
+                setSchemaVersion(connection, 3);
+            }
         }
     }
 
@@ -62,6 +68,14 @@ public class InitDB {
             updateColumnType(connection, "players", "first_join", "BIGINT NOT NULL DEFAULT 0");
             updateColumnType(connection, "players", "last_seen", "BIGINT NOT NULL DEFAULT 0");
         }
+    }
+
+    private void migrateV2ToV3(Connection connection) throws Exception {
+        ensureColumnExists(connection, "chat_messages", "player_name", "TEXT NOT NULL DEFAULT ''");
+        ensureColumnExists(connection, "chat_messages", "world", "TEXT NOT NULL DEFAULT ''");
+        ensureColumnExists(connection, "chat_messages", "x", "REAL NOT NULL DEFAULT 0");
+        ensureColumnExists(connection, "chat_messages", "y", "REAL NOT NULL DEFAULT 0");
+        ensureColumnExists(connection, "chat_messages", "z", "REAL NOT NULL DEFAULT 0");
     }
 
     private void ensureColumnExists(Connection connection, String tableName, String columnName, String columnDefinition) throws Exception {

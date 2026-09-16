@@ -73,5 +73,4 @@ public final class StorageManager {
             activeType = null;
         }
     }
-
 }

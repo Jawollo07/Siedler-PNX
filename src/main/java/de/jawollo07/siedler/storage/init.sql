@@ -65,7 +65,21 @@ CREATE TABLE IF NOT EXISTS players (
 
     CHECK (eliminated IN (0, 1))
 );
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id TEXT PRIMARY KEY,
+    player_id TEXT NOT NULL,
+    player_name TEXT NOT NULL,
+    world TEXT NOT NULL,
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    z REAL NOT NULL,
+    message TEXT NOT NULL,
+    created_at BIGINT NOT NULL,
 
+    FOREIGN KEY (player_id)
+        REFERENCES players(id)
+        ON DELETE CASCADE
+);
 -- ============================================================
 -- Team Diplomacy
 -- ============================================================

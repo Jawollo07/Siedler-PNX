@@ -1,5 +1,6 @@
 package de.jawollo07.siedler;
 
+import de.jawollo07.siedler.chat.ChatListener;
 import de.jawollo07.siedler.core.CommandManager;
 import de.jawollo07.siedler.command.SiedlerCommand;
 import de.jawollo07.siedler.core.SiedlerManager;
@@ -54,6 +55,7 @@ public final class SiedlerPlugin extends PluginBase {
          */
         storage = new StorageManager(this);
         storage.initialize();
+        getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
 
         /*
          * Initialize core managers.
