@@ -8,25 +8,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Locale;
 
-/**
- * Builds the chat format used for global player messages.
- */
+/** Builds the chat format used for global player messages. */
 public final class GlobalChat {
     private static final String FALLBACK_FORMAT = "§8[§7Global§8] §f%s§7: §f%s";
-    private static final String TEAM_FORMAT = "§8[%s%s§8] §f%s§7: §f%s";
 
     private GlobalChat() {
         // Utility class
     }
 
     /**
-     * Returns the global chat format for the player's team, or the default
-     * global format if the player has no team.
-     *
-     * @param storageManager active storage manager
-     * @param playerId       UUID string stored in the players table
-     * @return a format containing the two placeholders expected by chat events
-     * @throws SQLException if the database query fails
+     * Returns the player's team chat format, or the global fallback if the
+     * player has no team.
      */
     public static String getFormat(StorageManager storageManager, String playerId) throws SQLException {
         if (storageManager == null || playerId == null || playerId.isBlank()) {
@@ -38,7 +30,7 @@ public final class GlobalChat {
             return FALLBACK_FORMAT;
         }
 
-        // LEFT JOIN is important: players without a team must still be found.
+        // LEFT JOIN also returns players whose team_id is NULL.
         String sql = "SELECT t.name, t.color FROM players p "
                 + "LEFT JOIN teams t ON t.id = p.team_id WHERE p.id = ?";
 
@@ -55,7 +47,7 @@ public final class GlobalChat {
                 }
 
                 String teamColor = getMinecraftColor(resultSet.getString("color"));
-                return String.format(Locale.ROOT, TEAM_FORMAT, teamColor, teamName);
+                return "§8[" + teamColor + teamName + "§8] §f%s§7: §f%s";
             }
         }
     }
