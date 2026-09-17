@@ -10,16 +10,14 @@ import java.util.Locale;
 
 /** Builds the chat format used for global player messages. */
 public final class GlobalChat {
-    private static final String FALLBACK_FORMAT = "§8[§7Global§8] §f%s§7: §f%s";
+    // PlayerChatEvent uses positional String.format placeholders for player and message.
+    private static final String FALLBACK_FORMAT = "§8[§7Global§8] §f%1$s§7: §f%2$s";
 
     private GlobalChat() {
         // Utility class
     }
 
-    /**
-     * Returns the player's team chat format, or the global fallback if the
-     * player has no team.
-     */
+    /** Returns the player's team format, or the global fallback if no team is available. */
     public static String getFormat(StorageManager storageManager, String playerId) throws SQLException {
         if (storageManager == null || playerId == null || playerId.isBlank()) {
             return FALLBACK_FORMAT;
@@ -30,7 +28,6 @@ public final class GlobalChat {
             return FALLBACK_FORMAT;
         }
 
-        // LEFT JOIN also returns players whose team_id is NULL.
         String sql = "SELECT t.name, t.color FROM players p "
                 + "LEFT JOIN teams t ON t.id = p.team_id WHERE p.id = ?";
 
@@ -47,7 +44,7 @@ public final class GlobalChat {
                 }
 
                 String teamColor = getMinecraftColor(resultSet.getString("color"));
-                return "§8[" + teamColor + teamName + "§8] §f%s§7: §f%s";
+                return "§8[" + teamColor + teamName + "§8] §f%1$s§7: §f%2$s";
             }
         }
     }
