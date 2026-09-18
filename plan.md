@@ -80,13 +80,11 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 
 ## Phase 3 – Claims
 
-- [ ] Claim-Datenmodell
-- [ ] Claim erstellen/verwalten
-- [ ] Block-Break-Schutz
-- [ ] Block-Place-Schutz
+- [x] Claim-Datenmodell
+- [x] Claim erstellen/verwalten
+- [x] Block-Break-Schutz
+- [x] Block-Place-Schutz
 - [ ] Claim-Grenzen/Visualisierung
-- [ ] Block-Recovery
-- [ ] Online-Defender-Prüfung für Angriffe
 - [ ] Claim-sicheres Monster-/Pillager-Spawning
 
 ## Phase 4 – Economy & Taxes

@@ -30,7 +30,7 @@ public class ClaimManager {
         );
     }
 
-    public Claim ClaimInfo(Player player) {
+    public Claim ClaimInfoByPlayer(Player player) {
         if (player == null) {
             throw new IllegalArgumentException("Player darf nicht null sein");
         }
@@ -54,7 +54,7 @@ public class ClaimManager {
         }
     }
 
-    public Claim ClaimInfo(String claimId) {
+    public Claim ClaimInfoByID(String claimId) {
         if (claimId == null || claimId.isBlank()) {
             throw new IllegalArgumentException("Claim-ID darf nicht leer sein");
         }
@@ -74,7 +74,7 @@ public class ClaimManager {
     }
 
     public boolean deleteClaim(Player player) {
-        Claim claim = ClaimInfo(player);
+        Claim claim = ClaimInfoByPlayer(player);
         if (claim == null) {
             player.sendMessage("Hier befindet sich kein Claim");
             return false;

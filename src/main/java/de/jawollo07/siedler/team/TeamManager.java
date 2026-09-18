@@ -151,7 +151,24 @@ public class TeamManager {
 
         return getTeamByName(finalName);
     }
+    public boolean isPlayerInTeam(Player player) {
+        if (player == null) {
+            return false;
+        }
 
+        String sql = "SELECT team_id FROM players WHERE id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, player.getUniqueId().toString());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() && resultSet.getString("team_id") != null;
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().warning("Could not check team membership for player "
+                    + player.getName() + ": " + exception.getMessage());
+            return false;
+        }
+    }
     public boolean addPlayerToTeam(String playerName, String teamName) throws SQLException {
         if (playerName == null || playerName.isBlank()) {
             throw new IllegalArgumentException("Player name must not be blank");

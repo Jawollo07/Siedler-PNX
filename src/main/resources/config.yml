@@ -24,8 +24,12 @@ taxes:
   emeralds-per-villager-per-bonus: 1
 
 claims:
-  enabled: true
-
+  protection:
+    enabled: true
+    interaction-blacklist:
+      - minecraft:stone_button
+      - minecraft:oak_button
+      - minecraft:lever
 monsters:
   token:
     enabled: true

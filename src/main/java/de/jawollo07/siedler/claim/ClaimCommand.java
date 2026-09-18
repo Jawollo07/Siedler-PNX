@@ -5,14 +5,24 @@ import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.Player;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.claim.ClaimManager;
+import de.jawollo07.siedler.team.TeamManager;
+import de.jawollo07.siedler.claim.Utils;
+import de.jawollo07.siedler.storage.StorageManager;
 
 public class ClaimCommand extends Command {
-    private final ClaimCommand claimCommand;
+    private final ClaimManager claimManager;
+    private final TeamManager teamManager;
+    private final Utils utils;
+    private final StorageManager storageManager;
     public ClaimCommand(SiedlerPlugin plugin) {
         super("claim", "Befehl zur Verwaltung von Claims", "/claim");
         setPermission("siedler.command.claim");
         setPermission("siedler.admin");
-        this.claimCommand = new ClaimCommand(plugin);
+        this.claimManager = new ClaimManager(plugin);
+        this.teamManager = new TeamManager(plugin);
+        this.storageManager = new StorageManager(plugin);
+        this.utils = new Utils(storageManager);
     }
     public String help(CommandSender sender) {
         sender.sendMessage("§6§lSiedler 2.0 §7- §fClaim Management");
@@ -28,11 +38,20 @@ public class ClaimCommand extends Command {
         }
         switch (args[0].toLowerCase()) {
             case "set":
-            
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage("§cDieser Befehl kann nur von einem Spieler ausgeführt werden.");
+                    return false;
+                }
+                return claimManager.setClaim(args[1] ,(Player) sender) != null;
             case "delete":
-
+                String claim_id = utils.get_claimID((Player) sender);
+                return claimManager.deleteClaim(claim_id);
             case "info":
-            
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage("§cDieser Befehl kann nur von einem Spieler ausgeführt werden.");
+                    return false;
+                }
+                return claimManager.ClaimInfoByPlayer((Player) sender) != null;
             case "help":
                 return help(sender).equals("help");
             default:

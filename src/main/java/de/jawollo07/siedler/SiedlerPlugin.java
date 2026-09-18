@@ -12,6 +12,8 @@ import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
 
+import de.jawollo07.siedler.claim.Claim;
+import de.jawollo07.siedler.claim.ClaimCommand;
 import java.io.File;
 
 /**
@@ -28,6 +30,7 @@ public final class SiedlerPlugin extends PluginBase {
     private StorageManager storage;
     private SiedlerManager siedlerManager;
     private CommandManager commandManager;
+    private ClaimCommand claimCommand;
 
     /**
      * Returns the currently loaded Siedler plugin instance.
@@ -96,6 +99,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new DirektMessage(this));
         commandManager.register(new TeamChatCommand(this));
         commandManager.register(new RelationCommands(this));
+        commandManager.register(new ClaimCommand(this));
     }
 
     @Override

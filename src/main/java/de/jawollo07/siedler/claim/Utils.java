@@ -4,6 +4,9 @@ import de.jawollo07.siedler.storage.StorageManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.powernukkitx.Player;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,6 +63,34 @@ public class Utils {
             }
         } catch (SQLException exception) {
             throw new IllegalStateException("Claim-Zugriff konnte nicht geprüft werden", exception);
+        }
+    }
+    public String get_claimID(Player player) {
+        if (player.getLocation() == null) {
+            throw new IllegalArgumentException("Location darf nicht null sein");
+        }
+
+        String world = player.getLevel().getName();
+
+        int chunkX = (int) Math.floor(player.getX() / 16);
+        int chunkZ = (int) Math.floor(player.getZ() / 16);
+
+        String sql = "SELECT id FROM claims "
+               + "WHERE world = ? AND min_x <= ? AND max_x >= ? "
+               + "AND min_z <= ? AND max_z >= ? LIMIT 1";
+
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, world);
+            statement.setInt(2, chunkX);
+            statement.setInt(3, chunkX);
+            statement.setInt(4, chunkZ);
+            statement.setInt(5, chunkZ);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? resultSet.getString("id") : null;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Claim-ID konnte nicht ermittelt werden", e);
         }
     }
 }
