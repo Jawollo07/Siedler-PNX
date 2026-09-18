@@ -20,41 +20,45 @@ public final class ClaimCommand extends Command {
         this.utils = new Utils(plugin.getStorage());
     }
 
-    private boolean help(CommandSender sender) {
-        sender.sendMessage("§6§lSiedler §7- §fClaim-Verwaltung");
-        sender.sendMessage("§7/claim set <team> §8- §fErstellt einen Claim (5x5 Chunks)");
-        sender.sendMessage("§7/claim info §8- §fZeigt Informationen zum Claim hier");
-        sender.sendMessage("§7/claim delete §8- §fLöscht den Claim hier");
+    private boolean sendHelp(CommandSender sender) {
+        sender.sendMessage("§6§lSiedler §8» §fClaim-Befehle");
+        sender.sendMessage("§e/claim set <team> §8- §7Erstellt einen Claim für ein Team (5x5 Chunks).");
+        sender.sendMessage("§e/claim info §8- §7Zeigt Informationen zum Claim an deiner Position.");
+        sender.sendMessage("§e/claim delete §8- §7Löscht den Claim an deiner Position.");
+        sender.sendMessage("§e/claim help §8- §7Zeigt diese Hilfe an.");
         return true;
     }
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (args == null || args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            return help(sender);
+        if (args == null || args.length == 0) {
+            return sendHelp(sender);
         }
 
         String subcommand = args[0].toLowerCase(java.util.Locale.ROOT);
+        if (subcommand.equals("help")) {
+            return sendHelp(sender);
+        }
         if (!subcommand.equals("set") && !subcommand.equals("info") && !subcommand.equals("delete")) {
-            sender.sendMessage("§cUnbekannter Unterbefehl.");
-            return help(sender);
+            sender.sendMessage("§cUnbekannter Unterbefehl: §f" + args[0]);
+            return sendHelp(sender);
         }
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("§cDieser Befehl kann nur von einem Spieler ausgeführt werden.");
+            sender.sendMessage("§cDieser Unterbefehl kann nur von einem Spieler ausgeführt werden.");
             return false;
         }
 
         switch (subcommand) {
             case "set" -> {
                 if (args.length != 2 || args[1].isBlank()) {
-                    player.sendMessage("§cVerwendung: /claim set <team>");
+                    player.sendMessage("§cVerwendung: §f/claim set <team>");
                     return false;
                 }
                 return claimManager.setClaim(args[1].trim(), player) != null;
             }
             case "info" -> {
                 if (args.length != 1) {
-                    player.sendMessage("§cVerwendung: /claim info");
+                    player.sendMessage("§cVerwendung: §f/claim info");
                     return false;
                 }
                 Claim claim = claimManager.ClaimInfoByPlayer(player);
@@ -72,7 +76,7 @@ public final class ClaimCommand extends Command {
             }
             case "delete" -> {
                 if (args.length != 1) {
-                    player.sendMessage("§cVerwendung: /claim delete");
+                    player.sendMessage("§cVerwendung: §f/claim delete");
                     return false;
                 }
                 String claimId = utils.get_claimID(player);
@@ -83,7 +87,7 @@ public final class ClaimCommand extends Command {
                 return claimManager.deleteClaim(claimId);
             }
             default -> {
-                return help(sender);
+                return sendHelp(sender);
             }
         }
     }
