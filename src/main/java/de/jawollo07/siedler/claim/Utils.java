@@ -1,16 +1,15 @@
 package de.jawollo07.siedler.claim;
 
 import de.jawollo07.siedler.storage.StorageManager;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.powernukkitx.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/** Shared helpers for claim coordinate and access checks. Claim bounds are chunk coordinates. */
 public class Utils {
     private final StorageManager storage;
 
@@ -21,28 +20,29 @@ public class Utils {
         this.storage = storage;
     }
 
+    /** Converts block coordinates to chunk coordinates using floor (also correct below zero). */
     public List<Chunk> get4x4ChunksCentered(double blockX, double blockZ) {
-        int centerChunkX = (int) Math.floor(blockX / 16);
-        int centerChunkZ = (int) Math.floor(blockZ / 16);
+        int centerChunkX = (int) Math.floor(blockX / 16.0);
+        int centerChunkZ = (int) Math.floor(blockZ / 16.0);
         return get4x4ChunksFromChunk(centerChunkX, centerChunkZ);
     }
 
+    /**
+     * Returns the project's existing 5x5 claim footprint (25 chunks), centered on a chunk.
+     * The legacy method name is retained for source compatibility.
+     */
     public List<Chunk> get4x4ChunksFromChunk(int centerChunkX, int centerChunkZ) {
-        int half = 2;
-        int startX = centerChunkX - half;
-        int startZ = centerChunkZ - half;
         List<Chunk> chunks = new ArrayList<>(25);
-
-        for (int dx = 0; dx < 5; dx++) {
-            for (int dz = 0; dz < 5; dz++) {
-                chunks.add(new Chunk(startX + dx, startZ + dz));
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                chunks.add(new Chunk(centerChunkX + dx, centerChunkZ + dz));
             }
         }
-
         return chunks;
     }
-    public record Chunk(int x, int z) {
-    }
+
+    public record Chunk(int x, int z) { }
+
     public boolean hasAccess(String playerId, String claimId) {
         if (playerId == null || playerId.isBlank()) {
             throw new IllegalArgumentException("Spieler-ID darf nicht leer sein");
@@ -57,7 +57,6 @@ public class Utils {
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, playerId.trim());
             statement.setString(2, claimId.trim());
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
             }
@@ -65,19 +64,21 @@ public class Utils {
             throw new IllegalStateException("Claim-Zugriff konnte nicht geprüft werden", exception);
         }
     }
+
     public String get_claimID(Player player) {
-        if (player.getLocation() == null) {
-            throw new IllegalArgumentException("Location darf nicht null sein");
+        if (player == null) {
+            throw new IllegalArgumentException("Player darf nicht null sein");
+        }
+        if (player.getLevel() == null) {
+            throw new IllegalArgumentException("Level darf nicht null sein");
         }
 
         String world = player.getLevel().getName();
-
-        int chunkX = (int) Math.floor(player.getX() / 16);
-        int chunkZ = (int) Math.floor(player.getZ() / 16);
-
+        int chunkX = player.getChunkX();
+        int chunkZ = player.getChunkZ();
         String sql = "SELECT id FROM claims "
-               + "WHERE world = ? AND min_x <= ? AND max_x >= ? "
-               + "AND min_z <= ? AND max_z >= ? LIMIT 1";
+                + "WHERE world = ? AND min_x <= ? AND max_x >= ? "
+                + "AND min_z <= ? AND max_z >= ? LIMIT 1";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, world);
@@ -85,12 +86,11 @@ public class Utils {
             statement.setInt(3, chunkX);
             statement.setInt(4, chunkZ);
             statement.setInt(5, chunkZ);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next() ? resultSet.getString("id") : null;
             }
-        } catch (SQLException e) {
-            throw new IllegalStateException("Claim-ID konnte nicht ermittelt werden", e);
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Claim-ID konnte nicht ermittelt werden", exception);
         }
     }
 }
