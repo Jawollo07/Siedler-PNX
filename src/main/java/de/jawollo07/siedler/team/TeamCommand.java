@@ -1,259 +1,170 @@
 package de.jawollo07.siedler.team;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.powernukkitx.command.Command;
+import org.powernukkitx.command.CommandResult;
 import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.route.RouteTree;
+import org.powernukkitx.command.route.node.RouteNode;
+import org.powernukkitx.command.tree.node.StringNode;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.core.MessageManager;
 
+/** Team management commands, registered through the PowerNukkitX RouteTree API. */
 public final class TeamCommand extends Command {
     private final SiedlerPlugin plugin;
-    private final MessageManager messageManager;
+    private final MessageManager messages = new MessageManager();
     private final String prefix;
 
     public TeamCommand() {
-        super("team", "Manage teams", "/team");
+        super("team", "Manage teams", "/team help");
         this.plugin = SiedlerPlugin.getInstance();
-        this.messageManager = new MessageManager();
-        this.prefix = messageManager.getPrefix("team");
+        this.prefix = messages.getPrefix("team");
         setPermission("siedler.command.team");
+        setPermissionMessage(messages.getCommandMessage("no-permission"));
+        enableCommandTree();
     }
-    public String help(CommandSender sender) {
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.1"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.2"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.3"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.4"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.5"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.6"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.7"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.8"));
-        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.9"));
-        return "help";
+
+    @Override
+    protected void buildCommandTree(RouteTree tree) {
+        tree.getRoot().then(RouteNode.literal("help").exec(context -> {
+            sendHelp(context.getSender());
+            return CommandResult.success();
+        }));
+        tree.getRoot().then(RouteNode.literal("create")
+                .permission("siedler.command.team.create", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("name", new StringNode())
+                    .then(RouteNode.argument("color", new StringNode()).exec(context -> {
+                        create(context.getSender(), context.getArg("name"), context.getArg("color"));
+                        return CommandResult.success();
+                    }))));
+        tree.getRoot().then(RouteNode.literal("delete")
+                .permission("siedler.command.team.delete", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    delete(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("add")
+                .permission("siedler.command.team.add", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("player", new StringNode())
+                    .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                        add(context.getSender(), context.getArg("player"), context.getArg("team"));
+                        return CommandResult.success();
+                    }))));
+        tree.getRoot().then(RouteNode.literal("remove")
+                .permission("siedler.command.team.remove", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("player", new StringNode()).exec(context -> {
+                    remove(context.getSender(), context.getArg("player"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("list")
+                .permission("siedler.command.team.list", messages.getCommandMessage("no-permission"))
+                .exec(context -> {
+                    list(context.getSender());
+                    return CommandResult.success();
+                }));
+        tree.getRoot().then(RouteNode.literal("info")
+                .permission("siedler.command.team.info", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    info(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("setcolor")
+                .permission("siedler.command.team.setcolor", messages.getCommandMessage("no-permission"))
+                .then(RouteNode.argument("name", new StringNode())
+                    .then(RouteNode.argument("color", new StringNode()).exec(context -> {
+                        setColor(context.getSender(), context.getArg("name"), context.getArg("color"));
+                        return CommandResult.success();
+                    }))));
     }
-    @Override 
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (args.length == 0) {
-            return help(sender).equals("help");
-        }
-        switch (args[0].toLowerCase()) {
-            case "create":
-                return new TeamCreateCommand(plugin).execute(sender, commandLabel, args);
-            case "delete":
-                return new TeamDeleteCommand(plugin).execute(sender, commandLabel, args);
-            case "add":
-                return new TeamAddCommand(plugin).execute(sender, commandLabel, args);
-            case "remove":
-                return new TeamRemoveCommand(plugin).execute(sender, commandLabel, args);
-            case "list":
-                return new TeamListCommand(plugin).execute(sender, commandLabel, args);
-            case "info":
-                return new TeamInfoCommand(plugin).execute(sender, commandLabel, args);
-            case "setcolor":
-                return new TeamSetColorCommand(plugin).execute(sender, commandLabel, args);
-            default:
-                return help(sender).equals("help");
-        }
+
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage(prefix + "§eTeam-Befehle:");
+        sender.sendMessage("§7/team create <Name> <Farbe> §8- §fErstellt ein Team");
+        sender.sendMessage("§7/team delete <Name> §8- §fLöscht ein Team");
+        sender.sendMessage("§7/team add <Spieler> <Team> §8- §fFügt einen Online-Spieler hinzu");
+        sender.sendMessage("§7/team remove <Spieler> §8- §fEntfernt einen Spieler");
+        sender.sendMessage("§7/team list §8- §fListet Teams auf");
+        sender.sendMessage("§7/team info <Name> §8- §fZeigt Team-Informationen");
+        sender.sendMessage("§7/team setcolor <Name> <Farbe> §8- §fÄndert die Teamfarbe");
     }
-    public final class TeamCreateCommand {
-        private final SiedlerPlugin plugin;
-        public TeamCreateCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.create");
-            setPermission("siedler.admin");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 3) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.create"));
-                return false;
-            }
-            String name = args[1];
-            String color = args[2];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                Team team = teamManager.createTeam(name, color);
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "create.success") + team.name() + "' created with color '" + team.color() + "'.");
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "create.error") + e.getMessage());
-                return false;
-            }
-        }
-    }
-    public final class TeamDeleteCommand {
-        private final SiedlerPlugin plugin;
-        public TeamDeleteCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.delete");
-            setPermission("siedler.admin");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 2) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.delete"));
-                return false;
-            }
-            String name = args[1];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                boolean deleted = teamManager.deleteTeam(name);
-                if (deleted) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "delete.success") + name + "' deleted.");
-                } else {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + name + "' not found.");
-                }
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "delete.error") + e.getMessage());
-                return false;
-            }
+
+    private void create(CommandSender sender, String name, String color) {
+        try {
+            Team team = new TeamManager(plugin).createTeam(name, color);
+            sender.sendMessage(prefix + "Team §f" + team.name() + "§a wurde mit der Farbe §f" + team.color() + "§a erstellt.");
+        } catch (Exception e) {
+            sender.sendMessage(prefix + "§cTeam konnte nicht erstellt werden: " + e.getMessage());
         }
     }
-    public final class TeamAddCommand {
-        private final SiedlerPlugin plugin;
-        public TeamAddCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.add");
-            setPermission("siedler.admin");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 3) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.add"));
-                return false;
-            }
-            String playerName = args[1];
-            String teamName = args[2];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                boolean added = teamManager.addPlayerToTeam(playerName, teamName);
-                if (added) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.success") + playerName + "' added to team '" + teamName + "'.");
-                } else {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.not-found") + playerName + "' or team '" + teamName + "' not found.");
-                }
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.error") + e.getMessage());
-                return false;
-            }
+
+    private void delete(CommandSender sender, String name) {
+        try {
+            new TeamManager(plugin).deleteTeam(name);
+            sender.sendMessage(prefix + "§aTeam §f" + name + "§a wurde gelöscht.");
+        } catch (Exception e) {
+            sender.sendMessage(prefix + "§cTeam konnte nicht gelöscht werden: " + e.getMessage());
         }
     }
-    public final class TeamRemoveCommand {
-        private final SiedlerPlugin plugin;
-        public TeamRemoveCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.remove");
-            setPermission("siedler.admin");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 2) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.remove"));
-                return false;
-            }
-            String playerName = args[1];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                boolean removed = teamManager.removePlayerFromTeam(playerName);
-                if (removed) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.success") + playerName + "' removed from their team.");
-                } else {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.not-found") + playerName + "' not found or not in a team.");
-                }
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.error") + e.getMessage());
-                return false;
-            }
+
+    private void add(CommandSender sender, String player, String team) {
+        try {
+            new TeamManager(plugin).addPlayerToTeam(player, team);
+            sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde Team §f" + team + "§a hinzugefügt.");
+        } catch (Exception e) {
+            sender.sendMessage(prefix + "§cSpieler konnte nicht hinzugefügt werden: " + e.getMessage());
         }
     }
-    public final class TeamListCommand {
-        private final SiedlerPlugin plugin;
-        public TeamListCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.list");
-            setPermission("siedler.admin");
-            setPermission("siedler.basic");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                List<Team> teams = teamManager.getTeams();
-                if (teams.isEmpty()) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.empty"));
-                } else {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.header"));
-                    for (Team team : teams) {
-                        sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.entry") + team.name() + " §8(§f" + team.color() + "§8)");
-                    }
-                }
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.error") + e.getMessage());
-                return false;
-            }
+
+    private void remove(CommandSender sender, String player) {
+        try {
+            new TeamManager(plugin).removePlayerFromTeam(player);
+            sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde aus seinem Team entfernt.");
+        } catch (Exception e) {
+            sender.sendMessage(prefix + "§cSpieler konnte nicht entfernt werden: " + e.getMessage());
         }
     }
-    public final class TeamInfoCommand {
-        private final SiedlerPlugin plugin;
-        public TeamInfoCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.info");
-            setPermission("siedler.admin");
-            setPermission("siedler.basic");
-        }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 2) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.info"));
-                return false;
+
+    private void list(CommandSender sender) {
+        try {
+            List<Team> teams = new TeamManager(plugin).getTeams();
+            if (teams.isEmpty()) {
+                sender.sendMessage(prefix + "§7Es sind keine Teams vorhanden.");
+                return;
             }
-            String teamName = args[1];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                Team team = teamManager.getTeamByName(teamName);
-                if (team == null) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + teamName + "' not found.");
-                    return false;
-                }
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.header"));
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.name") + team.name());
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.color") + team.color());
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.tax-bonus") + team.taxBonus());
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.eliminated") + (team.eliminated() == 1 ? "Yes" : "No"));
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.balance") + team.balance());
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.error") + e.getMessage());
-                return false;
+            sender.sendMessage(prefix + "§eTeams:");
+            for (Team team : teams) {
+                sender.sendMessage("§8- §f" + team.name() + " §8(§f" + team.color() + "§8)");
             }
+        } catch (SQLException e) {
+            sender.sendMessage(prefix + "§cTeams konnten nicht geladen werden.");
+            plugin.getLogger().warning("Could not list teams: " + e.getMessage());
         }
     }
-    public final class TeamSetColorCommand {
-        private final SiedlerPlugin plugin;
-        public TeamSetColorCommand(SiedlerPlugin plugin) {
-            this.plugin = plugin;
-            setPermission("siedler.command.team.setcolor");
-            setPermission("siedler.admin");
+
+    private void info(CommandSender sender, String name) {
+        try {
+            Team team = new TeamManager(plugin).getTeamByName(name);
+            sender.sendMessage(prefix + "§eTeam-Informationen:");
+            sender.sendMessage("§7Name: §f" + team.name());
+            sender.sendMessage("§7Farbe: §f" + team.color());
+            sender.sendMessage("§7Steuerbonus: §f" + team.taxBonus());
+            sender.sendMessage("§7Eliminiert: §f" + (team.eliminated() == 1 ? "Ja" : "Nein"));
+            sender.sendMessage("§7Kontostand: §f" + team.balance());
+        } catch (SQLException e) {
+            sender.sendMessage(prefix + "§cTeam §f" + name + "§c wurde nicht gefunden.");
         }
-        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (args.length < 3) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.setcolor"));
-                return false;
-            }
-            String teamName = args[1];
-            String color = args[2];
-            try {
-                TeamManager teamManager = new TeamManager(plugin);
-                boolean updated = teamManager.setTeamColor(teamName, color);
-                if (updated) {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "setcolor.success") + teamName + "' color set to '" + color + "'.");
-                } else {
-                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + teamName + "' not found.");
-                }
-                return true;
-            } catch (Exception e) {
-                sender.sendMessage(prefix + messageManager.getMessage("team-command", "setcolor.error") + e.getMessage());
-                return false;
-            }
+    }
+
+    private void setColor(CommandSender sender, String name, String color) {
+        try {
+            new TeamManager(plugin).setTeamColor(name, color);
+            sender.sendMessage(prefix + "§aDie Farbe von Team §f" + name + "§a wurde auf §f" + color + "§a gesetzt.");
+        } catch (Exception e) {
+            sender.sendMessage(prefix + "§cTeamfarbe konnte nicht geändert werden: " + e.getMessage());
         }
     }
 }
