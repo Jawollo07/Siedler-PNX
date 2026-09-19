@@ -93,4 +93,45 @@ public class Utils {
             throw new IllegalStateException("Claim-ID konnte nicht ermittelt werden", exception);
         }
     }
+    public boolean isBlockInClaim(Double x, Double y, Double z) {
+        if (x == null || y == null || z == null) {
+            throw new IllegalArgumentException("Koordinaten dürfen nicht null sein");
+        }
+        if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
+            throw new IllegalArgumentException("Koordinaten müssen endlich sein");
+        }
+
+        int chunkX = (int) Math.floor(x / 16.0);
+        int chunkZ = (int) Math.floor(z / 16.0);
+        String sql = "SELECT 1 FROM claims "
+                + "WHERE min_x <= ? AND max_x >= ? "
+                + "AND min_z <= ? AND max_z >= ? LIMIT 1";
+
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, chunkX);
+            statement.setInt(2, chunkX);
+            statement.setInt(3, chunkZ);
+            statement.setInt(4, chunkZ);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Es konnte nicht geprüft werden, ob der Block in einem Claim liegt", exception);
+        }
+    }
+    public String getClaimTeam(String claimID) {
+        if (claimID == null || claimID.isBlank()) {
+            throw new IllegalArgumentException("Claim-ID darf nicht leer sein");
+        }
+
+        String sql = "SELECT team_id FROM claims WHERE id = ? LIMIT 1";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, claimID.trim());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? resultSet.getString("team_id") : null;
+            }
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Claim-Team konnte nicht ermittelt werden", exception);
+        }
+    }
 }

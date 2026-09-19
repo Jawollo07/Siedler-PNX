@@ -10,13 +10,18 @@ import java.util.UUID;
 import org.powernukkitx.Player;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.core.MessageManager;
 
 public class ClaimManager {
     private final StorageManager storage;
     private final SiedlerPlugin plugin;
+    private final MessageManager messageManager;
+    private final String prefix;
     public ClaimManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
         this.storage = plugin.getStorage();
+        this.messageManager = new MessageManager();
+        this.prefix = messageManager.getPrefix("claim");
     }
     private Claim ClaimMap(ResultSet resultSet) throws SQLException {
         return new Claim(
@@ -76,13 +81,13 @@ public class ClaimManager {
     public boolean deleteClaim(Player player) {
         Claim claim = ClaimInfoByPlayer(player);
         if (claim == null) {
-            player.sendMessage("Hier befindet sich kein Claim");
+            player.sendMessage(prefix + messageManager.getMessage("claim", "here-is-no-claim"));
             return false;
         }
 
         boolean deleted = deleteClaim(claim.id());
         if (deleted) {
-            player.sendMessage("Claim erfolgreich gelöscht");
+            player.sendMessage(prefix + messageManager.getMessage("claim", "succesfull-deleted"));
         }
         return deleted;
     }
@@ -108,7 +113,7 @@ public class ClaimManager {
         }
 
         if (team == null || team.isBlank()) {
-            player.sendMessage("Der Team Name darf nicht leer sein");
+            player.sendMessage(prefix + messageManager.getMessage("team", "team-name-empty"));
             throw new IllegalArgumentException("Team Name darf nicht leer sein");
         }
 
@@ -127,7 +132,7 @@ public class ClaimManager {
                 statement.setString(1, team.trim());
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (!resultSet.next()) {
-                        player.sendMessage("Das Team wurde nicht gefunden");
+                        player.sendMessage(prefix + messageManager.getMessage("team", "team-not-found"));
                         return null;
                     }
                     teamId = resultSet.getString("id");
@@ -145,7 +150,7 @@ public class ClaimManager {
                 statement.setInt(5, minZ);
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        player.sendMessage("Der Bereich überschneidet sich mit einem bestehenden Claim");
+                        player.sendMessage(prefix + messageManager.getMessage("claim", "claim-in-other-claim"));
                         return null;
                     }
                 }
@@ -168,7 +173,7 @@ public class ClaimManager {
             }
 
             Claim claim = new Claim(id, teamId, world, minX, minZ, maxX, maxZ);
-            player.sendMessage("Claim erfolgreich erstellt");
+            player.sendMessage(prefix + messageManager.getMessage("claim", "succesfull-created"));
             return claim;
         } catch (SQLException exception) {
             plugin.getLogger().warning("Claim konnte nicht erstellt werden: " + exception.getMessage());

@@ -1,0 +1,134 @@
+messages:
+  core:
+    prefix: "[Core]: "
+  main:
+    prefix: "[Siedler]: "
+    enable: "Enabled"
+    disable: "Disabled"
+    info: "Plugin for the Minecraft Siedler Project"
+  essentials:
+    welcome-message: "Willkommen "
+  chat:
+    prefix: "[Chat]: "
+    global-chat:
+      prefix: "[Global]: "
+    dm:
+      prefix: "[DM]: "
+      command-usage: "§cVerwendung: /dm <Spieler> <Nachricht>"
+    team-chat:
+      prefix: "[TeamChat]: "
+      message-cannot-send: "§cDie Teamnachricht konnte nicht gesendet werden."
+      command-usage: "§cVerwendung: /teamchat <Nachricht>"
+  claim:
+    prefix: "[Claim]: "
+    help:
+      "1": "§6§lSiedler §8» §fClaim-Befehle"
+      "2": "§e/claim set <team> §8- §7Erstellt einen Claim für ein Team."
+      "3": "§e/claim info §8- §7Zeigt Informationen zum Claim an deiner Position."
+      "4": "§e/claim delete §8- §7Löscht den Claim an deiner Position."
+      "5": "§e/claim help §8- §7Zeigt diese Hilfe an."
+    command-usage:
+      set: "§cVerwendung: §f/claim set <team>"
+      info: "§cVerwendung: §f/claim info"
+      delete: "§cVerwendung: §f/claim delete"
+    protection:
+      prefix: "[Claim Schutz]: "
+      block-breaking-not-allowed: "§cDu kannst hier nichts abbauen!"
+      block-placing-not-allowed: "§cDu kannst hier nichts platzieren!"
+      block-interacting-not-allowed: "§cDu kannst diesen Block hier nicht benutzen!"
+    here-is-no-claim: "§cHier befindet sich kein Claim."
+    succesfull-deleted: "Claim erfolgreich gelöscht"
+    succesfull-created: "Claim erfolgreich erstellt"
+    claim-in-other-claim: "Der Bereich überschneidet sich mit einem bestehenden Claim"
+  team: 
+    prefix: "[Teams]: "
+    team-name-empty: "Der Team Name darf nicht leer sein"
+    team-not-found: "Das Team wurde nicht gefunden"
+    help:
+      "1": "§6§lSiedler §7- §fDiplomatie Management"
+      "2": "§7/diplomatie help §8- §fZeigt diese Hilfe an"
+      "3": "§7/diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy> §8- §fÄndert die Diplomatie von deinem Team"
+      "4": "§7/diplomatie show [Team] §8- §fZeigt die aktuellen Diplomatien an"
+      admin:
+        "1": "§7/diplomatie admin set <team> <team> <friendly|allied|neutral|hostile|enemy> §8- §fÄndert die Diplomatie zwischen zwei Teams"
+        "2": "§7/diplomatie admin list §8- §fZeigt alle Team-Beziehungen an"
+    command-usage:
+      set: "§cVerwendung: /diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy>"
+      admin-set: "§cVerwendung: /diplomatie admin set <team1> <team2> <friendly|allied|neutral|hostile|enemy>"
+    elemination:
+      broadcast: ""
+    only-player-command: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
+    player-has-no-team: "§cDu bist in keinem Team und kannst deshalb keine Diplomatie ändern."
+    invalid-relation: "§cUngültige Beziehung. Gültig: friendly|allied|neutral|hostile|enemy"
+    relation-set: "§aBeziehung zwischen §f"
+    relation-not-set: "§cDie Beziehung konnte nicht gesetzt werden. Prüfe Teamnamen und Team-Existenz."
+    relation-save-error: "§cFehler beim Speichern der Diplomatie: "
+    show-no-team: "§cKein Team angegeben und du bist in keinem Team."
+    no-relations: "§7Für das Team §f"
+    relations-header: "§6Beziehungen für Team §f"
+    relation-entry: "§7- "
+    relations-load-error: "§cFehler beim Laden der Beziehungen: "
+    admin-no-permission: "§cDu hast keine Rechte für Admin-Diplomatiebefehle."
+    admin-relation-not-set: "§cDie Beziehung konnte nicht gesetzt werden."
+    admin-set-error: "§cFehler beim Admin-Setzen: "
+    team-header: "§6Team: §f"
+    no-relations-item: "§7- keine Beziehungen"
+    relations-list-error: "§cFehler beim Laden der Diplomatie-Liste: "
+  team-command:
+    help:
+      "1": "§6§lSiedler 2.0 §7- §fTeam Management"
+      "2": "§7/team create <name> <color> §8- §fCreate a new team"
+      "3": "§7/team delete <name> §8- §fDelete a team"
+      "4": "§7/team add <player> <team> §8- §fAdd a player to a team"
+      "5": "§7/team remove <player> §8- §fRemove a player from their team"
+      "6": "§7/team list §8- §fList all teams"
+      "7": "§7/team info <team> §8- §fGet information about a team"
+      "8": "§7/team setcolor <team> <color> §8- §fSet the color of a team"
+      "9": "§7/team help <team> §8- §fGet help about a team"
+    usage:
+      create: "§cUsage: /team create <name> <color>"
+      delete: "§cUsage: /team delete <name>"
+      add: "§cUsage: /team add <player> <team>"
+      remove: "§cUsage: /team remove <player>"
+      info: "§cUsage: /team info <team>"
+      setcolor: "§cUsage: /team setcolor <team> <color>"
+    create:
+      success: "§aTeam '"
+      error: "§cError creating team: "
+    delete:
+      success: "§aTeam '"
+      error: "§cError deleting team: "
+    add:
+      success: "§aPlayer '"
+      not-found: "§cPlayer '"
+      error: "§cError adding player to team: "
+    remove:
+      success: "§aPlayer '"
+      not-found: "§cPlayer '"
+      error: "§cError removing player from team: "
+    list:
+      empty: "§cNo teams found."
+      header: "§6Teams:"
+      entry: "§7- §f"
+      error: "§cError listing teams: "
+    info:
+      header: "§6Team Info:"
+      name: "§7- §fName: §f"
+      color: "§7- §fColor: §f"
+      tax-bonus: "§7- §fTax Bonus: §f"
+      eliminated: "§7- §fEliminated: §f"
+      balance: "§7- §fBalance: §f"
+      error: "§cError retrieving team info: "
+    setcolor:
+      success: "§aTeam '"
+      error: "§cError setting team color: "
+    team-not-found: "§cTeam '"
+  elimination:
+    prefix: "[Elemination]: "
+    broadcast-message: "Team wurde eliminiert: " # Format: prefix + broadcast-message + Team Name
+    welcome-message: "Dein Team wurde leider eliminiert"
+    command-usage: ""
+  only-player-command: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
+  player-has-no-team: "§cDu bist keinem Team zugeordnet."
+  no-permission: "Du hast die Erforderlichen Berechtigungen nicht"
+  unknown-subcommand: "§cUnbekannter Unterbefehl: §f"

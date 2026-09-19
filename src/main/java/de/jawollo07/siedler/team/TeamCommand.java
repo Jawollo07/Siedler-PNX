@@ -6,24 +6,30 @@ import org.powernukkitx.command.Command;
 import org.powernukkitx.command.CommandSender;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.core.MessageManager;
 
 public final class TeamCommand extends Command {
     private final SiedlerPlugin plugin;
+    private final MessageManager messageManager;
+    private final String prefix;
+
     public TeamCommand() {
         super("team", "Manage teams", "/team");
         this.plugin = SiedlerPlugin.getInstance();
+        this.messageManager = new MessageManager();
+        this.prefix = messageManager.getPrefix("team");
         setPermission("siedler.command.team");
     }
     public String help(CommandSender sender) {
-        sender.sendMessage("§6§lSiedler 2.0 §7- §fTeam Management");
-        sender.sendMessage("§7/team create <name> <color> §8- §fCreate a new team");
-        sender.sendMessage("§7/team delete <name> §8- §fDelete a team");
-        sender.sendMessage("§7/team add <player> <team> §8- §fAdd a player to a team");
-        sender.sendMessage("§7/team remove <player> §8- §fRemove a player from their team");
-        sender.sendMessage("§7/team list §8- §fList all teams");
-        sender.sendMessage("§7/team info <team> §8- §fGet information about a team");
-        sender.sendMessage("§7/team setcolor <team> <color> §8- §fSet the color of a team");
-        sender.sendMessage("§7/team help <team> §8- §fGet help about a team");
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.1"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.2"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.3"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.4"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.5"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.6"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.7"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.8"));
+        sender.sendMessage(prefix + messageManager.getMessage("team-command", "help.9"));
         return "help";
     }
     @Override 
@@ -59,7 +65,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {
-                sender.sendMessage("§cUsage: /team create <name> <color>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.create"));
                 return false;
             }
             String name = args[1];
@@ -67,10 +73,10 @@ public final class TeamCommand extends Command {
             try {
                 TeamManager teamManager = new TeamManager(plugin);
                 Team team = teamManager.createTeam(name, color);
-                sender.sendMessage("§aTeam '" + team.name() + "' created with color '" + team.color() + "'.");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "create.success") + team.name() + "' created with color '" + team.color() + "'.");
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError creating team: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "create.error") + e.getMessage());
                 return false;
             }
         }
@@ -84,7 +90,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
-                sender.sendMessage("§cUsage: /team delete <name>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.delete"));
                 return false;
             }
             String name = args[1];
@@ -92,13 +98,13 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 boolean deleted = teamManager.deleteTeam(name);
                 if (deleted) {
-                    sender.sendMessage("§aTeam '" + name + "' deleted.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "delete.success") + name + "' deleted.");
                 } else {
-                    sender.sendMessage("§cTeam '" + name + "' not found.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + name + "' not found.");
                 }
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError deleting team: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "delete.error") + e.getMessage());
                 return false;
             }
         }
@@ -112,7 +118,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {
-                sender.sendMessage("§cUsage: /team add <player> <team>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.add"));
                 return false;
             }
             String playerName = args[1];
@@ -121,13 +127,13 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 boolean added = teamManager.addPlayerToTeam(playerName, teamName);
                 if (added) {
-                    sender.sendMessage("§aPlayer '" + playerName + "' added to team '" + teamName + "'.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.success") + playerName + "' added to team '" + teamName + "'.");
                 } else {
-                    sender.sendMessage("§cPlayer '" + playerName + "' or team '" + teamName + "' not found.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.not-found") + playerName + "' or team '" + teamName + "' not found.");
                 }
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError adding player to team: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "add.error") + e.getMessage());
                 return false;
             }
         }
@@ -141,7 +147,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
-                sender.sendMessage("§cUsage: /team remove <player>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.remove"));
                 return false;
             }
             String playerName = args[1];
@@ -149,13 +155,13 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 boolean removed = teamManager.removePlayerFromTeam(playerName);
                 if (removed) {
-                    sender.sendMessage("§aPlayer '" + playerName + "' removed from their team.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.success") + playerName + "' removed from their team.");
                 } else {
-                    sender.sendMessage("§cPlayer '" + playerName + "' not found or not in a team.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.not-found") + playerName + "' not found or not in a team.");
                 }
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError removing player from team: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "remove.error") + e.getMessage());
                 return false;
             }
         }
@@ -173,16 +179,16 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 List<Team> teams = teamManager.getTeams();
                 if (teams.isEmpty()) {
-                    sender.sendMessage("§cNo teams found.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.empty"));
                 } else {
-                    sender.sendMessage("§6Teams:");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.header"));
                     for (Team team : teams) {
-                        sender.sendMessage("§7- §f" + team.name() + " §8(§f" + team.color() + "§8)");
+                        sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.entry") + team.name() + " §8(§f" + team.color() + "§8)");
                     }
                 }
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError listing teams: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "list.error") + e.getMessage());
                 return false;
             }
         }
@@ -197,7 +203,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 2) {
-                sender.sendMessage("§cUsage: /team info <team>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.info"));
                 return false;
             }
             String teamName = args[1];
@@ -205,18 +211,18 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 Team team = teamManager.getTeamByName(teamName);
                 if (team == null) {
-                    sender.sendMessage("§cTeam '" + teamName + "' not found.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + teamName + "' not found.");
                     return false;
                 }
-                sender.sendMessage("§6Team Info:");
-                sender.sendMessage("§7- §fName: §f" + team.name());
-                sender.sendMessage("§7- §fColor: §f" + team.color());
-                sender.sendMessage("§7- §fTax Bonus: §f" + team.taxBonus());
-                sender.sendMessage("§7- §fEliminated: §f" + (team.eliminated() == 1 ? "Yes" : "No"));
-                sender.sendMessage("§7- §fBalance: §f" + team.balance());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.header"));
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.name") + team.name());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.color") + team.color());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.tax-bonus") + team.taxBonus());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.eliminated") + (team.eliminated() == 1 ? "Yes" : "No"));
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.balance") + team.balance());
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError retrieving team info: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "info.error") + e.getMessage());
                 return false;
             }
         }
@@ -230,7 +236,7 @@ public final class TeamCommand extends Command {
         }
         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
             if (args.length < 3) {
-                sender.sendMessage("§cUsage: /team setcolor <team> <color>");
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "usage.setcolor"));
                 return false;
             }
             String teamName = args[1];
@@ -239,13 +245,13 @@ public final class TeamCommand extends Command {
                 TeamManager teamManager = new TeamManager(plugin);
                 boolean updated = teamManager.setTeamColor(teamName, color);
                 if (updated) {
-                    sender.sendMessage("§aTeam '" + teamName + "' color set to '" + color + "'.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "setcolor.success") + teamName + "' color set to '" + color + "'.");
                 } else {
-                    sender.sendMessage("§cTeam '" + teamName + "' not found.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team-command", "team-not-found") + teamName + "' not found.");
                 }
                 return true;
             } catch (Exception e) {
-                sender.sendMessage("§cError setting team color: " + e.getMessage());
+                sender.sendMessage(prefix + messageManager.getMessage("team-command", "setcolor.error") + e.getMessage());
                 return false;
             }
         }

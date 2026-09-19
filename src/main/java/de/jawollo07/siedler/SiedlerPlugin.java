@@ -4,16 +4,19 @@ import de.jawollo07.siedler.chat.ChatListener;
 import de.jawollo07.siedler.core.CommandManager;
 import de.jawollo07.siedler.core.SiedlerManager;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.team.Elimination;
 import de.jawollo07.siedler.team.RelationCommands;
 import de.jawollo07.siedler.team.TeamCommand;
 import de.jawollo07.siedler.chat.DirektMessage;
 import de.jawollo07.siedler.chat.TeamChatCommand;
+import de.jawollo07.siedler.claim.ClaimCommand;
+import de.jawollo07.siedler.claim.Protection;
+import de.jawollo07.siedler.core.MessageManager;
+import de.jawollo07.siedler.essentials.PlayerListener;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
 
-import de.jawollo07.siedler.claim.Claim;
-import de.jawollo07.siedler.claim.ClaimCommand;
 import java.io.File;
 
 /**
@@ -31,7 +34,7 @@ public final class SiedlerPlugin extends PluginBase {
     private SiedlerManager siedlerManager;
     private CommandManager commandManager;
     private ClaimCommand claimCommand;
-
+    private MessageManager messageManager;
     /**
      * Returns the currently loaded Siedler plugin instance.
      *
@@ -54,13 +57,16 @@ public final class SiedlerPlugin extends PluginBase {
                 new File(getDataFolder(), "config.yml"),
                 Config.YAML
         );
-
+        messageManager = new MessageManager();
+        messageManager.initialize(getDataFolder());
+        final String prefix = messageManager.getPrefix("main");
         /*
          * Initialize storage.
          */
         storage = new StorageManager(this);
         storage.initialize();
         getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         /*
          * Initialize core managers.
@@ -72,13 +78,13 @@ public final class SiedlerPlugin extends PluginBase {
          */
         commandManager = new CommandManager(this);
         registerCommands();
-
+        registerEvents();
         getLogger().info(
-                TextFormat.GREEN + "Siedler enabled."
+                TextFormat.GREEN + prefix + messageManager.getMessage("main", "enable")
         );
 
         getLogger().info(
-                TextFormat.GRAY + "Native PowerNukkitX foundation initialized."
+                TextFormat.WHITE + prefix + messageManager.getMessage("main", "info")
         );
 
         getLogger().info(
@@ -100,18 +106,23 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TeamChatCommand(this));
         commandManager.register(new RelationCommands(this));
         commandManager.register(new ClaimCommand(this));
+        commandManager.register(new Elimination(this));
+    } 
+    private void registerEvents() {
+        this.getServer().getPluginManager().registerEvents(new Protection(this), this);
+        getLogger().info("Claim Protection registered");
     }
-
     @Override
     public void onDisable() {
         if (storage != null) {
             storage.close();
         }
 
-        getLogger().info(
-                TextFormat.RED + "Siedler disabled."
-        );
-
+        if (messageManager != null && messageManager.getConfig() != null) {
+            getLogger().info(
+                TextFormat.RED + messageManager.getPrefix("main") + messageManager.getMessage("main", "disable")
+            );
+        }
         instance = null;
     }
 

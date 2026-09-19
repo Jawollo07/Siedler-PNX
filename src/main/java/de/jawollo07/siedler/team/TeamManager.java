@@ -2,6 +2,8 @@ package de.jawollo07.siedler.team;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.core.MessageManager;
+
 import org.powernukkitx.Player;
 
 import java.sql.PreparedStatement;
@@ -15,10 +17,14 @@ import java.util.UUID;
 public class TeamManager {
     private final SiedlerPlugin plugin;
     private final StorageManager storage;
+    private final MessageManager messageManager;
+    private final String prefix;
 
     public TeamManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
         this.storage = plugin.getStorage();
+        this.messageManager = new MessageManager();
+        this.prefix = messageManager.getPrefix("team");
     }
 
     private Team mapTeam(ResultSet resultSet) throws SQLException {
@@ -57,7 +63,32 @@ public class TeamManager {
 
         return getTeamById(id);
     }
+    public String getPlayerTeams(String player_id) {
+        if (player_id == null || player_id.isBlank()) {
+            return null;
+        }
 
+        String sql = "SELECT team_id FROM players WHERE id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, player_id.trim());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return null;
+                }
+
+                String teamId = resultSet.getString("team_id");
+                if (teamId == null || teamId.isBlank()) {
+                    return null;
+                }
+
+                return getTeamByID(teamId);
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().warning("Could not load player team for player " + player_id + ": " + exception.getMessage());
+            return null;
+        }
+    }
     private Team getTeamById(String id) throws SQLException {
         String sql = "SELECT id, name, color, tax_bonus, eliminated, elimination_block, created_at, balance "
                 + "FROM teams WHERE id = ?";
@@ -185,7 +216,6 @@ public class TeamManager {
         if (onlinePlayer == null) {
             throw new SQLException("Player must be online before being added to a team.");
         }
-
         String playerId = onlinePlayer.getUniqueId().toString();
         long now = System.currentTimeMillis();
         String upsertPlayerSql = "UPDATE players SET last_name = ?, last_seen = ? WHERE id = ?";
@@ -256,5 +286,52 @@ public class TeamManager {
         }
 
         return true;
+    }
+    public boolean notifyAllTeamMembers(String team_id, String message) {
+        if (team_id == null || team_id.isBlank()) {
+            return false;
+        }
+        if (message == null || message.isBlank()){
+            return false;
+        }
+        String sql = "SELECT id FROM players WHERE team_id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, team_id.trim());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<String> memberIds = new ArrayList<>();
+                while (resultSet.next()) {
+                    memberIds.add(resultSet.getString("id"));
+                }
+
+                for (Player player : plugin.getServer().getOnlinePlayers().values()) {
+                    if (memberIds.contains(player.getUniqueId().toString())) {
+                        player.sendMessage(prefix + message);
+                    }
+                }
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().warning("Could not notify team members: " + exception.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+    public String getTeamByID(String team_id) {
+        if (team_id == null || team_id.isBlank()) {
+            return null;
+        }
+
+        String sql = "SELECT name FROM teams WHERE id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, team_id.trim());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? resultSet.getString("name") : null;
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().warning("Could not load team: " + exception.getMessage());
+            return null;
+        }
     }
 }

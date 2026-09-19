@@ -30,6 +30,14 @@ claims:
       - minecraft:stone_button
       - minecraft:oak_button
       - minecraft:lever
+
+elimination:
+  block: minecraft:beacon
+weakness:
+  enabled: true
+  duration: 0 # 0 is Infinite
+  amplifier: 3
+  isVisible: false
 monsters:
   token:
     enabled: true

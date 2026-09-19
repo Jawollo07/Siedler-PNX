@@ -1,6 +1,7 @@
 package de.jawollo07.siedler.team;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.core.MessageManager;
 import org.powernukkitx.Player;
 import org.powernukkitx.command.Command;
 import org.powernukkitx.command.CommandSender;
@@ -15,6 +16,8 @@ import java.util.Objects;
 public class RelationCommands extends Command {
     private final SiedlerPlugin plugin;
     private final Relations relations;
+    private final MessageManager messageManager;
+    private final String prefix;
 
     public RelationCommands(SiedlerPlugin plugin) {
         super("diplomatie", "Ändert die Diplomatien zwischen Teams", "/diplomatie");
@@ -22,17 +25,19 @@ public class RelationCommands extends Command {
         this.relations = new Relations(plugin);
         setPermission("siedler.command.diplomatie");
         setPermission("siedler.basic");
-        plugin.getLogger().info("[RelationCommands] Diplomacy command initialized.");
+        this.messageManager = new MessageManager();
+        this.prefix = messageManager.getPrefix("team");
+        this.setPermissionMessage(messageManager.getCommandMessage("no-permission"));
     }
 
     public String help(CommandSender sender) {
-        sender.sendMessage("§6§lSiedler §7- §fDiplomatie Management");
-        sender.sendMessage("§7/diplomatie help §8- §fZeigt diese Hilfe an");
-        sender.sendMessage("§7/diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy> §8- §fÄndert die Diplomatie von deinem Team");
-        sender.sendMessage("§7/diplomatie show [Team] §8- §fZeigt die aktuellen Diplomatien an");
+        sender.sendMessage(prefix + messageManager.getMessage("team", "help.1"));
+        sender.sendMessage(prefix + messageManager.getMessage("team", "help.2"));
+        sender.sendMessage(prefix + messageManager.getMessage("team", "help.3"));
+        sender.sendMessage(prefix + messageManager.getMessage("team", "help.4"));
         if (sender.hasPermission("siedler.admin")) {
-            sender.sendMessage("§7/diplomatie admin set <team> <team> <friendly|allied|neutral|hostile|enemy> §8- §fÄndert die Diplomatie zwischen zwei Teams");
-            sender.sendMessage("§7/diplomatie admin list §8- §fZeigt alle Team-Beziehungen an");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "help.admin.1"));
+            sender.sendMessage(prefix + messageManager.getMessage("team", "help.admin.2"));
         }
         return "help";
     }
@@ -65,19 +70,19 @@ public class RelationCommands extends Command {
     private boolean setRelation(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
             plugin.getLogger().warning("[RelationCommands] /diplomatie set called by non-player sender: " + sender.getName());
-            sender.sendMessage("§cDieser Befehl kann nur von einem Spieler verwendet werden.");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "only-player-command"));
             return false;
         }
         if (args.length < 3) {
             plugin.getLogger().warning("[RelationCommands] Missing arguments for /diplomatie set by " + sender.getName());
-            sender.sendMessage("§cVerwendung: /diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy>");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "command-usage.set"));
             return false;
         }
 
         String ownTeam = resolvePlayerTeamName(player);
         if (ownTeam == null) {
             plugin.getLogger().warning("[RelationCommands] Player " + player.getName() + " tried to change diplomacy without a team");
-            sender.sendMessage("§cDu bist in keinem Team und kannst deshalb keine Diplomatie ändern.");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "player-has-no-team"));
             return false;
         }
 
@@ -86,7 +91,7 @@ public class RelationCommands extends Command {
 
         if (!Relations.isValidRelation(relation)) {
             plugin.getLogger().warning("[RelationCommands] Invalid relation input '" + relation + "' from " + player.getName());
-            sender.sendMessage("§cUngültige Beziehung. Gültig: friendly|allied|neutral|hostile|enemy");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "invalid-relation"));
             return false;
         }
 
@@ -94,15 +99,15 @@ public class RelationCommands extends Command {
             boolean changed = relations.setTeamRelation(ownTeam, targetTeam, relation);
             if (changed) {
                 plugin.getLogger().info("[RelationCommands] " + player.getName() + " changed relation " + ownTeam + " -> " + targetTeam + " = " + relation);
-                sender.sendMessage("§aBeziehung zwischen §f" + ownTeam + " §aund §f" + targetTeam + " §aauf §f" + relation + " §agesetzt.");
+                sender.sendMessage(prefix + messageManager.getMessage("team", "relation-set") + ownTeam + " §aund §f" + targetTeam + " §aauf §f" + relation + " §agesetzt.");
                 return true;
             }
             plugin.getLogger().warning("[RelationCommands] Failed to update relation from " + player.getName() + ": " + ownTeam + " -> " + targetTeam + " = " + relation);
-            sender.sendMessage("§cDie Beziehung konnte nicht gesetzt werden. Prüfe Teamnamen und Team-Existenz.");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "relation-not-set"));
             return false;
         } catch (SQLException e) {
             plugin.getLogger().info("[RelationCommands] DB error while setting relation", e);
-            sender.sendMessage("§cFehler beim Speichern der Diplomatie: " + e.getMessage());
+            sender.sendMessage(prefix + messageManager.getMessage("team", "relation-save-error") + e.getMessage());
             return false;
         }
     }
@@ -110,31 +115,31 @@ public class RelationCommands extends Command {
     private boolean showRelations(CommandSender sender, String[] args) {
         String teamName = args.length >= 2 ? args[1] : resolvePlayerTeamName(sender);
         if (teamName == null) {
-            sender.sendMessage("§cKein Team angegeben und du bist in keinem Team.");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "show-no-team"));
             return false;
         }
 
         try {
             Map<String, String> relationsForTeam = relations.getRelationsForTeamByName(teamName);
             if (relationsForTeam.isEmpty()) {
-                sender.sendMessage("§7Für das Team §f" + teamName + " §7sind noch keine Beziehungen eingetragen.");
+                sender.sendMessage(prefix + messageManager.getMessage("team", "no-relations") + teamName + " §7sind noch keine Beziehungen eingetragen.");
                 return true;
             }
 
-            sender.sendMessage("§6Beziehungen für Team §f" + teamName + "§6:");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "relations-header") + teamName + "§6:");
             for (Map.Entry<String, String> entry : relationsForTeam.entrySet()) {
-                sender.sendMessage("§7- " + entry.getKey() + " §8→ §f" + entry.getValue());
+                sender.sendMessage(prefix + messageManager.getMessage("team", "relation-entry") + entry.getKey() + " §8→ §f" + entry.getValue());
             }
             return true;
         } catch (SQLException e) {
-            sender.sendMessage("§cFehler beim Laden der Beziehungen: " + e.getMessage());
+            sender.sendMessage(prefix + messageManager.getMessage("team", "relations-load-error") + e.getMessage());
             return false;
         }
     }
 
     private boolean adminCommand(CommandSender sender, String[] args) {
         if (!sender.hasPermission("siedler.admin")) {
-            sender.sendMessage("§cDu hast keine Rechte für Admin-Diplomatiebefehle.");
+            sender.sendMessage(prefix + messageManager.getMessage("team", "admin-no-permission"));
             return false;
         }
         if (args.length < 2) {
@@ -145,7 +150,7 @@ public class RelationCommands extends Command {
         switch (subAction) {
             case "set":
                 if (args.length < 5) {
-                    sender.sendMessage("§cVerwendung: /diplomatie admin set <team1> <team2> <friendly|allied|neutral|hostile|enemy>");
+                    sender.sendMessage(prefix + messageManager.getMessage("team", "command-usage.admin-set"));
                     return false;
                 }
                 try {
@@ -154,13 +159,13 @@ public class RelationCommands extends Command {
                     String relation = args[4];
                     boolean changed = relations.setTeamRelation(teamA, teamB, relation);
                     if (changed) {
-                        sender.sendMessage("§aBeziehung zwischen §f" + teamA + " §aund §f" + teamB + " §aauf §f" + relation + " §agesetzt.");
+                        sender.sendMessage(prefix + messageManager.getMessage("team", "relation-set") + teamA + " §aund §f" + teamB + " §aauf §f" + relation + " §agesetzt.");
                         return true;
                     }
-                    sender.sendMessage("§cDie Beziehung konnte nicht gesetzt werden.");
+                    sender.sendMessage(prefix + messageManager.getMessage("team", "admin-relation-not-set"));
                     return false;
                 } catch (SQLException e) {
-                    sender.sendMessage("§cFehler beim Admin-Setzen: " + e.getMessage());
+                    sender.sendMessage(prefix + messageManager.getMessage("team", "admin-set-error") + e.getMessage());
                     return false;
                 }
             case "show":
@@ -171,19 +176,19 @@ public class RelationCommands extends Command {
                 try {
                     TeamManager teamManager = new TeamManager(plugin);
                     for (Team team : teamManager.getTeams()) {
-                        sender.sendMessage("§6Team: §f" + team.name());
+                        sender.sendMessage(prefix + messageManager.getMessage("team", "team-header") + team.name());
                         Map<String, String> entries = relations.getRelationsForTeamByName(team.name());
                         if (entries.isEmpty()) {
-                            sender.sendMessage("§7- keine Beziehungen");
+                            sender.sendMessage(prefix + messageManager.getMessage("team", "no-relations-item"));
                             continue;
                         }
                         for (Map.Entry<String, String> entry : entries.entrySet()) {
-                            sender.sendMessage("§7- " + entry.getKey() + " §8→ §f" + entry.getValue());
+                            sender.sendMessage(prefix + messageManager.getMessage("team", "relation-entry") + entry.getKey() + " §8→ §f" + entry.getValue());
                         }
                     }
                     return true;
                 } catch (SQLException e) {
-                    sender.sendMessage("§cFehler beim Laden der Diplomatie-Liste: " + e.getMessage());
+                    sender.sendMessage(prefix + messageManager.getMessage("team", "relations-list-error") + e.getMessage());
                     return false;
                 }
             default:

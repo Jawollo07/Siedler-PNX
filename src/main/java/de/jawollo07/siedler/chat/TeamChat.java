@@ -1,6 +1,9 @@
 package de.jawollo07.siedler.chat;
 
 import de.jawollo07.siedler.SiedlerPlugin;
+import de.jawollo07.siedler.core.ConfigManager;
+import de.jawollo07.siedler.core.MessageManager;
+
 import org.powernukkitx.Player;
 
 import java.sql.PreparedStatement;
@@ -11,11 +14,16 @@ import java.util.Set;
 
 public class TeamChat {
 	private final SiedlerPlugin plugin;
-
+	private final ConfigManager configManager;
+	private final MessageManager messageManager;
+	private final String prefix;
 	public TeamChat(SiedlerPlugin plugin) {
 		this.plugin = plugin;
+		this.configManager = new ConfigManager();
+		this.messageManager = new MessageManager();
+		this.prefix = messageManager.getPrefix("chat.team-chat");
 	}
-
+	
 	public boolean send(Player sender, String message) {
 		String teamSql = "SELECT t.id, t.name FROM players p "
 				+ "JOIN teams t ON t.id = p.team_id WHERE p.id = ?";
@@ -25,14 +33,14 @@ public class TeamChat {
 
 			try (ResultSet teamResult = teamStatement.executeQuery()) {
 				if (!teamResult.next()) {
-					sender.sendMessage("§cDu bist keinem Team zugeordnet.");
+					sender.sendMessage(prefix + messageManager.getCommandMessage("player-has-no-team"));
 					return false;
 				}
 
 				String teamId = teamResult.getString("id");
 				String teamName = teamResult.getString("name");
 				Set<String> memberIds = getMemberIds(teamId);
-				String formattedMessage = "§7[TeamChat] §e" + sender.getName()
+				String formattedMessage = prefix + "§e" + sender.getName()
 						+ " §8(" + teamName + ") §7: §f" + message;
 
 				for (Player onlinePlayer : plugin.getServer().getOnlinePlayers().values()) {
@@ -44,7 +52,7 @@ public class TeamChat {
 			}
 		} catch (SQLException exception) {
 			plugin.getLogger().warning("Failed to send team chat message: " + exception.getMessage());
-			sender.sendMessage("§cDie Teamnachricht konnte nicht gesendet werden.");
+			sender.sendMessage(prefix + messageManager.getMessage("chat", "chat.team-chat.message-cannot-send"));
 			return false;
 		}
 	}

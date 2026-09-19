@@ -59,8 +59,14 @@ public final class SQLite {
                         "CREATE TABLE IF NOT EXISTS teams (" +
                         "id TEXT PRIMARY KEY, " +
                         "name TEXT NOT NULL UNIQUE, " +
+                        "color TEXT NOT NULL DEFAULT 'WHITE', " +
                         "tax_bonus INTEGER NOT NULL DEFAULT 1, " +
-                        "eliminated INTEGER NOT NULL DEFAULT 0)"
+                        "eliminated INTEGER NOT NULL DEFAULT 0, " +
+                        "elimination_block TEXT, " +
+                        "created_at BIGINT NOT NULL DEFAULT 0, " +
+                        "balance INTEGER NOT NULL DEFAULT 0, " +
+                        "CHECK (tax_bonus >= 1), " +
+                        "CHECK (eliminated IN (0, 1)))"
                 );
 
                 statement.executeUpdate(

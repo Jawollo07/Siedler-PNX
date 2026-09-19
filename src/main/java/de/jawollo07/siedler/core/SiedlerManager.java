@@ -7,7 +7,6 @@ import de.jawollo07.siedler.storage.StorageManager;
 public final class SiedlerManager {
     private final SiedlerPlugin plugin;
     private final StorageManager storage;
-
     public SiedlerManager(SiedlerPlugin plugin, StorageManager storage) {
         this.plugin = plugin;
         this.storage = storage;

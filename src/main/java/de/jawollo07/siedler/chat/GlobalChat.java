@@ -10,13 +10,10 @@ import java.util.Locale;
 
 /** Builds the chat format used for global player messages. */
 public final class GlobalChat {
-    // PlayerChatEvent uses positional String.format placeholders for player and message.
-    private static final String FALLBACK_FORMAT = "§8[§7Global§8] §f%1$s§7: §f%2$s";
-
     private GlobalChat() {
-        // Utility class
+    
     }
-
+    private static final String FALLBACK_FORMAT = "§8[§7Global§8] §f%1$s§7: §f%2$s";
     /** Returns the player's team format, or the global fallback if no team is available. */
     public static String getFormat(StorageManager storageManager, String playerId) throws SQLException {
         if (storageManager == null || playerId == null || playerId.isBlank()) {

@@ -62,9 +62,9 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [x] Team-Mitglieder und stabile Player-IDs
 - [x] Teamchat
 - [x] Diplomatie: allied / neutral / enemy
-- [ ] Team-Eliminierung
-- [ ] permanenter Spectator nach Tod eines eliminierten Spielers
-- [ ] konfigurierbarer Eliminierungsblock
+- [x] Team-Eliminierung
+- [x] permanenter Spectator nach Tod eines eliminierten Spielers
+- [x] konfigurierbarer Eliminierungsblock
 
 ### Versionsmeilensteine Phase 2
 

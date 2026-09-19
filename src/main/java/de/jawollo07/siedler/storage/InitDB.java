@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class InitDB {
-    private static final int CURRENT_SCHEMA_VERSION = 4;
+    private static final int CURRENT_SCHEMA_VERSION = 5;
 
     public void initDatabase() {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
@@ -39,6 +39,10 @@ public class InitDB {
             if (version < 4) {
                 migrateV3ToV4(connection);
                 setSchemaVersion(connection, 4);
+            }
+            if (version < 5) {
+                migrateV4ToV5(connection);
+                setSchemaVersion(connection, 5);
             }
         }
     }
@@ -84,6 +88,16 @@ public class InitDB {
 
     private void migrateV3ToV4(Connection connection) throws Exception {
         ensureColumnExists(connection, "chat_messages", "target", "TEXT NOT NULL DEFAULT 'global'");
+    }
+
+    private void migrateV4ToV5(Connection connection) throws Exception {
+        ensureColumnExists(connection, "teams", "color", "TEXT NOT NULL DEFAULT 'WHITE'");
+        ensureColumnExists(connection, "teams", "elimination_block", "TEXT");
+        ensureColumnExists(connection, "teams", "created_at", "BIGINT NOT NULL DEFAULT 0");
+        ensureColumnExists(connection, "teams", "balance", "INTEGER NOT NULL DEFAULT 0");
+
+        ensureColumnExists(connection, "players", "team_id", "TEXT");
+        ensureColumnExists(connection, "players", "eliminated", "INTEGER NOT NULL DEFAULT 0");
     }
 
     private void ensureColumnExists(Connection connection, String tableName, String columnName, String columnDefinition) throws Exception {
