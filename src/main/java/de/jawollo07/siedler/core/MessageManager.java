@@ -16,7 +16,7 @@ public class MessageManager {
     private static final Pattern NUMERIC_YAML_KEY = Pattern.compile("^(\\s+)(\\d+):(?=\\s|$)", Pattern.MULTILINE);
     private static final String BUNDLED_MESSAGES = "messages.yml";
 
-    private volatile Config config;
+    private static volatile Config config;
 
     public synchronized void initialize(File dataFolder) {
         Objects.requireNonNull(dataFolder, "dataFolder");
@@ -30,7 +30,7 @@ public class MessageManager {
         Config loaded = new Config(configFile, Config.YAML);
         Config defaults = loadBundledDefaults();
         loaded.setDefault(defaults.getRootSection());
-        this.config = loaded;
+        MessageManager.config = loaded;
         loaded.save();
     }
 

@@ -1,9 +1,9 @@
 name: Siedler
 main: de.jawollo07.siedler.SiedlerPlugin
-version: "3.3.0"
+version: "3.3.1"
 api: ["3.0.0"]
 load: POSTWORLD
 author: Jawollo07
-description: Siedler 3.3.0 - Teams, Claims, Economy, Monsters, Soldiers and Essentials
+description: Siedler 3.3.1 - Teams, Claims, Economy, Monsters, Soldiers and Essentials
 website: https://github.com/Jawollo07/Siedler-PNX
 prefix: "Siedler"

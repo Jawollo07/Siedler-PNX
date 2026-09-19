@@ -58,25 +58,33 @@ public class RelationCommands extends Command {
                     listAllRelations(context.getSender());
                     return CommandResult.success();
                 }));
-        tree.getRoot().then(RouteNode.literal("admin").permission("siedler.admin", messageManager.getCommandMessage("no-permission"))
-                .then(RouteNode.literal("set")
-                        .then(RouteNode.argument("teamA", new StringNode())
-                                .then(RouteNode.argument("teamB", new StringNode())
-                                        .then(RouteNode.argument("relation", new StringNode()).exec(context -> {
-                                            setAdminRelation(context.getSender(), context.getArg("teamA"), context.getArg("teamB"), context.getArg("relation"));
-                                            return CommandResult.success();
-                                        }))))
-                .then(RouteNode.literal("show").then(RouteNode.argument("team", new StringNode()).exec(context -> {
+        RouteNode admin = RouteNode.literal("admin")
+                .permission("siedler.admin", messageManager.getCommandMessage("no-permission"));
+        RouteNode adminSet = RouteNode.literal("set");
+        RouteNode teamA = RouteNode.argument("teamA", new StringNode());
+        RouteNode teamB = RouteNode.argument("teamB", new StringNode());
+        RouteNode relation = RouteNode.argument("relation", new StringNode()).exec(context -> {
+            setAdminRelation(context.getSender(), context.getArg("teamA"), context.getArg("teamB"), context.getArg("relation"));
+            return CommandResult.success();
+        });
+        teamB.then(relation);
+        teamA.then(teamB);
+        adminSet.then(teamA);
+        admin.then(adminSet);
+        admin.then(RouteNode.literal("show")
+                .exec(context -> {
+                    listAllRelations(context.getSender());
+                    return CommandResult.success();
+                })
+                .then(RouteNode.argument("team", new StringNode()).exec(context -> {
                     showRelations(context.getSender(), context.getArg("team"));
                     return CommandResult.success();
-                })).exec(context -> {
-                    listAllRelations(context.getSender());
-                    return CommandResult.success();
-                }))
-                .then(RouteNode.literal("list").exec(context -> {
-                    listAllRelations(context.getSender());
-                    return CommandResult.success();
                 })));
+        admin.then(RouteNode.literal("list").exec(context -> {
+            listAllRelations(context.getSender());
+            return CommandResult.success();
+        }));
+        tree.getRoot().then(admin);
     }
 
     public String help(CommandSender sender) {
@@ -180,8 +188,8 @@ public class RelationCommands extends Command {
 
     private String resolvePlayerTeamName(Player player) {
         String sql = "SELECT t.name FROM players p LEFT JOIN teams t ON t.id = p.team_id WHERE p.last_name = ?";
-        try (Connection connection = plugin.getStorage().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        Connection connection = plugin.getStorage().getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, player.getName());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) return resultSet.getString("name");
