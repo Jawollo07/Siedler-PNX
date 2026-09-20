@@ -3,6 +3,7 @@ package de.jawollo07.siedler.team;
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
 import de.jawollo07.siedler.core.MessageManager;
+import de.jawollo07.siedler.eco.EcoManager;
 
 import org.powernukkitx.Player;
 
@@ -19,11 +20,13 @@ public class TeamManager {
     private final StorageManager storage;
     private final MessageManager messageManager;
     private final String prefix;
+    private final EcoManager ecoManager;
 
     public TeamManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
         this.storage = plugin.getStorage();
         this.messageManager = new MessageManager();
+        this.ecoManager = new EcoManager(plugin);
         this.prefix = messageManager.getPrefix("team");
     }
 
@@ -48,6 +51,11 @@ public class TeamManager {
         String trimmedName = name.trim();
         String normalizedColor = (color == null || color.isBlank()) ? "WHITE" : color.trim().toUpperCase(Locale.ROOT);
 
+        int maxTeams = plugin.getConfig().getInt("teams.max-teams", 0);
+        if (maxTeams > 0 && getTeams().size() >= maxTeams) {
+            throw new IllegalStateException("The maximum number of teams has been reached.");
+        }
+
         String id = UUID.randomUUID().toString();
         String sql = "INSERT INTO teams (id, name, color, tax_bonus, eliminated, created_at) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -60,7 +68,7 @@ public class TeamManager {
             statement.setLong(6, System.currentTimeMillis());
             statement.executeUpdate();
         }
-
+        ecoManager.teamCreation(id);
         return getTeamById(id);
     }
     public String getPlayerTeams(String player_id) {
@@ -187,7 +195,7 @@ public class TeamManager {
             return false;
         }
 
-        String sql = "SELECT team_id FROM players WHERE id = ?";
+        String sql = "SELECT team_id FROM players WHERE id = ? AND team_id IS NOT NULL";
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, player.getUniqueId().toString());
 
@@ -217,6 +225,18 @@ public class TeamManager {
             throw new SQLException("Player must be online before being added to a team.");
         }
         String playerId = onlinePlayer.getUniqueId().toString();
+        Team currentTeam = getTeamForPlayer(playerId);
+        if (currentTeam != null) {
+            throw new IllegalStateException(
+                    "Player is already a member of team '" + currentTeam.name() + "'."
+            );
+        }
+
+        int maxPlayersPerTeam = plugin.getConfig().getInt("teams.max-players-per-team", 0);
+        if (maxPlayersPerTeam > 0 && getTeamMemberCount(team.id()) >= maxPlayersPerTeam) {
+            throw new IllegalStateException("Team '" + team.name() + "' is full.");
+        }
+
         long now = System.currentTimeMillis();
         String upsertPlayerSql = "UPDATE players SET last_name = ?, last_seen = ? WHERE id = ?";
         try (PreparedStatement statement = storage.getConnection().prepareStatement(upsertPlayerSql)) {
@@ -236,13 +256,19 @@ public class TeamManager {
             }
         }
 
-        String sql = "UPDATE players SET team_id = ? WHERE id = ?";
+        String sql = "UPDATE players SET team_id = ? WHERE id = ? AND team_id IS NULL";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, team.id());
             statement.setString(2, playerId);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
+                Team assignedTeam = getTeamForPlayer(playerId);
+                if (assignedTeam != null) {
+                    throw new IllegalStateException(
+                            "Player is already a member of team '" + assignedTeam.name() + "'."
+                    );
+                }
                 throw new SQLException("Adding player to team failed.");
             }
         }
@@ -255,17 +281,53 @@ public class TeamManager {
             throw new IllegalArgumentException("Player name must not be blank");
         }
 
-        String sql = "UPDATE players SET team_id = NULL WHERE last_name = ?";
+        Player onlinePlayer = plugin.getServer().getOnlinePlayers().values().stream()
+                .filter(player -> player.getName().equalsIgnoreCase(playerName.trim()))
+                .findFirst()
+                .orElse(null);
+        if (onlinePlayer == null) {
+            throw new SQLException("Player must be online before being removed from a team.");
+        }
+
+        String sql = "UPDATE players SET team_id = NULL WHERE id = ? AND team_id IS NOT NULL";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
-            statement.setString(1, playerName.trim());
+            statement.setString(1, onlinePlayer.getUniqueId().toString());
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Removing player from team failed.");
+                throw new SQLException("Player is not a member of a team.");
             }
         }
 
         return true;
+    }
+
+    public Team getTeamForPlayer(String playerId) throws SQLException {
+        if (playerId == null || playerId.isBlank()) {
+            throw new IllegalArgumentException("Player ID must not be blank");
+        }
+
+        String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, "
+                + "t.elimination_block, t.created_at, t.balance "
+                + "FROM players p JOIN teams t ON t.id = p.team_id WHERE p.id = ?";
+
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, playerId.trim());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? mapTeam(resultSet) : null;
+            }
+        }
+    }
+
+    private int getTeamMemberCount(String teamId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM players WHERE team_id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, teamId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getInt(1);
+            }
+        }
     }
 
     public boolean setTeamColor(String teamName, String color) throws SQLException {

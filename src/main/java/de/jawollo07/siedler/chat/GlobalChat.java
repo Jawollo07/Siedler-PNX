@@ -41,7 +41,7 @@ public final class GlobalChat {
                 }
 
                 String teamColor = getMinecraftColor(resultSet.getString("color"));
-                return "§8[" + teamColor + teamName + "§8] §f%1$s§7: §f%2$s";
+                return "§8[" + teamColor + teamName + "§8] §f"; // %1$s§7: §f%2$s";
             }
         }
     }

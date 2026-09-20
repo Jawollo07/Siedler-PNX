@@ -1,7 +1,11 @@
 package de.jawollo07.siedler.chat;
 
 import org.powernukkitx.event.EventHandler;
+import org.powernukkitx.event.EventPriority;
 import org.powernukkitx.event.Listener;
+
+import java.sql.SQLException;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.player.PlayerChatEvent;
 import de.jawollo07.siedler.storage.StorageManager;
@@ -15,17 +19,14 @@ public class ChatListener implements Listener {
         this.chatLogger = new ChatLogger(storageManager);
     }
 
-    @EventHandler
-    public void onChatMessage(PlayerChatEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChatMessage(PlayerChatEvent event) throws SQLException {
         Player player = event.getPlayer();
         String playerID = player.getUniqueId().toString();
         String message = event.getMessage();
-
-        try {
-            event.setFormat(GlobalChat.getFormat(storageManager, playerID));
-        } catch (java.sql.SQLException exception) {
-            event.setFormat("§8[§7Global§8] §f%s§7: §f%s");
-        }
+        String format = GlobalChat.getFormat(storageManager, playerID);
+        String end_format = format + player.getName() + "§7: §f" + message;
+        event.setFormat(end_format);
 
         chatLogger.saveChatMessage(
             playerID,

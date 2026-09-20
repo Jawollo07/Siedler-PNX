@@ -30,7 +30,10 @@ claims:
       - minecraft:stone_button
       - minecraft:oak_button
       - minecraft:lever
-
+economy:
+  start-money: 0
+  symbol: "€"
+  name: "Eurolles"
 elimination:
   block: minecraft:beacon
 weakness:

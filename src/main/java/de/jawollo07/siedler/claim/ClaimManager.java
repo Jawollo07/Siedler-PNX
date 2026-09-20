@@ -2,6 +2,7 @@ package de.jawollo07.siedler.claim;
 
 import de.jawollo07.siedler.storage.StorageManager;
 
+import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -178,6 +179,15 @@ public class ClaimManager {
         } catch (SQLException exception) {
             plugin.getLogger().warning("Claim konnte nicht erstellt werden: " + exception.getMessage());
             throw new IllegalStateException("Claim konnte nicht erstellt werden", exception);
+        }
+    }
+    public Integer[] getClaimPostion(String claimID) throws SQLException {
+        if(claimID == null | claimID.isBlank()) {
+            throw new IllegalArgumentException();
+        }
+        String sql = "SELECT min_x, min_z, max_x, max_z FROM claims WHERE id = ?";
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            
         }
     }
 }

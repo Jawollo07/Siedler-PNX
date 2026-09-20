@@ -21,14 +21,13 @@ SELECT 1
 WHERE NOT EXISTS (
     SELECT 1 FROM schema_version
 );
-
 -- ============================================================
 -- Teams
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS teams (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
     color TEXT NOT NULL DEFAULT 'WHITE',
 
     tax_bonus INTEGER NOT NULL DEFAULT 1,
@@ -49,10 +48,10 @@ CREATE TABLE IF NOT EXISTS teams (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS players (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     last_name TEXT NOT NULL,
 
-    team_id TEXT,
+    team_id VARCHAR(36),
 
     eliminated INTEGER NOT NULL DEFAULT 0,
 
@@ -65,11 +64,70 @@ CREATE TABLE IF NOT EXISTS players (
 
     CHECK (eliminated IN (0, 1))
 );
+
+-- ============================================================
+-- Economy
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS team_money (
+    id VARCHAR(36) PRIMARY KEY,
+    team_id VARCHAR(36) NOT NULL,
+    balance INTEGER NOT NULL,
+
+    FOREIGN KEY (team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id VARCHAR(36) PRIMARY KEY,
+    team_id VARCHAR(36) NOT NULL,
+    member_id VARCHAR(36),
+
+    amount INTEGER NOT NULL,
+    transaction_type VARCHAR(64) NOT NULL,
+    description TEXT,
+    created_at BIGINT NOT NULL,
+
+    FOREIGN KEY (team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (member_id)
+        REFERENCES players(id)
+        ON DELETE SET NULL,
+
+    CHECK (amount != 0)
+);
+
+CREATE TABLE IF NOT EXISTS balance_history (
+    id VARCHAR(36) PRIMARY KEY,
+    team_id VARCHAR(36) NOT NULL,
+    date BIGINT NOT NULL,
+    balance INTEGER NOT NULL,
+
+    FOREIGN KEY (team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_balance_history_team
+    ON balance_history(team_id);
+
+CREATE INDEX IF NOT EXISTS idx_balance_history_date
+    ON balance_history(date);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_team
+    ON transactions(team_id);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_created
+    ON transactions(created_at);
+
 CREATE TABLE IF NOT EXISTS chat_messages (
-    id TEXT PRIMARY KEY,
-    player_id TEXT NOT NULL,
+    id VARCHAR(36) PRIMARY KEY,
+    player_id VARCHAR(36) NOT NULL,
     player_name TEXT NOT NULL,
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
     target TEXT NOT NULL,
     x REAL NOT NULL,
     y REAL NOT NULL,
@@ -86,8 +144,8 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS team_diplomacy (
-    team_id TEXT NOT NULL,
-    other_team_id TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
+    other_team_id VARCHAR(36) NOT NULL,
 
     relation TEXT NOT NULL DEFAULT 'neutral',
 
@@ -106,9 +164,9 @@ CREATE TABLE IF NOT EXISTS team_diplomacy (
 );
 
 CREATE TABLE IF NOT EXISTS team_relation_logs (
-    id TEXT PRIMARY KEY,
-    team_id TEXT NOT NULL,
-    other_team_id TEXT NOT NULL,
+    id VARCHAR(36) PRIMARY KEY,
+    team_id VARCHAR(36) NOT NULL,
+    other_team_id VARCHAR(36) NOT NULL,
     relation TEXT NOT NULL DEFAULT 'neutral',
     action TEXT NOT NULL DEFAULT 'set_relation',
     created_at BIGINT NOT NULL,
@@ -129,12 +187,12 @@ CREATE TABLE IF NOT EXISTS team_relation_logs (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS team_bonus_sources (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    team_id TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
 
-    source_type TEXT NOT NULL,
-    source_id TEXT NOT NULL,
+    source_type VARCHAR(64) NOT NULL,
+    source_id VARCHAR(255) NOT NULL,
 
     amount INTEGER NOT NULL DEFAULT 1,
     permanent INTEGER NOT NULL DEFAULT 1,
@@ -156,11 +214,11 @@ CREATE TABLE IF NOT EXISTS team_bonus_sources (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS claims (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    team_id TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     min_x INTEGER NOT NULL,
     min_z INTEGER NOT NULL,
@@ -182,11 +240,11 @@ CREATE TABLE IF NOT EXISTS claims (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS outposts (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    name TEXT NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     x INTEGER NOT NULL,
     y INTEGER NOT NULL,
@@ -194,7 +252,7 @@ CREATE TABLE IF NOT EXISTS outposts (
 
     radius INTEGER NOT NULL DEFAULT 12,
 
-    owner_team_id TEXT,
+    owner_team_id VARCHAR(36),
 
     captured_at BIGINT,
 
@@ -212,7 +270,7 @@ CREATE TABLE IF NOT EXISTS outposts (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS token_rounds (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
     started_at BIGINT NOT NULL,
 
@@ -228,13 +286,13 @@ CREATE TABLE IF NOT EXISTS token_rounds (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS tokens (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    round_id TEXT NOT NULL,
+    round_id VARCHAR(36) NOT NULL,
 
-    entity_uuid TEXT UNIQUE,
+    entity_uuid VARCHAR(36) UNIQUE,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     x REAL NOT NULL,
     y REAL NOT NULL,
@@ -257,13 +315,13 @@ CREATE TABLE IF NOT EXISTS tokens (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS soldier_groups (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    owner_player_id TEXT NOT NULL,
+    owner_player_id VARCHAR(36) NOT NULL,
 
-    team_id TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
 
-    name TEXT NOT NULL,
+    name VARCHAR(255) NOT NULL,
 
     created_at INTEGER NOT NULL,
 
@@ -283,12 +341,12 @@ CREATE TABLE IF NOT EXISTS soldier_groups (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS soldiers (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    entity_uuid TEXT UNIQUE,
+    entity_uuid VARCHAR(36) UNIQUE,
 
-    owner_player_id TEXT NOT NULL,
-    team_id TEXT NOT NULL,
+    owner_player_id VARCHAR(36) NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
 
     type TEXT NOT NULL,
 
@@ -297,9 +355,9 @@ CREATE TABLE IF NOT EXISTS soldiers (
 
     attack_mode INTEGER NOT NULL DEFAULT 0,
 
-    group_id TEXT,
+    group_id VARCHAR(36),
 
-    world TEXT,
+    world VARCHAR(255),
 
     x REAL,
     y REAL,
@@ -330,7 +388,7 @@ CREATE TABLE IF NOT EXISTS soldiers (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS player_stats (
-    player_id TEXT PRIMARY KEY,
+    player_id VARCHAR(36) PRIMARY KEY,
 
     kills INTEGER NOT NULL DEFAULT 0,
     deaths INTEGER NOT NULL DEFAULT 0,
@@ -361,8 +419,8 @@ CREATE TABLE IF NOT EXISTS player_stats (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS inventories (
-    owner_id TEXT NOT NULL,
-    inventory_type TEXT NOT NULL,
+    owner_id VARCHAR(36) NOT NULL,
+    inventory_type VARCHAR(64) NOT NULL,
     slot INTEGER NOT NULL,
 
     item_data TEXT,
@@ -384,8 +442,8 @@ CREATE TABLE IF NOT EXISTS inventories (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS team_inventories (
-    team_id TEXT NOT NULL,
-    inventory_type TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
+    inventory_type VARCHAR(64) NOT NULL,
     slot INTEGER NOT NULL,
 
     item_data TEXT,
@@ -404,10 +462,10 @@ CREATE TABLE IF NOT EXISTS team_inventories (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS homes (
-    player_id TEXT NOT NULL,
-    name TEXT NOT NULL,
+    player_id VARCHAR(36) NOT NULL,
+    name VARCHAR(255) NOT NULL,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     x REAL NOT NULL,
     y REAL NOT NULL,
@@ -430,11 +488,11 @@ CREATE TABLE IF NOT EXISTS homes (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS death_points (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    player_id TEXT NOT NULL,
+    player_id VARCHAR(36) NOT NULL,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     x REAL NOT NULL,
     y REAL NOT NULL,
@@ -455,11 +513,11 @@ CREATE TABLE IF NOT EXISTS death_points (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS mines (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    owner_team_id TEXT NOT NULL,
+    owner_team_id VARCHAR(36) NOT NULL,
 
-    world TEXT NOT NULL,
+    world VARCHAR(255) NOT NULL,
 
     x INTEGER NOT NULL,
     y INTEGER NOT NULL,
@@ -469,7 +527,7 @@ CREATE TABLE IF NOT EXISTS mines (
 
     armed INTEGER NOT NULL DEFAULT 1,
 
-    group_id TEXT,
+    group_id VARCHAR(36),
 
     rearm_at INTEGER,
 
@@ -488,11 +546,11 @@ CREATE TABLE IF NOT EXISTS mines (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS mine_groups (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    owner_team_id TEXT NOT NULL,
+    owner_team_id VARCHAR(36) NOT NULL,
 
-    name TEXT NOT NULL,
+    name VARCHAR(255) NOT NULL,
 
     created_at INTEGER NOT NULL,
 
@@ -512,9 +570,9 @@ CREATE TABLE IF NOT EXISTS mine_groups (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS tax_transactions (
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
 
-    team_id TEXT NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
 
     villager_count INTEGER NOT NULL,
     tax_bonus INTEGER NOT NULL,
@@ -542,7 +600,7 @@ CREATE TABLE IF NOT EXISTS tax_transactions (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
+    `key` VARCHAR(255) PRIMARY KEY,
     value TEXT
 );
 

@@ -9,6 +9,7 @@ import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.route.RouteTree;
 import org.powernukkitx.command.route.node.RouteNode;
 import org.powernukkitx.command.tree.node.StringNode;
+import org.powernukkitx.Player;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.core.MessageManager;
@@ -16,12 +17,14 @@ import de.jawollo07.siedler.core.MessageManager;
 /** Team management commands, registered through the PowerNukkitX RouteTree API. */
 public final class TeamCommand extends Command {
     private final SiedlerPlugin plugin;
+    private final TeamManager teamManager;
     private final MessageManager messages = new MessageManager();
     private final String prefix;
 
     public TeamCommand() {
         super("team", "Manage teams", "/team help");
         this.plugin = SiedlerPlugin.getInstance();
+        this.teamManager = new TeamManager(plugin);
         this.prefix = messages.getPrefix("team");
         setPermission("siedler.command.team");
         setPermissionMessage(messages.getCommandMessage("no-permission"));
@@ -94,7 +97,7 @@ public final class TeamCommand extends Command {
 
     private void create(CommandSender sender, String name, String color) {
         try {
-            Team team = new TeamManager(plugin).createTeam(name, color);
+            Team team = teamManager.createTeam(name, color);
             sender.sendMessage(prefix + "Team §f" + team.name() + "§a wurde mit der Farbe §f" + team.color() + "§a erstellt.");
         } catch (Exception e) {
             sender.sendMessage(prefix + "§cTeam konnte nicht erstellt werden: " + e.getMessage());
@@ -103,7 +106,7 @@ public final class TeamCommand extends Command {
 
     private void delete(CommandSender sender, String name) {
         try {
-            new TeamManager(plugin).deleteTeam(name);
+            teamManager.deleteTeam(name);
             sender.sendMessage(prefix + "§aTeam §f" + name + "§a wurde gelöscht.");
         } catch (Exception e) {
             sender.sendMessage(prefix + "§cTeam konnte nicht gelöscht werden: " + e.getMessage());
@@ -112,7 +115,7 @@ public final class TeamCommand extends Command {
 
     private void add(CommandSender sender, String player, String team) {
         try {
-            new TeamManager(plugin).addPlayerToTeam(player, team);
+            teamManager.addPlayerToTeam(player, team);
             sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde Team §f" + team + "§a hinzugefügt.");
         } catch (Exception e) {
             sender.sendMessage(prefix + "§cSpieler konnte nicht hinzugefügt werden: " + e.getMessage());
@@ -121,7 +124,7 @@ public final class TeamCommand extends Command {
 
     private void remove(CommandSender sender, String player) {
         try {
-            new TeamManager(plugin).removePlayerFromTeam(player);
+            teamManager.removePlayerFromTeam(player);
             sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde aus seinem Team entfernt.");
         } catch (Exception e) {
             sender.sendMessage(prefix + "§cSpieler konnte nicht entfernt werden: " + e.getMessage());
@@ -130,7 +133,7 @@ public final class TeamCommand extends Command {
 
     private void list(CommandSender sender) {
         try {
-            List<Team> teams = new TeamManager(plugin).getTeams();
+            List<Team> teams = teamManager.getTeams();
             if (teams.isEmpty()) {
                 sender.sendMessage(prefix + "§7Es sind keine Teams vorhanden.");
                 return;
@@ -147,7 +150,7 @@ public final class TeamCommand extends Command {
 
     private void info(CommandSender sender, String name) {
         try {
-            Team team = new TeamManager(plugin).getTeamByName(name);
+            Team team = teamManager.getTeamByName(name);
             sender.sendMessage(prefix + "§eTeam-Informationen:");
             sender.sendMessage("§7Name: §f" + team.name());
             sender.sendMessage("§7Farbe: §f" + team.color());
@@ -161,7 +164,7 @@ public final class TeamCommand extends Command {
 
     private void setColor(CommandSender sender, String name, String color) {
         try {
-            new TeamManager(plugin).setTeamColor(name, color);
+            teamManager.setTeamColor(name, color);
             sender.sendMessage(prefix + "§aDie Farbe von Team §f" + name + "§a wurde auf §f" + color + "§a gesetzt.");
         } catch (Exception e) {
             sender.sendMessage(prefix + "§cTeamfarbe konnte nicht geändert werden: " + e.getMessage());

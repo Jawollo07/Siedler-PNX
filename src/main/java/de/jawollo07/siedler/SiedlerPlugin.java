@@ -10,6 +10,7 @@ import de.jawollo07.siedler.team.TeamCommand;
 import de.jawollo07.siedler.chat.DirektMessage;
 import de.jawollo07.siedler.chat.TeamChatCommand;
 import de.jawollo07.siedler.claim.ClaimCommand;
+import de.jawollo07.siedler.eco.EcoCommand;
 import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
@@ -35,6 +36,7 @@ public final class SiedlerPlugin extends PluginBase {
     private CommandManager commandManager;
     private ClaimCommand claimCommand;
     private MessageManager messageManager;
+    private EcoCommand ecoCommand;
     /**
      * Returns the currently loaded Siedler plugin instance.
      *
@@ -107,6 +109,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new RelationCommands(this));
         commandManager.register(new ClaimCommand(this));
         commandManager.register(new Elimination(this));
+        commandManager.register(new EcoCommand(this));
     } 
     private void registerEvents() {
         this.getServer().getPluginManager().registerEvents(new Protection(this), this);

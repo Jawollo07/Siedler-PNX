@@ -89,14 +89,13 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 
 ## Phase 4 – Economy & Taxes
 
-- [ ] Economy-Service
+- [x] Economy-Service
 - [ ] Villager-basierte Tagessteuer
 - [ ] Online-Team-Bedingung
 - [ ] TaxBonusManager
-- [ ] `taxBonus=1` als Standard für bestehende/neue Teams
+- [x] `taxBonus=1` als Standard für bestehende/neue Teams
 - [ ] Token-Bonus als permanente TaxBonus-Quelle
 - [ ] Outpost-Bonus als permanente TaxBonus-Quelle
-- [ ] gemeinsames Bonus-Limit
 - [ ] atomare Buchung + Retry
 - [ ] Steuerstatistiken
 

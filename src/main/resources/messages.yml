@@ -80,11 +80,12 @@ messages:
       "2": "§7/team create <name> <color> §8- §fCreate a new team"
       "3": "§7/team delete <name> §8- §fDelete a team"
       "4": "§7/team add <player> <team> §8- §fAdd a player to a team"
-      "5": "§7/team remove <player> §8- §fRemove a player from their team"
-      "6": "§7/team list §8- §fList all teams"
-      "7": "§7/team info <team> §8- §fGet information about a team"
-      "8": "§7/team setcolor <team> <color> §8- §fSet the color of a team"
-      "9": "§7/team help <team> §8- §fGet help about a team"
+      "5": "§7/team join <team> §8- §fJoin a team"
+      "6": "§7/team leave §8- §fLeave your team"
+      "7": "§7/team remove <player> §8- §fRemove a player from their team"
+      "8": "§7/team list §8- §fList all teams"
+      "9": "§7/team info <team> §8- §fGet information about a team"
+      "10": "§7/team setcolor <team> <color> §8- §fSet the color of a team"
     usage:
       create: "§cUsage: /team create <name> <color>"
       delete: "§cUsage: /team delete <name>"
@@ -128,6 +129,8 @@ messages:
     broadcast-message: "Team wurde eliminiert: " # Format: prefix + broadcast-message + Team Name
     welcome-message: "Dein Team wurde leider eliminiert"
     command-usage: ""
+  eco:
+    prefix: "[ECO]: "
   only-player-command: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
   player-has-no-team: "§cDu bist keinem Team zugeordnet."
   no-permission: "Du hast die Erforderlichen Berechtigungen nicht"

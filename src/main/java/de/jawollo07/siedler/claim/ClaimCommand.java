@@ -19,7 +19,7 @@ public final class ClaimCommand extends Command {
         }
         setPermission("siedler.command.claim");
         this.claimManager = new ClaimManager(plugin);
-        this.utils = new Utils(plugin.getStorage());
+        this.utils = new Utils(plugin);
         this.messageManager = new MessageManager();
         this.setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         this.prefix = messageManager.getPrefix("claim");

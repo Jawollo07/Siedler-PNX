@@ -13,15 +13,10 @@ import java.util.Locale;
 public class InitDB {
     private static final int CURRENT_SCHEMA_VERSION = 5;
 
-    public void initDatabase() {
+    public void initDatabase() throws Exception {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
-        try {
-            runInternalScript(plugin, "storage/init.sql");
-            upgradeDatabase(plugin.getStorage().getConnection());
-        } catch (Exception e) {
-            plugin.getLogger().error("Failed to initialize database: " + e.getMessage());
-            e.printStackTrace();
-        }
+        runInternalScript(plugin, "storage/init.sql");
+        upgradeDatabase(plugin.getStorage().getConnection());
     }
 
     private void upgradeDatabase(Connection connection) throws Exception {
@@ -99,7 +94,6 @@ public class InitDB {
         ensureColumnExists(connection, "players", "team_id", "TEXT");
         ensureColumnExists(connection, "players", "eliminated", "INTEGER NOT NULL DEFAULT 0");
     }
-
     private void ensureColumnExists(Connection connection, String tableName, String columnName, String columnDefinition) throws Exception {
         try (ResultSet columns = connection.getMetaData().getColumns(null, null, tableName, columnName)) {
             if (columns.next()) {

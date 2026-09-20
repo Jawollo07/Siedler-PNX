@@ -34,7 +34,7 @@ public class Protection implements Listener {
     private final String eliminationBlock;
 
     public Protection(SiedlerPlugin plugin) {
-        this.utils = new Utils(plugin.getStorage());
+        this.utils = new Utils(plugin);
         this.configManager.initialize(plugin.getDataFolder());
         this.config = configManager.getConfig();
         this.claimsProtectionEnabled = config.getBoolean("claims.protection.enabled");

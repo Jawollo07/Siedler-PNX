@@ -1,7 +1,11 @@
 package de.jawollo07.siedler.claim;
 
+import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.claim.ClaimManager;
 import org.powernukkitx.Player;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,12 +16,15 @@ import java.util.List;
 /** Shared helpers for claim coordinate and access checks. Claim bounds are chunk coordinates. */
 public class Utils {
     private final StorageManager storage;
-
-    public Utils(StorageManager storage) {
-        if (storage == null) {
+    private final SiedlerPlugin plugin;
+    private final ClaimManager claimManager;
+    public Utils(SiedlerPlugin plugin) {
+        if (plugin.getStorage() == null) {
             throw new IllegalArgumentException("StorageManager darf nicht null sein");
         }
-        this.storage = storage;
+        this.storage = plugin.getStorage();
+        this.plugin = plugin;
+        this.claimManager = new ClaimManager(plugin);
     }
 
     /** Converts block coordinates to chunk coordinates using floor (also correct below zero). */
@@ -134,4 +141,9 @@ public class Utils {
             throw new IllegalStateException("Claim-Team konnte nicht ermittelt werden", exception);
         }
     }
+    public Integer countVillagerInClaim(String claimID) {
+        Level level = plugin.getServer().getLevelByName("overworld");
+        
+    }
 }
+
