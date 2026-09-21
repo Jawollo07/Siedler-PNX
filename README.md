@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 2 – Teams: migration in progress.**
+🚧 **Phase 3 – Claims: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -81,10 +81,10 @@ The systems from Siedler 1.x are migrated in dependency order:
 3. Claims + protection
 4. Economy + taxes + TaxBonus
 5. Token monsters + outposts + raids
-6. Soldiers + AI + groups + levels
-7. Market + traders
-8. Essentials + inventories + statistics
-9. Mines + control system
+6. Market + traders
+7. Essentials + inventories + statistics
+8. Mines + control system
+9. Soldiers + AI + groups + levels
 10. Migration, compatibility and release hardening
 
 The detailed checklist and current progress are maintained in [`plan.md`](plan.md).
@@ -117,12 +117,8 @@ Requires **JDK 21** and **Maven**.
 mvn clean package
 ```
 
-The plugin JAR is produced under `target/`. The current Maven project version is **`2.2.0-SNAPSHOT`**.
+The plugin JAR is produced under `target/`. The current Maven project version is **`3.3.1`**.
 
 ## Migration reference
 
 The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonus, token monsters, outpost capture, monster raids, soldiers (infantry/archer/cavalry), soldier AI, market/traders, homes/TPA, persistent ender/team chests, player statistics, anti-AFK, and the minefield/control system.
-
-## Next milestone
-
-The next planned feature milestone is **`2.4.0 – Teamchat`**, followed by diplomacy and the remaining team-elimination mechanics. See [`plan.md`](plan.md) for the complete roadmap.

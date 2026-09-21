@@ -9,7 +9,7 @@ Die Versionsnummer ist direkt an die Phasen dieses Plans gekoppelt:
 ```text
 PHASE.FEATURE.PATCH
 ```
-
+ 
 - **PHASE** – entspricht der aktuellen Phase des Migrationsplans.
 - **FEATURE** – nummeriert größere abgeschlossene Meilensteine innerhalb der Phase.
 - **PATCH** – Bugfixes, Korrekturen und kleine technische Änderungen ohne neuen Meilenstein.
@@ -77,7 +77,7 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - `2.6.0` – Team-Eliminierung
 - `2.7.0` – permanenter Spectator nach Eliminierung
 - `2.8.0` – konfigurierbarer Eliminierungsblock
-
+ 
 ## Phase 3 – Claims
 
 - [x] Claim-Datenmodell
