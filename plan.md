@@ -115,7 +115,46 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] Pillager Squads / Raids
 - [ ] normale Monster und Siedler-Monstersteuerung
 
-## Phase 6 – Soldiers
+## Phase 6 – Market & Traders
+
+- [ ] MarketManager
+- [ ] Market-Schutz gegen Break + Place
+- [ ] Monster-Deaktivierung im Markt
+- [ ] TraderManager
+- [ ] frei definierbare Trades
+- [ ] vordefinierte Siedler-3-artige Trader
+- [ ] Emerald als Standardwährung
+- [ ] Soldier Trader
+- [ ] weitere Spezial-Trader
+
+## Phase 7 – Essentials & Statistics
+
+- [ ] Homes
+- [ ] TPA
+- [ ] Start-System
+- [ ] Death Points
+- [ ] persistenter 27-Slot `/ec`
+- [ ] persistenter 54-Slot `/teamchest`
+- [ ] Player Stats
+- [ ] Server Dashboard/Statistiken
+- [ ] Anti-AFK
+
+## Phase 8 – Minefield
+
+- [ ] Mine-Item
+- [ ] persistente Minen
+- [ ] Minegruppen
+- [ ] Platzierungsvalidierung
+- [ ] Trigger-Modi
+- [ ] Warnung/Sound
+- [ ] verzögerte Detonation
+- [ ] Kettenreaktionen
+- [ ] Explosion ohne Blockschaden + Feuer
+- [ ] automatisches Wieder-Scharfmachen
+- [ ] Control-System
+- [ ] Team-/Diplomatie-Integration
+
+## Phase 9 – Soldiers
 
 - [ ] Soldier-Datenmodell und Registry
 - [ ] Besitzer/Team über Player-ID
@@ -135,45 +174,6 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] Archer-Ballistik
 - [ ] Combat positions/Formationen
 - [ ] Hit-/Attack-Handling
-
-## Phase 7 – Market & Traders
-
-- [ ] MarketManager
-- [ ] Market-Schutz gegen Break + Place
-- [ ] Monster-Deaktivierung im Markt
-- [ ] TraderManager
-- [ ] frei definierbare Trades
-- [ ] vordefinierte Siedler-3-artige Trader
-- [ ] Emerald als Standardwährung
-- [ ] Soldier Trader
-- [ ] weitere Spezial-Trader
-
-## Phase 8 – Essentials & Statistics
-
-- [ ] Homes
-- [ ] TPA
-- [ ] Start-System
-- [ ] Death Points
-- [ ] persistenter 27-Slot `/ec`
-- [ ] persistenter 54-Slot `/teamchest`
-- [ ] Player Stats
-- [ ] Server Dashboard/Statistiken
-- [ ] Anti-AFK
-
-## Phase 9 – Minefield
-
-- [ ] Mine-Item
-- [ ] persistente Minen
-- [ ] Minegruppen
-- [ ] Platzierungsvalidierung
-- [ ] Trigger-Modi
-- [ ] Warnung/Sound
-- [ ] verzögerte Detonation
-- [ ] Kettenreaktionen
-- [ ] Explosion ohne Blockschaden + Feuer
-- [ ] automatisches Wieder-Scharfmachen
-- [ ] Control-System
-- [ ] Team-/Diplomatie-Integration
 
 ## Phase 10 – Migration & Release
 
