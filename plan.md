@@ -97,9 +97,21 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] Token-Bonus als permanente TaxBonus-Quelle
 - [ ] Outpost-Bonus als permanente TaxBonus-Quelle
 - [ ] atomare Buchung + Retry
-- [ ] Steuerstatistiken
+- [ ] Steuerstatistik
 
-## Phase 5 – Monster, Tokens & Outposts
+Phase 5 – Essentials & Statistics
+
+- [ ] Homes
+- [ ] TPA
+- [ ] Start-System
+- [ ] Death Points
+- [ ] persistenter 27-Slot `/ec`
+- [ ] persistenter 54-Slot `/teamchest`
+- [ ] Player Stats
+- [ ] Server Dashboard/Statistiken
+- [ ] Anti-AFK
+
+## Phase 6 – Monster, Tokens & Outposts
 
 - [ ] TokenManager
 - [ ] automatische Token-Spawns per Konfiguration/Befehl
@@ -115,7 +127,7 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] Pillager Squads / Raids
 - [ ] normale Monster und Siedler-Monstersteuerung
 
-## Phase 6 – Market & Traders
+## Phase 7 – Market & Traders
 
 - [ ] MarketManager
 - [ ] Market-Schutz gegen Break + Place
@@ -126,18 +138,6 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] Emerald als Standardwährung
 - [ ] Soldier Trader
 - [ ] weitere Spezial-Trader
-
-## Phase 7 – Essentials & Statistics
-
-- [ ] Homes
-- [ ] TPA
-- [ ] Start-System
-- [ ] Death Points
-- [ ] persistenter 27-Slot `/ec`
-- [ ] persistenter 54-Slot `/teamchest`
-- [ ] Player Stats
-- [ ] Server Dashboard/Statistiken
-- [ ] Anti-AFK
 
 ## Phase 8 – Minefield
 
