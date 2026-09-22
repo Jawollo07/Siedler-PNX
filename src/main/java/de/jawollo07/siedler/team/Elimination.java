@@ -223,38 +223,4 @@ public class Elimination extends Command {
         player.sendMessage(messageManager.getMessage("elimination", "welcome-messsage"));
         player.setGamemode(3);
     }
-}    @Override
-    protected void buildCommandTree(RouteTree tree) {
-        tree.getRoot().then(RouteNode.literal("help").exec(context -> {
-            sendHelpMessage(context.getSender());
-            return CommandResult.success();
-        }));
-
-        tree.getRoot().then(RouteNode.literal("list").exec(context -> {
-            listEleminations(context.getSender());
-            return CommandResult.success();
-        }));
-
-        RouteNode admin = RouteNode.literal("admin")
-                .permission("siedler.admin", messageManager.getCommandMessage("no-permission"));
-
-        admin.then(RouteNode.literal("help").exec(context -> {
-            sendHelpMessage(context.getSender());
-            return CommandResult.success();
-        }));
-
-        admin.then(RouteNode.literal("eliminate")
-                .then(RouteNode.argument("team", new StringNode()).exec(context -> {
-                    setTeamEliminated(context.getArg("team"), context.getSender());
-                    return CommandResult.success();
-                })));
-
-        admin.then(RouteNode.literal("deeliminate")
-                .then(RouteNode.argument("team", new StringNode()).exec(context -> {
-                    setTeamDeEliminated(context.getArg("team"), context.getSender());
-                    return CommandResult.success();
-                })));
-
-        tree.getRoot().then(admin);
-    }
-
+}
