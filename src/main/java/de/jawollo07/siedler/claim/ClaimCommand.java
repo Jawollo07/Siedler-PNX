@@ -72,7 +72,6 @@ public final class ClaimCommand extends Command {
 
         tree.getRoot().then(
                 RouteNode.literal("admin")
-                        .requires(context -> context.getSender().hasPermission(ADMIN_PERMISSION))
                         .then(
                                 RouteNode.literal("help")
                                         .exec(context -> {
