@@ -3,7 +3,7 @@ package de.jawollo07.siedler.eco;
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.claim.Claim;
 import de.jawollo07.siedler.claim.ClaimManager;
-import de.mcjj.siedler.core.MessageManager;
+import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.team.Team;
 import de.jawollo07.siedler.team.TeamManager;
 import org.powernukkitx.Player;
