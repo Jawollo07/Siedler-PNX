@@ -2,6 +2,7 @@ package de.jawollo07.siedler.storage;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
