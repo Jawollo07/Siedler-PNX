@@ -11,17 +11,19 @@ import org.powernukkitx.command.tree.node.StringNode;
 import org.powernukkitx.Player;
 
 /**
- * Commands for creating, inspecting and deleting claims.
+ * Commands for inspecting claims and administering them.
  *
  * <p>Uses the PowerNukkitX Tree Command API exclusively.</p>
  */
 public final class ClaimCommand extends Command {
+    private static final String ADMIN_PERMISSION = "siedler.admin";
+
     private final ClaimManager claimManager;
     private final MessageManager messageManager;
     private final String prefix;
 
     public ClaimCommand(SiedlerPlugin plugin) {
-        super("claim", "Verwaltung von Claims", "/claim <set|info|delete|help>");
+        super("claim", "Verwaltung von Claims", "/claim <help|info|admin>");
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin darf nicht null sein");
         }
@@ -39,31 +41,9 @@ public final class ClaimCommand extends Command {
         tree.getRoot().then(
                 RouteNode.literal("help")
                         .exec(context -> {
-                            sendHelp(context.getSender());
+                            sendHelp(context.getSender(), false);
                             return CommandResult.success();
                         })
-        );
-
-        tree.getRoot().then(
-                RouteNode.literal("set")
-                        .then(RouteNode.argument("team", new StringNode()).exec(context -> {
-                            CommandSender sender = context.getSender();
-                            if (!(sender instanceof Player player)) {
-                                sender.sendMessage(
-                                        prefix + messageManager.getCommandMessage("only-player-command")
-                                );
-                                return CommandResult.success();
-                            }
-
-                            Claim claim = claimManager.setClaim(
-                                    context.getArg("team"),
-                                    player
-                            );
-
-                            return claim != null
-                                    ? CommandResult.success()
-                                    : CommandResult.fail("Claim konnte nicht erstellt werden");
-                        }))
         );
 
         tree.getRoot().then(
@@ -82,7 +62,7 @@ public final class ClaimCommand extends Command {
                                 player.sendMessage(
                                         prefix + messageManager.getMessage("claim", "here-is-no-claim")
                                 );
-                                return CommandResult.fail("Kein Claim an dieser Position");
+                                return CommandResult.success();
                             }
 
                             sendClaimInfo(player, claim);
@@ -91,29 +71,64 @@ public final class ClaimCommand extends Command {
         );
 
         tree.getRoot().then(
-                RouteNode.literal("delete")
-                        .exec(context -> {
-                            CommandSender sender = context.getSender();
-                            if (!(sender instanceof Player player)) {
-                                sender.sendMessage(
-                                        prefix + messageManager.getCommandMessage("only-player-command")
-                                );
-                                return CommandResult.success();
-                            }
+                RouteNode.literal("admin")
+                        .requires(context -> context.getSender().hasPermission(ADMIN_PERMISSION))
+                        .then(
+                                RouteNode.literal("help")
+                                        .exec(context -> {
+                                            sendHelp(context.getSender(), true);
+                                            return CommandResult.success();
+                                        })
+                        )
+                        .then(
+                                RouteNode.literal("set")
+                                        .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                                            CommandSender sender = context.getSender();
+                                            if (!(sender instanceof Player player)) {
+                                                sender.sendMessage(
+                                                        prefix + messageManager.getCommandMessage("only-player-command")
+                                                );
+                                                return CommandResult.success();
+                                            }
 
-                            return claimManager.deleteClaim(player)
-                                    ? CommandResult.success()
-                                    : CommandResult.fail("Claim konnte nicht gelöscht werden");
-                        })
+                                            Claim claim = claimManager.setClaim(
+                                                    context.getArg("team"),
+                                                    player
+                                            );
+
+                                            return claim != null
+                                                    ? CommandResult.success()
+                                                    : CommandResult.fail("Claim konnte nicht erstellt werden");
+                                        }))
+                        )
+                        .then(
+                                RouteNode.literal("delete")
+                                        .exec(context -> {
+                                            CommandSender sender = context.getSender();
+                                            if (!(sender instanceof Player player)) {
+                                                sender.sendMessage(
+                                                        prefix + messageManager.getCommandMessage("only-player-command")
+                                                );
+                                                return CommandResult.success();
+                                            }
+
+                                            return claimManager.deleteClaim(player)
+                                                    ? CommandResult.success()
+                                                    : CommandResult.fail("Claim konnte nicht gelöscht werden");
+                                        })
+                        )
         );
     }
 
-    private void sendHelp(CommandSender sender) {
+    private void sendHelp(CommandSender sender, boolean admin) {
         sender.sendMessage(prefix + messageManager.getMessage("claim", "help.1"));
         sender.sendMessage(prefix + messageManager.getMessage("claim", "help.2"));
         sender.sendMessage(prefix + messageManager.getMessage("claim", "help.3"));
-        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.4"));
-        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.5"));
+
+        if (admin) {
+            sender.sendMessage(prefix + messageManager.getMessage("claim", "help.4"));
+            sender.sendMessage(prefix + messageManager.getMessage("claim", "help.5"));
+        }
     }
 
     private void sendClaimInfo(Player player, Claim claim) {
