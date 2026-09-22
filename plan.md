@@ -101,7 +101,7 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 | `/team` | `help`, `list`, `info <name>` | `admin help`, `admin create`, `admin delete`, `admin add`, `admin remove`, `admin setcolor` |
 | `/diplomatie` | `help`, `set`, `show` | `admin help`, `admin set`, `admin show`, `admin list` |
 | `/elimination` | `help`, `list` | `admin help`, `admin eliminate`, `admin deeliminate` |
-| `/eco` | `help`, `show` | `admin help`, `admin set`, `admin add`, `admin remove` |
+| `/eco` | `help`, `show`, `stats [Team]` | `admin help`, `admin set`, `admin add`, `admin remove` |
 
 `/dm` und `/teamchat` sind Kommunikationscommands und benötigen keine `siedler.admin`-Struktur.
 
@@ -127,7 +127,7 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 - [ ] Outpost-Bonus als permanente TaxBonus-Quelle
 - [x] atomare Buchung + Retry
 - [x] Steuertransaktionen / Steuerhistorie
-- [ ] Steuerstatistik
+- [x] Steuerstatistik
 
 ### Tax-System
 
@@ -147,7 +147,7 @@ Bei der Standard-Konfiguration `Rate = 1` gilt beispielsweise:
 
 Die Steuer ist **Team-Einkommen** und wird der Team-Balance gutgeschrieben. Sie wird nur ausgeführt, wenn mindestens ein Mitglied des Teams online ist. Ausgeschiedene Teams erhalten keine Steuer.
 
-Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuerläufe werden protokolliert und können über das konfigurierte Retry-Intervall erneut versucht werden.
+Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuerläufe werden protokolliert und können über das konfigurierte Retry-Intervall erneut versucht werden. Mit `/eco stats [Team]` sind Steuerstatistiken als Ingame-SimpleForm verfügbar; enthalten sind Gesamteinnahmen, erfolgreiche/fehlgeschlagene Erhebungen, erfasste Dorfbewohner und die letzte Steuererhebung.
 
 ## Phase 5 – Essentials & Statistics
 
