@@ -141,8 +141,8 @@ public class TaxManager {
             Level level = plugin.getServer().getLevelByName(claim.world());
             if (level == null) continue;
 
-            for (int x = claim.minX(); x <= claim.maxX(); x++) {
-                for (int z = claim.minZ(); z <= claim.maxZ(); z++) {
+            for (int x = claim.min_x(); x <= claim.max_x(); x++) {
+                for (int z = claim.min_z(); z <= claim.max_z(); z++) {
                     IChunk chunk = level.getProvider().getLoadedChunk(x, z);
                     boolean wasLoaded = chunk != null;
 
