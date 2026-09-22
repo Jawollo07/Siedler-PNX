@@ -113,8 +113,8 @@ public class TaxManager {
             }
 
             // Tax is income for the team: villagers × TaxBonus = Coins.
-            ecoManager.addMoney(team.id(), (int) amount, "TAX",
-                    "Tagessteuer: " + villagers + " Dorfbewohner × TaxBonus " + bonus);
+            ecoManager.changeMoney(team.id(), (int) amount, "TAX",
+                    "Tagessteuer: " + villagers + " Dorfbewohner × TaxBonus " + bonus, null);
 
             recordTaxTransaction(team.id(), villagers, bonus, amount, true, "paid");
             teamManager.notifyAllTeamMembers(team.id(),
