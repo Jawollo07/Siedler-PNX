@@ -164,6 +164,7 @@ messages:
     admin-help-set: "/eco admin set <Team> <Betrag>"
     admin-help-add: "/eco admin add <Team> <Betrag>"
     admin-help-remove: "/eco admin remove <Team> <Betrag>"
+    tax-income: "Steuereinnahmen: +{amount}{symbol} für {villagers} Dorfbewohner (TaxBonus {bonus})."
   only-player-command: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
   player-has-no-team: "§cDu bist keinem Team zugeordnet."
   no-permission: "Du hast die Erforderlichen Berechtigungen nicht"
