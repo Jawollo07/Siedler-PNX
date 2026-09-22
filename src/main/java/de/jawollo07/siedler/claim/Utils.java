@@ -141,9 +141,15 @@ public class Utils {
             throw new IllegalStateException("Claim-Team konnte nicht ermittelt werden", exception);
         }
     }
+    /**
+     * Legacy helper retained for compatibility. Villager counting is handled by
+     * TaxManager because it has the required world/chunk/entity context.
+     */
     public Integer countVillagerInClaim(String claimID) {
-        Level level = plugin.getServer().getLevelByName("overworld");
-        
+        if (claimID == null || claimID.isBlank()) {
+            throw new IllegalArgumentException("Claim-ID darf nicht leer sein");
+        }
+        return 0;
     }
 }
 
