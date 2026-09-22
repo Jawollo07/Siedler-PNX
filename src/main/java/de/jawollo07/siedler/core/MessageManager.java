@@ -99,6 +99,10 @@ public class MessageManager {
         return getString(requirePathPart(path, "path"), "[Fehlende Nachricht: " + path + "]");
     }
 
+    public String getMessage(String path) {
+        return getMessageFromPath(path);
+    }
+
     public String getCommandMessage(String type) {
         return getString("messages." + requirePathPart(type, "type"), "[Fehlende Nachricht: " + type + "]");
     }
