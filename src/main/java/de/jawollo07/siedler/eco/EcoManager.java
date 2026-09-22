@@ -8,13 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class EcoManager {
     private final StorageManager storageManager;
-    private final Map<String, Integer> teamMoney = new ConcurrentHashMap<>();
     private final Config config;
 
     public EcoManager(SiedlerPlugin plugin) {
@@ -32,7 +29,7 @@ public class EcoManager {
         return null;
     }
 
-    public synchronized void teamCreation(String teamID) {
+    public void teamCreation(String teamID) {
         String normalizedTeamId = requireTeamId(teamID);
         String sql = "INSERT INTO team_money (id, team_id, balance) VALUES (?, ?, 0)";
 
@@ -40,7 +37,6 @@ public class EcoManager {
             statement.setString(1, UUID.randomUUID().toString());
             statement.setString(2, normalizedTeamId);
             statement.executeUpdate();
-            teamMoney.put(normalizedTeamId, 0);
         } catch (SQLException exception) {
             throw new IllegalStateException(
                     "Could not create economy account for team " + normalizedTeamId, exception);
@@ -49,21 +45,12 @@ public class EcoManager {
 
     public Integer getMoney(String teamID) {
         String normalizedTeamId = requireTeamId(teamID);
-        Integer cachedBalance = teamMoney.get(normalizedTeamId);
-        if (cachedBalance != null) {
-            return cachedBalance;
-        }
+        String sql = "SELECT balance FROM team_money WHERE team_id = ?";
 
-        String sql = "SELECT balance FROM team_money WHERE team_id = ? LIMIT 1";
         try (PreparedStatement statement = storageManager.getConnection().prepareStatement(sql)) {
             statement.setString(1, normalizedTeamId);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
-                    return null;
-                }
-                int balance = resultSet.getInt("balance");
-                teamMoney.put(normalizedTeamId, balance);
-                return balance;
+                return resultSet.next() ? resultSet.getInt("balance") : null;
             }
         } catch (SQLException exception) {
             throw new IllegalStateException(
@@ -72,12 +59,44 @@ public class EcoManager {
     }
 
     public synchronized void setMoney(String teamID, Integer balance) throws SQLException {
+        String normalizedTeamId = requireTeamId(teamID);
         if (balance == null || balance < 0) {
             throw new IllegalArgumentException("balance must be >= 0");
         }
-        long delta = balance.longValue() - currentBalance(teamID);
-        if (delta != 0) {
-            changeMoney(teamID, delta, "SET", "Kontostand gesetzt", null);
+
+        Connection connection = storageManager.getConnection();
+        boolean previousAutoCommit = connection.getAutoCommit();
+        try {
+            connection.setAutoCommit(false);
+
+            long oldBalance = currentBalance(connection, normalizedTeamId);
+            long newBalance = balance.longValue();
+            long delta = newBalance - oldBalance;
+            if (delta == 0) {
+                connection.commit();
+                return;
+            }
+
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE team_money SET balance = ? WHERE team_id = ?")) {
+                statement.setLong(1, newBalance);
+                statement.setString(2, normalizedTeamId);
+                if (statement.executeUpdate() != 1) {
+                    throw new SQLException("Economy account not found for team " + normalizedTeamId);
+                }
+            }
+
+            logChange(connection, normalizedTeamId, delta, "SET", "Kontostand gesetzt", null, newBalance);
+            connection.commit();
+        } catch (SQLException | RuntimeException exception) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                exception.addSuppressed(rollbackException);
+            }
+            throw exception;
+        } finally {
+            restoreAutoCommit(connection, previousAutoCommit);
         }
     }
 
@@ -133,36 +152,8 @@ public class EcoManager {
                 }
             }
 
-            long now = System.currentTimeMillis();
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO transactions "
-                            + "(id, team_id, member_id, amount, transaction_type, description, created_at) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-                statement.setString(1, UUID.randomUUID().toString());
-                statement.setString(2, normalizedTeamId);
-                if (memberId == null || memberId.isBlank()) {
-                    statement.setNull(3, java.sql.Types.VARCHAR);
-                } else {
-                    statement.setString(3, memberId.trim());
-                }
-                statement.setLong(4, delta);
-                statement.setString(5, transactionType.trim().toUpperCase());
-                statement.setString(6, description);
-                statement.setLong(7, now);
-                statement.executeUpdate();
-            }
-
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO balance_history (id, team_id, date, balance) VALUES (?, ?, ?, ?)")) {
-                statement.setString(1, UUID.randomUUID().toString());
-                statement.setString(2, normalizedTeamId);
-                statement.setLong(3, now);
-                statement.setLong(4, newBalance);
-                statement.executeUpdate();
-            }
-
+            logChange(connection, normalizedTeamId, delta, transactionType, description, memberId, newBalance);
             connection.commit();
-            teamMoney.put(normalizedTeamId, (int) newBalance);
         } catch (SQLException | RuntimeException exception) {
             try {
                 connection.rollback();
@@ -171,21 +162,52 @@ public class EcoManager {
             }
             throw exception;
         } finally {
-            try {
-                connection.setAutoCommit(previousAutoCommit);
-            } catch (SQLException ignored) {
-                // Keep the original exception/result.
-            }
+            restoreAutoCommit(connection, previousAutoCommit);
         }
     }
 
-    private long currentBalance(String teamID) throws SQLException {
-        return currentBalance(storageManager.getConnection(), requireTeamId(teamID));
+    private void logChange(
+            Connection connection,
+            String teamID,
+            long delta,
+            String transactionType,
+            String description,
+            String memberId,
+            long newBalance
+    ) throws SQLException {
+        long now = System.currentTimeMillis();
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO transactions "
+                        + "(id, team_id, member_id, amount, transaction_type, description, created_at) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+            statement.setString(1, UUID.randomUUID().toString());
+            statement.setString(2, teamID);
+            if (memberId == null || memberId.isBlank()) {
+                statement.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                statement.setString(3, memberId.trim());
+            }
+            statement.setLong(4, delta);
+            statement.setString(5, transactionType.trim().toUpperCase());
+            statement.setString(6, description);
+            statement.setLong(7, now);
+            statement.executeUpdate();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO balance_history (id, team_id, date, balance) VALUES (?, ?, ?, ?)")) {
+            statement.setString(1, UUID.randomUUID().toString());
+            statement.setString(2, teamID);
+            statement.setLong(3, now);
+            statement.setLong(4, newBalance);
+            statement.executeUpdate();
+        }
     }
 
     private long currentBalance(Connection connection, String teamID) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT balance FROM team_money WHERE team_id = ? LIMIT 1")) {
+                "SELECT balance FROM team_money WHERE team_id = ?")) {
             statement.setString(1, teamID);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
@@ -206,6 +228,14 @@ public class EcoManager {
     private void requirePositiveAmount(Integer amount) {
         if (amount == null || amount <= 0) {
             throw new IllegalArgumentException("amount must be > 0");
+        }
+    }
+
+    private void restoreAutoCommit(Connection connection, boolean previousAutoCommit) {
+        try {
+            connection.setAutoCommit(previousAutoCommit);
+        } catch (SQLException ignored) {
+            // Preserve the original operation result.
         }
     }
 }
