@@ -37,27 +37,27 @@ public final class TeamCommand extends Command {
             sendHelp(context.getSender());
             return CommandResult.success();
         }));
-        tree.getRoot().then(RouteNode.literal("create")
+        tree.getRoot().then(RouteNode.literal("admin")\n                .permission("siedler.admin", messages.getCommandMessage("no-permission"))\n                .then(RouteNode.literal("create")
                 .permission("siedler.command.team.create", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.argument("name", new StringNode())
                     .then(RouteNode.argument("color", new StringNode()).exec(context -> {
                         create(context.getSender(), context.getArg("name"), context.getArg("color"));
                         return CommandResult.success();
                     }))));
-        tree.getRoot().then(RouteNode.literal("delete")
+        RouteNode.literal("delete")
                 .permission("siedler.command.team.delete", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.argument("name", new StringNode()).exec(context -> {
                     delete(context.getSender(), context.getArg("name"));
                     return CommandResult.success();
                 })));
-        tree.getRoot().then(RouteNode.literal("add")
+        RouteNode.literal("add")
                 .permission("siedler.command.team.add", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.argument("player", new StringNode())
                     .then(RouteNode.argument("team", new StringNode()).exec(context -> {
                         add(context.getSender(), context.getArg("player"), context.getArg("team"));
                         return CommandResult.success();
                     }))));
-        tree.getRoot().then(RouteNode.literal("remove")
+        RouteNode.literal("remove")
                 .permission("siedler.command.team.remove", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.argument("player", new StringNode()).exec(context -> {
                     remove(context.getSender(), context.getArg("player"));
@@ -75,7 +75,7 @@ public final class TeamCommand extends Command {
                     info(context.getSender(), context.getArg("name"));
                     return CommandResult.success();
                 })));
-        tree.getRoot().then(RouteNode.literal("setcolor")
+        RouteNode.literal("setcolor")
                 .permission("siedler.command.team.setcolor", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.argument("name", new StringNode())
                     .then(RouteNode.argument("color", new StringNode()).exec(context -> {
@@ -170,4 +170,65 @@ public final class TeamCommand extends Command {
             sender.sendMessage(prefix + "§cTeamfarbe konnte nicht geändert werden: " + e.getMessage());
         }
     }
-}
+}    @Override
+    protected void buildCommandTree(RouteTree tree) {
+        tree.getRoot().then(RouteNode.literal("help").exec(context -> {
+            sendHelp(context.getSender());
+            return CommandResult.success();
+        }));
+
+        tree.getRoot().then(RouteNode.literal("list").exec(context -> {
+            list(context.getSender());
+            return CommandResult.success();
+        }));
+
+        tree.getRoot().then(RouteNode.literal("info")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    info(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+
+        RouteNode admin = RouteNode.literal("admin")
+                .permission("siedler.admin", messages.getCommandMessage("no-permission"));
+
+        admin.then(RouteNode.literal("help").exec(context -> {
+            sendAdminHelp(context.getSender());
+            return CommandResult.success();
+        }));
+
+        admin.then(RouteNode.literal("create")
+                .then(RouteNode.argument("name", new StringNode())
+                    .then(RouteNode.argument("color", new StringNode()).exec(context -> {
+                        create(context.getSender(), context.getArg("name"), context.getArg("color"));
+                        return CommandResult.success();
+                    }))));
+
+        admin.then(RouteNode.literal("delete")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    delete(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+
+        admin.then(RouteNode.literal("add")
+                .then(RouteNode.argument("player", new StringNode())
+                    .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                        add(context.getSender(), context.getArg("player"), context.getArg("team"));
+                        return CommandResult.success();
+                    }))));
+
+        admin.then(RouteNode.literal("remove")
+                .then(RouteNode.argument("player", new StringNode()).exec(context -> {
+                    remove(context.getSender(), context.getArg("player"));
+                    return CommandResult.success();
+                })));
+
+        admin.then(RouteNode.literal("setcolor")
+                .then(RouteNode.argument("name", new StringNode())
+                    .then(RouteNode.argument("color", new StringNode()).exec(context -> {
+                        setColor(context.getSender(), context.getArg("name"), context.getArg("color"));
+                        return CommandResult.success();
+                    }))));
+
+        tree.getRoot().then(admin);
+    }
+
