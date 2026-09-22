@@ -61,7 +61,7 @@ public class EcoCommand extends Command {
                                 Integer balance = ecoManager.getMoney(team.id());
                                 String symbol = ecoManager.getCurrency("s");
                                 context.getSender().sendMessage(
-                                        prefix + format(messageManager.getMessage("messages.eco.balance"), "team", team.name(), "balance", String(balance), "symbol", symbol)
+                                        prefix + format(messageManager.getMessage("messages.eco.balance"), "team", team.name(), "balance", String.valueOf(balance), "symbol", symbol)
                                 );
                                 return CommandResult.success();
                             } catch (Exception exception) {
@@ -131,7 +131,7 @@ public class EcoCommand extends Command {
                                         ecoManager.setMoney(team.id(), balance);
                                         String symbol = ecoManager.getCurrency("s");
                                         context.getSender().sendMessage(
-                                                prefix + format(messageManager.getMessage("messages.eco.balance-set"), "team", team.name(), "amount", String(balance), "symbol", symbol)
+                                                prefix + format(messageManager.getMessage("messages.eco.balance-set"), "team", team.name(), "amount", String.valueOf(balance), "symbol", symbol)
                                         );
                                         return CommandResult.success();
                                     } catch (Exception exception) {
@@ -151,7 +151,7 @@ public class EcoCommand extends Command {
                                         ecoManager.addMoney(team.id(), amount);
                                         String symbol = ecoManager.getCurrency("s");
                                         context.getSender().sendMessage(
-                                                prefix + format(messageManager.getMessage("messages.eco.balance-added"), "team", team.name(), "amount", String(amount), "symbol", symbol)
+                                                prefix + format(messageManager.getMessage("messages.eco.balance-added"), "team", team.name(), "amount", String.valueOf(amount), "symbol", symbol)
                                         );
                                         return CommandResult.success();
                                     } catch (Exception exception) {
@@ -171,7 +171,7 @@ public class EcoCommand extends Command {
                                         ecoManager.removeMoney(team.id(), amount);
                                         String symbol = ecoManager.getCurrency("s");
                                         context.getSender().sendMessage(
-                                                prefix + format(messageManager.getMessage("messages.eco.balance-removed"), "team", team.name(), "amount", String(amount), "symbol", symbol)
+                                                prefix + format(messageManager.getMessage("messages.eco.balance-removed"), "team", team.name(), "amount", String.valueOf(amount), "symbol", symbol)
                                         );
                                         return CommandResult.success();
                                     } catch (Exception exception) {
