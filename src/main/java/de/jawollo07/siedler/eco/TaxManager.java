@@ -3,6 +3,7 @@ package de.jawollo07.siedler.eco;
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.claim.Claim;
 import de.jawollo07.siedler.claim.ClaimManager;
+import de.mcjj.siedler.core.MessageManager;
 import de.jawollo07.siedler.team.Team;
 import de.jawollo07.siedler.team.TeamManager;
 import org.powernukkitx.Player;
@@ -25,6 +26,7 @@ public class TaxManager {
     private final TeamManager teamManager;
     private final ClaimManager claimManager;
     private final EcoManager ecoManager;
+    private final MessageManager messageManager;
     private TaskHandler task;
     private long lastRun;
 
@@ -33,6 +35,7 @@ public class TaxManager {
         this.teamManager = new TeamManager(plugin);
         this.claimManager = new ClaimManager(plugin);
         this.ecoManager = new EcoManager(plugin);
+        this.messageManager = new MessageManager();
     }
 
     public void start() {
@@ -115,8 +118,11 @@ public class TaxManager {
 
             recordTaxTransaction(team.id(), villagers, bonus, amount, true, "paid");
             teamManager.notifyAllTeamMembers(team.id(),
-                    "Steuereinnahmen: +" + amount + ecoManager.getCurrency("s")
-                            + " für " + villagers + " Dorfbewohner (TaxBonus " + bonus + ").");
+                    format(messageManager.getMessage("messages.eco.tax-income"),
+                            "amount", String.valueOf(amount),
+                            "symbol", ecoManager.getCurrency("s"),
+                            "villagers", String.valueOf(villagers),
+                            "bonus", String.valueOf(bonus)));
             return new TaxResult(team.id(), villagers, bonus, amount, true, "paid");
         } catch (Exception exception) {
             String reason = exception.getMessage() == null ? "payment_failed" : exception.getMessage();
@@ -222,6 +228,14 @@ public class TaxManager {
             statement.setLong(8, System.currentTimeMillis());
             statement.executeUpdate();
         }
+    }
+
+    private String format(String template, String... replacements) {
+        String result = template;
+        for (int i = 0; i + 1 < replacements.length; i += 2) {
+            result = result.replace("{" + replacements[i] + "}", replacements[i + 1]);
+        }
+        return result;
     }
 
     private int safeVillagerCount(Team team) {
