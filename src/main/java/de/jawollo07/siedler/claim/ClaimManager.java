@@ -152,11 +152,16 @@ public class ClaimManager {
         }
 
         String playerId = player.getUniqueId().toString();
-        if (!hasTeamAccess(playerId, claim.teamID())) {
-            player.sendMessage(prefix + messageManager.getMessage(
-                    "claim", "protection.block-breaking-not-allowed"
-            ));
-            return false;
+        try {
+            if (!hasTeamAccess(playerId, claim.teamID())) {
+                player.sendMessage(prefix + messageManager.getMessage(
+                        "claim", "protection.block-breaking-not-allowed"
+                ));
+                return false;
+            }
+        } catch (SQLException exception) {
+            logSqlError("Claim-Berechtigung konnte nicht geprüft werden", exception);
+            throw new IllegalStateException("Claim-Berechtigung konnte nicht geprüft werden", exception);
         }
 
         boolean deleted = deleteClaim(claim.id());
