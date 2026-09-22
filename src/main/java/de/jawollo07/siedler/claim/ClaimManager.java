@@ -286,6 +286,29 @@ public class ClaimManager {
         return getClaimPosition(claimID);
     }
 
+    /**
+     * Returns all claims belonging to a team.
+     */
+    public java.util.List<Claim> getClaimsForTeam(String teamId) throws SQLException {
+        if (teamId == null || teamId.isBlank()) {
+            throw new IllegalArgumentException("Team-ID darf nicht leer sein");
+        }
+
+        String sql = "SELECT id, team_id, world, min_x, min_z, max_x, max_z "
+                + "FROM claims WHERE team_id = ? ORDER BY world, min_x, min_z";
+
+        java.util.List<Claim> claims = new java.util.ArrayList<>();
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, teamId.trim());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    claims.add(mapClaim(resultSet));
+                }
+            }
+        }
+        return claims;
+    }
+
     private String findTeamId(String teamName) throws SQLException {
         String sql = "SELECT id FROM teams WHERE name = ? LIMIT 1";
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
