@@ -1,6 +1,6 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 15.09.2026
+Stand: 22.09.2026
 
 ## Versionsschema
 
@@ -9,7 +9,7 @@ Die Versionsnummer ist direkt an die Phasen dieses Plans gekoppelt:
 ```text
 PHASE.FEATURE.PATCH
 ```
- 
+
 - **PHASE** – entspricht der aktuellen Phase des Migrationsplans.
 - **FEATURE** – nummeriert größere abgeschlossene Meilensteine innerhalb der Phase.
 - **PATCH** – Bugfixes, Korrekturen und kleine technische Änderungen ohne neuen Meilenstein.
@@ -55,11 +55,12 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [x] Storage Verwaltung
 - [x] Player-ID Datenmodell
 
-## Phase 2 – Teams
+## Phase 2 – Teams ✅
 
 - [x] TeamManager
 - [x] Team-Erstellung/Löschen
 - [x] Team-Mitglieder und stabile Player-IDs
+- [x] Teamfarben und Anzeige
 - [x] Teamchat
 - [x] Diplomatie: allied / neutral / enemy
 - [x] Team-Eliminierung
@@ -77,13 +78,41 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - `2.6.0` – Team-Eliminierung
 - `2.7.0` – permanenter Spectator nach Eliminierung
 - `2.8.0` – konfigurierbarer Eliminierungsblock
- 
+
+## Command-System
+
+Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
+
+- [x] zentrale Command-Registrierung über `CommandManager`
+- [x] Tree-API-Routing für ClaimCommand
+- [x] Tree-API-Routing für TeamCommand
+- [x] Tree-API-Routing für RelationCommands
+- [x] Tree-API-Routing für Elimination
+- [x] Tree-API-Routing für EcoCommand
+- [x] administrative Routen unter einem expliziten `admin`-Subcommand
+- [x] Schutz administrativer Routen mit `siedler.admin`
+- [x] normale Kommunikationscommands bleiben unabhängig von `admin`
+
+### Aktuelle Command-Struktur
+
+| Command | Spieler | Admin (`siedler.admin`) |
+|---|---|---|
+| `/claim` | `help`, `info` | `admin help`, `admin set`, `admin delete` |
+| `/team` | `help`, `list`, `info <name>` | `admin help`, `admin create`, `admin delete`, `admin add`, `admin remove`, `admin setcolor` |
+| `/diplomatie` | `help`, `set`, `show` | `admin help`, `admin set`, `admin show`, `admin list` |
+| `/elimination` | `help`, `list` | `admin help`, `admin eliminate`, `admin deeliminate` |
+| `/eco` | `help`, `show` | `admin help`, `admin set`, `admin add`, `admin remove` |
+
+`/dm` und `/teamchat` sind Kommunikationscommands und benötigen keine `siedler.admin`-Struktur.
+
 ## Phase 3 – Claims
 
 - [x] Claim-Datenmodell
 - [x] Claim erstellen/verwalten
+- [x] Claim-Berechtigungs-/Teamprüfung
 - [x] Block-Break-Schutz
 - [x] Block-Place-Schutz
+- [x] Claim-Adminbefehle über `/claim admin`
 - [ ] Claim-Grenzen/Visualisierung
 - [ ] Claim-sicheres Monster-/Pillager-Spawning
 
@@ -186,10 +215,12 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 
 ## Aktueller Stand
 
-**Aktuelle Planphase:** Phase 2 – Teams
+**Aktuelle Planphase:** Phase 3 – Claims
 
-Die Foundation und die grundlegenden Core-/Datenmodell-Arbeiten sind abgeschlossen. In Phase 2 sind TeamManager, Team-Erstellung/Löschung, Team-Mitglieder mit stabilen Player-IDs sowie Teamfarben/Anzeige umgesetzt.
+Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
-Der nächste noch offene funktionale Meilenstein ist **`2.4.0` – Teamchat**.
+Das Command-System wurde auf die PowerNukkitX Tree Command API vereinheitlicht. Administrative Aktionen sind bei den Management-Commands über ein explizites `admin`-Subcommand organisiert und mit `siedler.admin` geschützt.
+
+In Phase 3 sind Claim-Datenmodell, Claim-Verwaltung, Team-/Berechtigungsprüfungen sowie Block-Break- und Block-Place-Schutz umgesetzt. Als nächste Claim-Arbeiten bleiben die Visualisierung der Claim-Grenzen und claim-sicheres Monster-/Pillager-Spawning.
 
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
