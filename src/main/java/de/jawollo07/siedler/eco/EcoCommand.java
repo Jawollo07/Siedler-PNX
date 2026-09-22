@@ -75,14 +75,14 @@ public class EcoCommand extends Command {
         stats.exec(context -> {
             if (!(context.getSender() instanceof Player player)) {
                 context.getSender().sendMessage(prefix + messageManager.getMessage("messages.eco.stats-player-only"));
-                return CommandResult.fail("Spieler erforderlich.");
+                return CommandResult.fail(messageManager.getMessage("messages.eco.player-required"));
             }
 
             try {
                 Team team = teamManager.getTeamForPlayer(player.getUniqueId().toString());
                 if (team == null) {
                     context.getSender().sendMessage(prefix + messageManager.getMessage("messages.eco.no-team"));
-                    return CommandResult.fail("Spieler ist keinem Team zugeordnet.");
+                    return CommandResult.fail(messageManager.getMessage("messages.eco.no-team-error"));
                 }
                 sendTaxStatistics(player, team);
                 return CommandResult.success();
