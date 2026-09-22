@@ -11,6 +11,7 @@ import de.jawollo07.siedler.chat.DirektMessage;
 import de.jawollo07.siedler.chat.TeamChatCommand;
 import de.jawollo07.siedler.claim.ClaimCommand;
 import de.jawollo07.siedler.eco.EcoCommand;
+import de.jawollo07.siedler.eco.TaxManager;
 import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
@@ -20,12 +21,6 @@ import org.powernukkitx.utils.TextFormat;
 
 import java.io.File;
 
-/**
- * Main entry point for Siedler.
- *
- * <p>The plugin uses managers to keep the main plugin class clean and
- * separates command registration, game logic and storage handling.</p>
- */
 public final class SiedlerPlugin extends PluginBase {
 
     private static SiedlerPlugin instance;
@@ -37,11 +32,8 @@ public final class SiedlerPlugin extends PluginBase {
     private ClaimCommand claimCommand;
     private MessageManager messageManager;
     private EcoCommand ecoCommand;
-    /**
-     * Returns the currently loaded Siedler plugin instance.
-     *
-     * @return plugin instance
-     */
+    private TaxManager taxManager;
+
     public static SiedlerPlugin getInstance() {
         return instance;
     }
@@ -62,25 +54,21 @@ public final class SiedlerPlugin extends PluginBase {
         messageManager = new MessageManager();
         messageManager.initialize(getDataFolder());
         final String prefix = messageManager.getPrefix("main");
-        /*
-         * Initialize storage.
-         */
+
         storage = new StorageManager(this);
         storage.initialize();
         getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
-        /*
-         * Initialize core managers.
-         */
         siedlerManager = new SiedlerManager(this, storage);
 
-        /*
-         * Initialize and register commands.
-         */
         commandManager = new CommandManager(this);
         registerCommands();
         registerEvents();
+
+        taxManager = new TaxManager(this);
+        taxManager.start();
+
         getLogger().info(
                 TextFormat.GREEN + prefix + messageManager.getMessage("main", "enable")
         );
@@ -96,12 +84,6 @@ public final class SiedlerPlugin extends PluginBase {
         );
     }
 
-    /**
-     * Registers all commands used by Siedler.
-     *
-     * <p>To add a new command, simply add another
-     * {@code commandManager.register(...)} call here.</p>
-     */
     private void registerCommands() {
         commandManager.register(new TeamCommand());
         commandManager.register(new DirektMessage(this));
@@ -110,13 +92,20 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new ClaimCommand(this));
         commandManager.register(new Elimination(this));
         commandManager.register(new EcoCommand(this));
-    } 
+    }
+
     private void registerEvents() {
         this.getServer().getPluginManager().registerEvents(new Protection(this), this);
         getLogger().info("Claim Protection registered");
     }
+
     @Override
     public void onDisable() {
+        if (taxManager != null) {
+            taxManager.stop();
+            taxManager = null;
+        }
+
         if (storage != null) {
             storage.close();
         }
@@ -129,38 +118,18 @@ public final class SiedlerPlugin extends PluginBase {
         instance = null;
     }
 
-    /**
-     * Returns the plugin configuration.
-     *
-     * @return configuration
-     */
     public Config getConfig() {
         return config;
     }
 
-    /**
-     * Returns the storage manager.
-     *
-     * @return storage manager
-     */
     public StorageManager getStorage() {
         return storage;
     }
 
-    /**
-     * Returns the Siedler manager.
-     *
-     * @return Siedler manager
-     */
     public SiedlerManager getSiedlerManager() {
         return siedlerManager;
     }
 
-    /**
-     * Returns the command manager.
-     *
-     * @return command manager
-     */
     public CommandManager getCommandManager() {
         return commandManager;
     }
