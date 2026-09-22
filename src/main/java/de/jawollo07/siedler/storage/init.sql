@@ -74,6 +74,8 @@ CREATE TABLE IF NOT EXISTS team_money (
     team_id VARCHAR(36) NOT NULL,
     balance INTEGER NOT NULL,
 
+    UNIQUE (team_id),
+
     FOREIGN KEY (team_id)
         REFERENCES teams(id)
         ON DELETE CASCADE
