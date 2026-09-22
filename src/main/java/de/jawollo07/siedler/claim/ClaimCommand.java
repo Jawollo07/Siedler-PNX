@@ -2,93 +2,134 @@ package de.jawollo07.siedler.claim;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.core.MessageManager;
-import org.powernukkitx.Player;
 import org.powernukkitx.command.Command;
+import org.powernukkitx.command.CommandResult;
 import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.route.RouteTree;
+import org.powernukkitx.command.route.node.RouteNode;
+import org.powernukkitx.command.tree.node.StringNode;
+import org.powernukkitx.Player;
 
-/** Commands for creating, inspecting and deleting claims. */
+/**
+ * Commands for creating, inspecting and deleting claims.
+ *
+ * <p>Uses the PowerNukkitX Tree Command API exclusively.</p>
+ */
 public final class ClaimCommand extends Command {
     private final ClaimManager claimManager;
-    private final Utils utils;
     private final MessageManager messageManager;
     private final String prefix;
+
     public ClaimCommand(SiedlerPlugin plugin) {
         super("claim", "Verwaltung von Claims", "/claim <set|info|delete|help>");
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin darf nicht null sein");
         }
+
         setPermission("siedler.command.claim");
         this.claimManager = new ClaimManager(plugin);
-        this.utils = new Utils(plugin);
         this.messageManager = new MessageManager();
-        this.setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         this.prefix = messageManager.getPrefix("claim");
-    }
-
-    private boolean sendHelp(CommandSender sender) {
-        sender.sendMessage(messageManager.getMessage("claim", "help.1"));
-        sender.sendMessage(messageManager.getMessage("claim", "help.2"));
-        sender.sendMessage(messageManager.getMessage("claim", "help.3"));
-        sender.sendMessage(messageManager.getMessage("claim", "help.4"));
-        sender.sendMessage(messageManager.getMessage("claim", "help.5"));
-        return true;
+        setPermissionMessage(messageManager.getCommandMessage("no-permission"));
+        enableCommandTree();
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (args == null || args.length == 0) {
-            return sendHelp(sender);
-        }
+    protected void buildCommandTree(RouteTree tree) {
+        tree.getRoot().then(
+                RouteNode.literal("help")
+                        .exec(context -> {
+                            sendHelp(context.getSender());
+                            return CommandResult.success();
+                        })
+        );
 
-        String subcommand = args[0].toLowerCase(java.util.Locale.ROOT);
-        if (subcommand.equals("help")) {
-            return sendHelp(sender);
-        }
-        if (!subcommand.equals("set") && !subcommand.equals("info") && !subcommand.equals("delete")) {
-            sender.sendMessage(messageManager.getCommandMessage("unknown-subcommand") + args[0]);
-            return sendHelp(sender);
-        }
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(messageManager.getCommandMessage("only-player-command"));
-            return false;
-        }
+        tree.getRoot().then(
+                RouteNode.literal("set")
+                        .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                            CommandSender sender = context.getSender();
+                            if (!(sender instanceof Player player)) {
+                                sender.sendMessage(
+                                        prefix + messageManager.getCommandMessage("only-player-command")
+                                );
+                                return CommandResult.success();
+                            }
 
-        switch (subcommand) {
-            case "set" -> {
-                if (args.length != 2 || args[1].isBlank()) {
-                    player.sendMessage(messageManager.getMessage("claim", "command-usage.set"));
-                    return false;
-                }
-                return claimManager.setClaim(args[1].trim(), player) != null;
-            }
-            case "info" -> {
-                if (args.length != 1) {
-                    player.sendMessage(messageManager.getMessage("claim", "command-usage.info"));
-                    return false;
-                }
-                Claim claim = claimManager.ClaimInfoByPlayer(player);
-                if (claim == null) {
-                    player.sendMessage(messageManager.getMessage("claim", "here-is-no-claim"));
-                    return false;
-                }
-                player.sendMessage("§6Claim-Informationen:");
-                player.sendMessage("§7ID: §f" + claim.id());
-                player.sendMessage("§7Team: §f" +  utils.getClaimTeam(claim.id()));
-                player.sendMessage("§7Welt: §f" + claim.world());
-                player.sendMessage("§7Chunks: §f" + claim.min_x() + ", " + claim.min_z()
-                        + " §7bis §f" + claim.max_x() + ", " + claim.max_z());
-                return true;
-            }
-            case "delete" -> {
-                if (args.length != 1) {
-                    player.sendMessage(messageManager.getMessage("claim", "command-usage.delete"));
-                    return false;
-                }
-                return claimManager.deleteClaim(player);
-            }
-            default -> {
-                return sendHelp(sender);
-            }
-        }
+                            Claim claim = claimManager.setClaim(
+                                    context.getArg("team"),
+                                    player
+                            );
+
+                            return claim != null
+                                    ? CommandResult.success()
+                                    : CommandResult.fail("Claim konnte nicht erstellt werden");
+                        }))
+        );
+
+        tree.getRoot().then(
+                RouteNode.literal("info")
+                        .exec(context -> {
+                            CommandSender sender = context.getSender();
+                            if (!(sender instanceof Player player)) {
+                                sender.sendMessage(
+                                        prefix + messageManager.getCommandMessage("only-player-command")
+                                );
+                                return CommandResult.success();
+                            }
+
+                            Claim claim = claimManager.claimInfoByPlayer(player);
+                            if (claim == null) {
+                                player.sendMessage(
+                                        prefix + messageManager.getMessage("claim", "here-is-no-claim")
+                                );
+                                return CommandResult.fail("Kein Claim an dieser Position");
+                            }
+
+                            sendClaimInfo(player, claim);
+                            return CommandResult.success();
+                        })
+        );
+
+        tree.getRoot().then(
+                RouteNode.literal("delete")
+                        .exec(context -> {
+                            CommandSender sender = context.getSender();
+                            if (!(sender instanceof Player player)) {
+                                sender.sendMessage(
+                                        prefix + messageManager.getCommandMessage("only-player-command")
+                                );
+                                return CommandResult.success();
+                            }
+
+                            return claimManager.deleteClaim(player)
+                                    ? CommandResult.success()
+                                    : CommandResult.fail("Claim konnte nicht gelöscht werden");
+                        })
+        );
+    }
+
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.1"));
+        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.2"));
+        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.3"));
+        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.4"));
+        sender.sendMessage(prefix + messageManager.getMessage("claim", "help.5"));
+    }
+
+    private void sendClaimInfo(Player player, Claim claim) {
+        player.sendMessage("§6Claim-Informationen:");
+        player.sendMessage("§7ID: §f" + claim.id());
+        player.sendMessage("§7Team: §f" + claim.teamID());
+        player.sendMessage("§7Welt: §f" + claim.world());
+        player.sendMessage(
+                "§7Chunks: §f"
+                        + claim.min_x()
+                        + ", "
+                        + claim.min_z()
+                        + " §7bis §f"
+                        + claim.max_x()
+                        + ", "
+                        + claim.max_z()
+        );
     }
 }
