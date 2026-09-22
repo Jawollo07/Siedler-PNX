@@ -25,7 +25,6 @@ public class TaxManager {
     private final TeamManager teamManager;
     private final ClaimManager claimManager;
     private final EcoManager ecoManager;
-    private final TaxBonusManager taxBonusManager;
     private TaskHandler task;
     private long lastRun;
 
@@ -34,7 +33,6 @@ public class TaxManager {
         this.teamManager = new TeamManager(plugin);
         this.claimManager = new ClaimManager(plugin);
         this.ecoManager = new EcoManager(plugin);
-        this.taxBonusManager = new TaxBonusManager(plugin);
     }
 
     public void start() {
@@ -77,17 +75,27 @@ public class TaxManager {
         }
     }
 
+    /**
+     * Calculates and pays the team's villager tax.
+     *
+     * Formula:
+     * villagers × TaxBonus × configured rate
+     *
+     * Example: 1 villager × TaxBonus 3 × rate 1 = 3 Coins.
+     *
+     * The team receives the money only when at least one team member is online.
+     */
     public TaxResult collectTax(Team team) {
         if (team == null) throw new IllegalArgumentException("team must not be null");
 
         try {
             if (!isTeamMemberOnline(team.id())) {
-                return recordFailure(team.id(), 0, taxBonusManager.getTaxBonus(team.id()),
+                return recordFailure(team.id(), 0, Math.max(1, team.taxBonus()),
                         0, "no_online_member");
             }
 
             int villagers = countVillagers(team);
-            int bonus = taxBonusManager.getTaxBonus(team.id());
+            int bonus = Math.max(1, team.taxBonus());
             long rate = Math.max(1L,
                     plugin.getConfig().getInt("taxes.emeralds-per-villager-per-bonus", 1));
             long amount = Math.multiplyExact(Math.multiplyExact((long) villagers, bonus), rate);
@@ -96,22 +104,24 @@ public class TaxManager {
                 recordTaxTransaction(team.id(), villagers, bonus, 0, true, "no_villagers");
                 return new TaxResult(team.id(), villagers, bonus, 0, true, "no_villagers");
             }
+
             if (amount > Integer.MAX_VALUE) {
                 return recordFailure(team.id(), villagers, bonus, amount, "amount_too_large");
             }
 
-            ecoManager.changeMoney(team.id(), -amount, "TAX",
-                    "Tagessteuer: " + villagers + " Dorfbewohner × TaxBonus " + bonus, null);
+            // Tax is income for the team: villagers × TaxBonus = Coins.
+            ecoManager.addMoney(team.id(), (int) amount, "TAX",
+                    "Tagessteuer: " + villagers + " Dorfbewohner × TaxBonus " + bonus);
 
             recordTaxTransaction(team.id(), villagers, bonus, amount, true, "paid");
             teamManager.notifyAllTeamMembers(team.id(),
-                    "Steuer: " + amount + ecoManager.getCurrency("s")
+                    "Steuereinnahmen: +" + amount + ecoManager.getCurrency("s")
                             + " für " + villagers + " Dorfbewohner (TaxBonus " + bonus + ").");
             return new TaxResult(team.id(), villagers, bonus, amount, true, "paid");
         } catch (Exception exception) {
             String reason = exception.getMessage() == null ? "payment_failed" : exception.getMessage();
             int villagers = safeVillagerCount(team);
-            int bonus = safeTaxBonus(team);
+            int bonus = Math.max(1, team.taxBonus());
             return recordFailure(team.id(), villagers, bonus,
                     calculateAmount(villagers, bonus), reason);
         }
@@ -215,18 +225,17 @@ public class TaxManager {
     }
 
     private int safeVillagerCount(Team team) {
-        try { return countVillagers(team); } catch (Exception ignored) { return 0; }
-    }
-
-    private int safeTaxBonus(Team team) {
-        try { return taxBonusManager.getTaxBonus(team.id()); }
-        catch (Exception ignored) { return Math.max(1, team.taxBonus()); }
+        try {
+            return countVillagers(team);
+        } catch (Exception ignored) {
+            return 0;
+        }
     }
 
     private long calculateAmount(int villagers, int bonus) {
         long rate = Math.max(1L,
                 plugin.getConfig().getInt("taxes.emeralds-per-villager-per-bonus", 1));
-        return Math.max(0L, (long) villagers * bonus * rate);
+        return Math.max(0L, (long) villagers * Math.max(1, bonus) * rate);
     }
 
     public record TaxResult(String teamId, int villagers, int taxBonus,
