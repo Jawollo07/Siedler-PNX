@@ -308,7 +308,8 @@ public class TeamManager {
         }
 
         String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, "
-                + "t.elimination_block, t.created_at, t.balance "
+                + "t.elimination_block, t.created_at, "
+                + "COALESCE((SELECT tm.balance FROM team_money tm WHERE tm.team_id = t.id LIMIT 1), 0) AS balance "
                 + "FROM players p JOIN teams t ON t.id = p.team_id WHERE p.id = ?";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
