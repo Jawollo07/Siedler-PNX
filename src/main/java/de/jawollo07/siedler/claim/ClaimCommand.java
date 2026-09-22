@@ -84,12 +84,7 @@ public final class ClaimCommand extends Command {
                     player.sendMessage(messageManager.getMessage("claim", "command-usage.delete"));
                     return false;
                 }
-                String claimId = utils.get_claimID(player);
-                if (claimId == null) {
-                    player.sendMessage(messageManager.getMessage("claim", "here-is-no-claim"));
-                    return false;
-                }
-                return claimManager.deleteClaim(claimId);
+                return claimManager.deleteClaim(player);
             }
             default -> {
                 return sendHelp(sender);
