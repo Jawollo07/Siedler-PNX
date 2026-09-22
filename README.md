@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 3 – Claims: migration in progress.**
+🚧 **Phase 4 – Economy & Taxes: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -29,8 +29,43 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Team elimination and permanent spectator handling
 - Claim management
 - Claim block-break and block-place protection
+- Economy service with persistent team balances
+- Transaction and balance-history logging
+- Villager-based team taxes
+- TaxBonus-based tax calculation
+- Online-team requirement for tax income
 - Tree Command API for command routing
 - Administrative command routes protected by `siedler.admin`
+
+## Economy & Taxes
+
+The economy uses `team_money` as the central source for team balances. Balance changes are performed transactionally and recorded in the transaction and balance-history tables.
+
+### Tax formula
+
+The current tax formula is:
+
+```text
+Coins = Villager × TaxBonus × Rate
+```
+
+The default rate is `1`.
+
+Examples:
+
+```text
+1 Villager × TaxBonus 1 = 1 Coin
+1 Villager × TaxBonus 3 = 3 Coins
+10 Villagers × TaxBonus 3 = 30 Coins
+```
+
+Tax is **team income**. It is added to the team's balance rather than charged from it.
+
+A team receives its tax income only when **at least one team member is online**. Eliminated teams do not receive tax income.
+
+The tax cycle runs by default every 24 hours. Failed tax cycles are recorded and can be retried using the configured retry interval.
+
+Tax records contain the team, villager count, TaxBonus, calculated amount, success state, reason and timestamp.
 
 ## Command architecture
 
