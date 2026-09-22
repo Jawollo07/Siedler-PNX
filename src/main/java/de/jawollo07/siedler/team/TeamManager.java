@@ -98,8 +98,8 @@ public class TeamManager {
         }
     }
     private Team getTeamById(String id) throws SQLException {
-        String sql = "SELECT id, name, color, tax_bonus, eliminated, elimination_block, created_at, balance "
-                + "FROM teams WHERE id = ?";
+        String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, t.elimination_block, t.created_at, COALESCE((SELECT tm.balance FROM team_money tm WHERE tm.team_id = t.id LIMIT 1), 0) AS balance "
+                + "FROM teams t WHERE t.id = ?";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, id);
@@ -115,8 +115,8 @@ public class TeamManager {
 
     public List<Team> getTeams() throws SQLException {
         List<Team> teams = new ArrayList<>();
-        String sql = "SELECT id, name, color, tax_bonus, eliminated, elimination_block, created_at, balance "
-                + "FROM teams ORDER BY name";
+        String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, t.elimination_block, t.created_at, COALESCE((SELECT tm.balance FROM team_money tm WHERE tm.team_id = t.id LIMIT 1), 0) AS balance "
+                + "FROM teams t ORDER BY t.name";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
@@ -133,8 +133,8 @@ public class TeamManager {
             throw new IllegalArgumentException("Team name must not be blank");
         }
 
-        String sql = "SELECT id, name, color, tax_bonus, eliminated, elimination_block, created_at, balance "
-                + "FROM teams WHERE name = ?";
+        String sql = "SELECT t.id, t.name, t.color, t.tax_bonus, t.eliminated, t.elimination_block, t.created_at, COALESCE((SELECT tm.balance FROM team_money tm WHERE tm.team_id = t.id LIMIT 1), 0) AS balance "
+                + "FROM teams t WHERE t.name = ?";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, name.trim());
