@@ -99,7 +99,7 @@ Der erste stabile Gesamt-Release ist damit `10.0.0`.
 - [ ] atomare Buchung + Retry
 - [ ] Steuerstatistik
 
-Phase 5 – Essentials & Statistics
+## Phase 5 – Essentials & Statistics
 
 - [ ] Homes
 - [ ] TPA
