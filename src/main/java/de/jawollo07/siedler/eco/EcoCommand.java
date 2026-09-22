@@ -113,9 +113,9 @@ public class EcoCommand extends Command {
         admin.then(
                 RouteNode.literal("help")
                         .exec(context -> {
-                            context.getSender().sendMessage(prefix + "/eco admin set <Team> <Betrag>");
-                            context.getSender().sendMessage(prefix + "/eco admin add <Team> <Betrag>");
-                            context.getSender().sendMessage(prefix + "/eco admin remove <Team> <Betrag>");
+                            context.getSender().sendMessage(messageManager.getMessage("messages.eco.help.admin-set"));
+                            context.getSender().sendMessage(messageManager.getMessage("messages.eco.help.admin-add"));
+                            context.getSender().sendMessage(messageManager.getMessage("messages.eco.help.admin-remove"));
                             return CommandResult.success();
                         })
         );
