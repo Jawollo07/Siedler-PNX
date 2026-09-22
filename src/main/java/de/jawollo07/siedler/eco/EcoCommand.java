@@ -209,18 +209,18 @@ public class EcoCommand extends Command {
                 ? "Noch keine Steuererhebung"
                 : formatTimestamp(stats.lastTaxTimestamp());
 
-        return "§6Steuerübersicht§r\\n"
-                + "Team: " + team.name() + "\\n"
-                + "TaxBonus: " + Math.max(1, team.taxBonus()) + "\\n\\n"
-                + "§eGesamteinnahmen:§r " + stats.totalCoins() + symbol + "\\n"
-                + "Erfolgreiche Erhebungen: " + stats.successfulCycles() + "\\n"
-                + "Fehlgeschlagene Erhebungen: " + stats.failedCycles() + "\\n"
-                + "Erfasste Dorfbewohner: " + stats.totalVillagers() + "\\n\\n"
-                + "§eLetzte Erhebung§r\\n"
-                + "Zeit: " + last + "\\n"
-                + "Dorfbewohner: " + stats.lastVillagers() + "\\n"
-                + "TaxBonus: " + stats.lastTaxBonus() + "\\n"
-                + "Betrag: " + stats.lastAmount() + symbol + "\\n"
+        return "§6Steuerübersicht§r\n"
+                + "Team: " + team.name() + "\n"
+                + "TaxBonus: " + Math.max(1, team.taxBonus()) + "\n\n"
+                + "§eGesamteinnahmen:§r " + stats.totalCoins() + symbol + "\n"
+                + "Erfolgreiche Erhebungen: " + stats.successfulCycles() + "\n"
+                + "Fehlgeschlagene Erhebungen: " + stats.failedCycles() + "\n"
+                + "Erfasste Dorfbewohner: " + stats.totalVillagers() + "\n\n"
+                + "§eLetzte Erhebung§r\n"
+                + "Zeit: " + last + "\n"
+                + "Dorfbewohner: " + stats.lastVillagers() + "\n"
+                + "TaxBonus: " + stats.lastTaxBonus() + "\n"
+                + "Betrag: " + stats.lastAmount() + symbol + "\n"
                 + "Ergebnis: " + (stats.lastReason() == null ? "-" : stats.lastReason());
     }
 
