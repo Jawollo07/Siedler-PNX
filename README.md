@@ -34,6 +34,7 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Villager-based team taxes
 - TaxBonus-based tax calculation
 - Online-team requirement for tax income
+- Tax statistics with in-game SimpleForm UI
 - Tree Command API for command routing
 - Administrative command routes protected by `siedler.admin`
 
@@ -67,6 +68,8 @@ The tax cycle runs by default every 24 hours. Failed tax cycles are recorded and
 
 Tax records contain the team, villager count, TaxBonus, calculated amount, success state, reason and timestamp.
 
+`/eco stats` opens an in-game SimpleForm for the player's own team. `/eco stats <Team>` can display a selected team's tax statistics. The UI shows total tax income, successful and failed collections, counted villagers and details of the latest tax collection.
+
 ## Command architecture
 
 All migrated command managers use the **PowerNukkitX Tree Command API**. Commands are structured into normal player routes and, where administrative actions are required, an explicit `admin` subcommand.
@@ -85,7 +88,7 @@ Current command structure:
 | `/team` | `help`, `list`, `info <name>` | `admin help`, `admin create`, `admin delete`, `admin add`, `admin remove`, `admin setcolor` |
 | `/diplomatie` | `help`, `set`, `show` | `admin help`, `admin set`, `admin show`, `admin list` |
 | `/elimination` | `help`, `list` | `admin help`, `admin eliminate`, `admin deeliminate` |
-| `/eco` | `help`, `show` | `admin help`, `admin set`, `admin add`, `admin remove` |
+| `/eco` | `help`, `show`, `stats [Team]` | `admin help`, `admin set`, `admin add`, `admin remove` |
 
 Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
 
