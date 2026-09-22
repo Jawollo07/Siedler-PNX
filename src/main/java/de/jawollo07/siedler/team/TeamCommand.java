@@ -87,6 +87,15 @@ public final class TeamCommand extends Command {
         tree.getRoot().then(admin);
     }
 
+    private void sendAdminHelp(CommandSender sender) {
+        sender.sendMessage(prefix + "§eTeam-Admin-Befehle:");
+        sender.sendMessage("§7/team admin create <Name> <Farbe> §8- §fErstellt ein Team");
+        sender.sendMessage("§7/team admin delete <Name> §8- §fLöscht ein Team");
+        sender.sendMessage("§7/team admin add <Spieler> <Team> §8- §fFügt einen Spieler hinzu");
+        sender.sendMessage("§7/team admin remove <Spieler> §8- §fEntfernt einen Spieler");
+        sender.sendMessage("§7/team admin setcolor <Name> <Farbe> §8- §fÄndert die Teamfarbe");
+    }
+
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(prefix + "§eTeam-Befehle:");
         sender.sendMessage("§7/team create <Name> <Farbe> §8- §fErstellt ein Team");
