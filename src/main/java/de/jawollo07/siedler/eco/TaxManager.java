@@ -238,6 +238,81 @@ public class TaxManager {
         return Math.max(0L, (long) villagers * Math.max(1, bonus) * rate);
     }
 
+
+    public TaxStatistics getStatistics(String teamId) throws SQLException {
+        if (teamId == null || teamId.isBlank()) {
+            throw new IllegalArgumentException("Team ID must not be blank");
+        }
+
+        String sql = "SELECT COUNT(*) AS total_cycles, "
+                + "COALESCE(SUM(CASE WHEN successful = 1 THEN 1 ELSE 0 END), 0) AS successful_cycles, "
+                + "COALESCE(SUM(CASE WHEN successful = 0 THEN 1 ELSE 0 END), 0) AS failed_cycles, "
+                + "COALESCE(SUM(CASE WHEN successful = 1 AND reason = 'paid' THEN emeralds_charged ELSE 0 END), 0) AS total_coins, "
+                + "COALESCE(SUM(CASE WHEN successful = 1 AND reason = 'paid' THEN villager_count ELSE 0 END), 0) AS total_villagers, "
+                + "MAX(created_at) AS last_tax_at "
+                + "FROM tax_transactions WHERE team_id = ?";
+
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(sql)) {
+            statement.setString(1, teamId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return new TaxStatistics(teamId, 0, 0, 0, 0L, 0L,
+                            null, 0, 0, 0L, null);
+                }
+
+                long lastTaxAt = resultSet.getLong("last_tax_at");
+                Long lastTaxTimestamp = resultSet.wasNull() ? null : lastTaxAt;
+                int lastVillagers = 0;
+                int lastBonus = 0;
+                long lastAmount = 0L;
+                String lastReason = null;
+
+                String latestSql = "SELECT villager_count, tax_bonus, emeralds_charged, reason "
+                        + "FROM tax_transactions WHERE team_id = ? "
+                        + "ORDER BY created_at DESC LIMIT 1";
+                try (PreparedStatement latest = plugin.getStorage().getConnection().prepareStatement(latestSql)) {
+                    latest.setString(1, teamId);
+                    try (ResultSet latestResult = latest.executeQuery()) {
+                        if (latestResult.next()) {
+                            lastVillagers = latestResult.getInt("villager_count");
+                            lastBonus = latestResult.getInt("tax_bonus");
+                            lastAmount = latestResult.getLong("emeralds_charged");
+                            lastReason = latestResult.getString("reason");
+                        }
+                    }
+                }
+
+                return new TaxStatistics(
+                        teamId,
+                        resultSet.getLong("total_cycles"),
+                        resultSet.getLong("successful_cycles"),
+                        resultSet.getLong("failed_cycles"),
+                        resultSet.getLong("total_coins"),
+                        resultSet.getLong("total_villagers"),
+                        lastTaxTimestamp,
+                        lastVillagers,
+                        lastBonus,
+                        lastAmount,
+                        lastReason
+                );
+            }
+        }
+    }
+
+    public record TaxStatistics(
+            String teamId,
+            long totalCycles,
+            long successfulCycles,
+            long failedCycles,
+            long totalCoins,
+            long totalVillagers,
+            Long lastTaxTimestamp,
+            int lastVillagers,
+            int lastTaxBonus,
+            long lastAmount,
+            String lastReason
+    ) {}
+
     public record TaxResult(String teamId, int villagers, int taxBonus,
                             long amount, boolean successful, String reason) {}
 }
