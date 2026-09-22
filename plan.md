@@ -119,14 +119,35 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 ## Phase 4 – Economy & Taxes
 
 - [x] Economy-Service
-- [ ] Villager-basierte Tagessteuer
-- [ ] Online-Team-Bedingung
+- [x] Villager-basierte Tagessteuer
+- [x] Online-Team-Bedingung
 - [ ] TaxBonusManager
 - [x] `taxBonus=1` als Standard für bestehende/neue Teams
 - [ ] Token-Bonus als permanente TaxBonus-Quelle
 - [ ] Outpost-Bonus als permanente TaxBonus-Quelle
-- [ ] atomare Buchung + Retry
+- [x] atomare Buchung + Retry
+- [x] Steuertransaktionen / Steuerhistorie
 - [ ] Steuerstatistik
+
+### Tax-System
+
+Die aktuelle Steuerformel lautet:
+
+```text
+Coins = Dorfbewohner × TaxBonus × Rate
+```
+
+Bei der Standard-Konfiguration `Rate = 1` gilt beispielsweise:
+
+```text
+1 Dorfbewohner × TaxBonus 1 = 1 Coin
+1 Dorfbewohner × TaxBonus 3 = 3 Coins
+10 Dorfbewohner × TaxBonus 3 = 30 Coins
+```
+
+Die Steuer ist **Team-Einkommen** und wird der Team-Balance gutgeschrieben. Sie wird nur ausgeführt, wenn mindestens ein Mitglied des Teams online ist. Ausgeschiedene Teams erhalten keine Steuer.
+
+Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuerläufe werden protokolliert und können über das konfigurierte Retry-Intervall erneut versucht werden.
 
 ## Phase 5 – Essentials & Statistics
 
@@ -215,12 +236,12 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 
 ## Aktueller Stand
 
-**Aktuelle Planphase:** Phase 3 – Claims
+**Aktuelle Planphase:** Phase 4 – Economy & Taxes
 
 Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
-Das Command-System wurde auf die PowerNukkitX Tree Command API vereinheitlicht. Administrative Aktionen sind bei den Management-Commands über ein explizites `admin`-Subcommand organisiert und mit `siedler.admin` geschützt.
+Phase 3 – Claims ist begonnen. Claim-Datenmodell, Claim-Verwaltung, Team-/Berechtigungsprüfungen sowie Block-Break- und Block-Place-Schutz sind umgesetzt. Claim-Visualisierung und claim-sicheres Monster-/Pillager-Spawning bleiben offen.
 
-In Phase 3 sind Claim-Datenmodell, Claim-Verwaltung, Team-/Berechtigungsprüfungen sowie Block-Break- und Block-Place-Schutz umgesetzt. Als nächste Claim-Arbeiten bleiben die Visualisierung der Claim-Grenzen und claim-sicheres Monster-/Pillager-Spawning.
+Phase 4 – Economy & Taxes ist begonnen. Die Economy verwendet `team_money` als zentrale Balancequelle. Transaktionale Balanceänderungen, Balance-Historie und die villagerbasierte Tagessteuer sind umgesetzt. Die Steuer berechnet `Dorfbewohner × TaxBonus × Rate`, schreibt das Ergebnis als Team-Einkommen gut und setzt mindestens ein online befindliches Teammitglied voraus.
 
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
