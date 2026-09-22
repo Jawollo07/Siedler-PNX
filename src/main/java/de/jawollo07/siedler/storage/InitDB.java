@@ -8,10 +8,11 @@ import java.io.Reader;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.Locale;
 
 public class InitDB {
-    private static final int CURRENT_SCHEMA_VERSION = 5;
+    private static final int CURRENT_SCHEMA_VERSION = 6;
 
     public void initDatabase() throws Exception {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
@@ -38,6 +39,10 @@ public class InitDB {
             if (version < 5) {
                 migrateV4ToV5(connection);
                 setSchemaVersion(connection, 5);
+            }
+            if (version < 6) {
+                migrateV5ToV6(connection);
+                setSchemaVersion(connection, 6);
             }
         }
     }
@@ -94,6 +99,37 @@ public class InitDB {
         ensureColumnExists(connection, "players", "team_id", "TEXT");
         ensureColumnExists(connection, "players", "eliminated", "INTEGER NOT NULL DEFAULT 0");
     }
+    private void migrateV5ToV6(Connection connection) throws Exception {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(
+                    "DELETE FROM team_money WHERE id NOT IN " +
+                    "(SELECT MIN(id) FROM team_money GROUP BY team_id)"
+            );
+        }
+
+        try (PreparedStatement select = connection.prepareStatement(
+                "SELECT t.id, t.balance FROM teams t " +
+                "LEFT JOIN team_money tm ON tm.team_id = t.id " +
+                "WHERE tm.team_id IS NULL");
+             ResultSet resultSet = select.executeQuery()) {
+            while (resultSet.next()) {
+                try (PreparedStatement insert = connection.prepareStatement(
+                        "INSERT INTO team_money (id, team_id, balance) VALUES (?, ?, ?)")) {
+                    insert.setString(1, UUID.randomUUID().toString());
+                    insert.setString(2, resultSet.getString("id"));
+                    insert.setInt(3, resultSet.getInt("balance"));
+                    insert.executeUpdate();
+                }
+            }
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_team_money_team_id ON team_money(team_id)"
+            );
+        }
+    }
+
     private void ensureColumnExists(Connection connection, String tableName, String columnName, String columnDefinition) throws Exception {
         try (ResultSet columns = connection.getMetaData().getColumns(null, null, tableName, columnName)) {
             if (columns.next()) {
