@@ -199,4 +199,60 @@ public class RelationCommands extends Command {
         }
         return null;
     }
-}
+}    @Override
+    protected void buildCommandTree(RouteTree tree) {
+        tree.getRoot().then(RouteNode.literal("help").exec(context -> {
+            help(context.getSender());
+            return CommandResult.success();
+        }));
+
+        tree.getRoot().then(RouteNode.literal("set")
+                .then(RouteNode.argument("team", new StringNode())
+                        .then(RouteNode.argument("relation", new StringNode()).exec(context -> {
+                            setRelation(context.getSender(), context.getArg("team"), context.getArg("relation"));
+                            return CommandResult.success();
+                        }))));
+
+        tree.getRoot().then(RouteNode.literal("show")
+                .exec(context -> {
+                    showRelations(context.getSender(), null);
+                    return CommandResult.success();
+                })
+                .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                    showRelations(context.getSender(), context.getArg("team"));
+                    return CommandResult.success();
+                })));
+
+        RouteNode admin = RouteNode.literal("admin")
+                .permission("siedler.admin", messageManager.getCommandMessage("no-permission"));
+
+        admin.then(RouteNode.literal("help").exec(context -> {
+            help(context.getSender());
+            return CommandResult.success();
+        }));
+        admin.then(RouteNode.literal("set")
+                .then(RouteNode.argument("teamA", new StringNode())
+                        .then(RouteNode.argument("teamB", new StringNode())
+                                .then(RouteNode.argument("relation", new StringNode()).exec(context -> {
+                                    setAdminRelation(context.getSender(), context.getArg("teamA"), context.getArg("teamB"), context.getArg("relation"));
+                                    return CommandResult.success();
+                                })))));
+
+        admin.then(RouteNode.literal("show")
+                .exec(context -> {
+                    listAllRelations(context.getSender());
+                    return CommandResult.success();
+                })
+                .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                    showRelations(context.getSender(), context.getArg("team"));
+                    return CommandResult.success();
+                })));
+
+        admin.then(RouteNode.literal("list").exec(context -> {
+            listAllRelations(context.getSender());
+            return CommandResult.success();
+        }));
+
+        tree.getRoot().then(admin);
+    }
+
