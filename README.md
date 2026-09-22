@@ -24,6 +24,37 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Team creation and deletion
 - Team membership with stable player IDs
 - Team colors / display data
+- Team chat
+- Diplomacy
+- Team elimination and permanent spectator handling
+- Claim management
+- Claim block-break and block-place protection
+- Tree Command API for command routing
+- Administrative command routes protected by `siedler.admin`
+
+## Command architecture
+
+All migrated command managers use the **PowerNukkitX Tree Command API**. Commands are structured into normal player routes and, where administrative actions are required, an explicit `admin` subcommand.
+
+Administrative routes require the permission:
+
+```text
+siedler.admin
+```
+
+Current command structure:
+
+| Command | Player routes | Admin routes |
+|---|---|---|
+| `/claim` | `help`, `info` | `admin help`, `admin set`, `admin delete` |
+| `/team` | `help`, `list`, `info <name>` | `admin help`, `admin create`, `admin delete`, `admin add`, `admin remove`, `admin setcolor` |
+| `/diplomatie` | `help`, `set`, `show` | `admin help`, `admin set`, `admin show`, `admin list` |
+| `/elimination` | `help`, `list` | `admin help`, `admin eliminate`, `admin deeliminate` |
+| `/eco` | `help`, `show` | `admin help`, `admin set`, `admin add`, `admin remove` |
+
+Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
+
+The central `CommandManager` remains responsible for registering commands with the PowerNukkitX command map. Individual command managers are responsible for their own Tree API routes and permissions.
 
 ## Versioning
 
@@ -102,7 +133,10 @@ SQLite is the default local storage backend, with MariaDB JDBC support available
 ## Development principles
 
 - Native PowerNukkitX APIs first.
-- Managers/services with clear responsibilities instead of one large main class.
+- Use the PowerNukkitX Tree Command API for command routing instead of manual argument parsing.
+- Separate normal player functionality from administrative management through explicit `admin` routes.
+- Administrative command routes require `siedler.admin`.
+- Managers/services have clear responsibilities instead of one large main class.
 - Persistent state must survive restarts.
 - Gameplay rules should be configurable.
 - Existing Siedler 1.x behavior is the functional reference, while Siedler 2.0 may improve implementation details where PowerNukkitX provides better native facilities.
