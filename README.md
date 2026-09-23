@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 4 – Economy & Taxes: migration in progress.**
+🚧 **Phase 4/5 – Economy, Taxes & Essentials: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -37,6 +37,11 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Tax statistics with in-game SimpleForm UI
 - Tree Command API for command routing
 - Administrative command routes protected by `siedler.admin`
+- Essentials Home system with persistent homes
+- `/sethome`, `/home`, `/homes` and `/delhome`
+- Home teleportation with saved world, position and rotation
+- Administrative management GUI with player information and moderation actions
+- Persistent moderation history for warnings, kicks, bans and temporary bans
 
 ## Economy & Taxes
 
@@ -89,6 +94,10 @@ Current command structure:
 | `/diplomatie` | `help`, `set`, `show` | `admin help`, `admin set`, `admin show`, `admin list` |
 | `/elimination` | `help`, `list` | `admin help`, `admin eliminate`, `admin deeliminate` |
 | `/eco` | `help`, `show`, `stats [Team]` | `admin help`, `admin set`, `admin add`, `admin remove` |
+| `/sethome` | `<Name>` | – |
+| `/home` | `<Name>` | – |
+| `/homes` | Home-GUI | – |
+| `/delhome` | `<Name>` | – |
 
 Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
 
