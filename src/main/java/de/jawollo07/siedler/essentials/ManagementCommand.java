@@ -201,7 +201,7 @@ public class ManagementCommand extends Command {
                 if (line.isBlank()) continue;
                 String[] parts = line.split("\\\\|", -1);
                 if (parts.length < 2) {
-                    details.append("§7").append(unescapeInventoryValue(line)).append("\n");
+                    details.append(messageManager.getMessage("messages.essentials.management-death-inventory-raw").replace("{line}", unescapeInventoryValue(line))).append("\n");
                     continue;
                 }
 
@@ -212,12 +212,13 @@ public class ManagementCommand extends Command {
                 String count = value(parts, "count");
                 String damage = value(parts, "damage");
 
-                details.append("§e").append(section)
-                        .append(" §8Slot ").append(slot)
-                        .append(": §f").append(name.isBlank() ? id : name)
-                        .append(" §7x").append(count);
+                details.append(messageManager.getMessage("messages.essentials.management-death-inventory-item")
+                        .replace("{section}", section)
+                        .replace("{slot}", slot)
+                        .replace("{name}", name.isBlank() ? id : name)
+                        .replace("{count}", count));
                 if (!damage.isBlank() && !"0".equals(damage)) {
-                    details.append(" §8(Damage ").append(damage).append(")");
+                    details.append(messageManager.getMessage("messages.essentials.management-death-inventory-damage").replace("{damage}", damage));
                 }
                 details.append("\n");
             }
@@ -247,11 +248,13 @@ public class ManagementCommand extends Command {
 
     private String formatDeathHistory(String playerName, DeathManager.DeathPoint point) {
         String date = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(point.createdAt()));
-        return "§f" + playerName + " §8(" + date + ")\n"
-                + "§7" + point.world() + " §8• §f"
-                + formatCoordinate(point.x()) + " "
-                + formatCoordinate(point.y()) + " "
-                + formatCoordinate(point.z());
+        return messageManager.getMessage("messages.essentials.management-death-history-entry-button")
+                .replace("{player}", playerName)
+                .replace("{date}", date)
+                .replace("{world}", point.world())
+                .replace("{x}", formatCoordinate(point.x()))
+                .replace("{y}", formatCoordinate(point.y()))
+                .replace("{z}", formatCoordinate(point.z()));
     }
 
     private String formatCoordinate(double value) {
@@ -339,8 +342,8 @@ public class ManagementCommand extends Command {
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-unban-confirm-title"),
                 messageManager.getMessage("messages.essentials.management-unban-confirm-header").replace("{player}", target.getName())
-                .addButton("§a✓ Bann aufheben", ignored -> executeUnban(admin, target))
-                .addButton("§7Abbrechen", ignored -> openModerationMenu(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-confirm-unban"), ignored -> executeUnban(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-confirm-cancel"), ignored -> openModerationMenu(admin, target))
                 .send(admin);
     }
 
@@ -389,12 +392,13 @@ public class ManagementCommand extends Command {
         String created = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.createdAt()));
         String expires = punishment.expiresAt() == null ? messageManager.getMessage("messages.essentials.management-history-permanent") :
                 new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.expiresAt()));
-        String details = "§7Typ: §f" + punishment.type()
-                + "\n§7Grund: §f" + punishment.reason()
-                + "\n§7Moderator: §f" + (punishment.moderatorName() == null ? messageManager.getMessage("messages.essentials.management-history-console") : punishment.moderatorName())
-                + "\n§7Erstellt: §f" + created
-                + "\n§7Ablauf: §f" + expires
-                + "\n§7Status: §f" + (punishment.active() ? messageManager.getMessage("messages.essentials.management-history-active") : messageManager.getMessage("messages.essentials.management-history-inactive"));
+        String details = messageManager.getMessage("messages.essentials.management-history-entry")
+                .replace("{type}", punishment.type())
+                .replace("{reason}", punishment.reason())
+                .replace("{moderator}", punishment.moderatorName() == null ? messageManager.getMessage("messages.essentials.management-history-console") : punishment.moderatorName())
+                .replace("{created}", created)
+                .replace("{expires}", expires)
+                .replace("{status}", punishment.active() ? messageManager.getMessage("messages.essentials.management-history-active") : messageManager.getMessage("messages.essentials.management-history-inactive"));
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-history-entry-title"),
                 details)
