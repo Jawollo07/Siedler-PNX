@@ -15,6 +15,7 @@ import de.jawollo07.siedler.eco.TaxManager;
 import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
+import de.jawollo07.siedler.essentials.ManagementCommand;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
@@ -92,6 +93,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new ClaimCommand(this));
         commandManager.register(new Elimination(this));
         commandManager.register(new EcoCommand(this));
+        commandManager.register(new ManagementCommand(this));
     }
 
     private void registerEvents() {
