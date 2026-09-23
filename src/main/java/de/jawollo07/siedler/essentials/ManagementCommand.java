@@ -15,12 +15,14 @@ public class ManagementCommand extends Command {
     private final SiedlerPlugin plugin;
     private final MessageManager messageManager;
     private final String prefix;
+    private final ModerationManager moderationManager;
 
     public ManagementCommand(SiedlerPlugin plugin) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
         this.plugin = plugin;
         this.messageManager = new MessageManager();
         this.prefix = messageManager.getPrefix("essentials");
+        this.moderationManager = new ModerationManager(plugin);
         setPermission("siedler.admin");
         setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         enableCommandTree();
