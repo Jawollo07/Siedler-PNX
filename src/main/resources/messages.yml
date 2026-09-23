@@ -87,7 +87,7 @@ messages:
     management-online: "§aOnline"
     management-offline: "§7Offline"
 
-    # Befehle
+    # Homes\n    home-created: "§aHome §f{name}§a wurde gespeichert."\n    home-deleted: "§aHome §f{name}§a wurde gelöscht."\n    home-not-found: "§cDas Home §f{name}§c wurde nicht gefunden."\n    home-teleported: "§aDu wurdest zu Home §f{name}§a teleportiert."\n    home-error: "§cHome konnte nicht verarbeitet werden: §f{error}"\n    home-teleport-error: "§cTeleport zum Home fehlgeschlagen: §f{error}"\n    homes-empty: "§7Du hast noch keine Homes gespeichert."\n    homes-title: "Meine Homes"\n    homes-header: "§7Gespeicherte Homes: §f{count}\\n\\n§8Wähle ein Home zum Teleportieren."\n    home-button: "§e{name}\\n§7{world} §8• §f{x} / {y} / {z}"\n    home-close: "Schließen"\n\n    # Befehle
     management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung help §8- §fZeigt diese Hilfe an"
     management-command-usage: "§cVerwendung: /verwaltung [menu|help]"
     management-no-permission: "§cDu hast keine Berechtigung für die Verwaltung."
