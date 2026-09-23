@@ -82,7 +82,10 @@ public final class SQLite {
                         "CREATE TABLE IF NOT EXISTS player_stats (" +
                         "player_id TEXT PRIMARY KEY, " +
                         "kills INTEGER NOT NULL DEFAULT 0, " +
-                        "deaths INTEGER NOT NULL DEFAULT 0)"
+                        "deaths INTEGER NOT NULL DEFAULT 0, " +
+                        "soldier_kills INTEGER NOT NULL DEFAULT 0, " +
+                        "monster_kills INTEGER NOT NULL DEFAULT 0, " +
+                        "playtime_seconds INTEGER NOT NULL DEFAULT 0)"
                 );
             }
 
