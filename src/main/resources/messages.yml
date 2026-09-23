@@ -8,7 +8,7 @@ messages:
     info: "Plugin for the Minecraft Siedler Project"
   essentials:
     welcome-message: "Willkommen "
-    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet."
+    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
 
     # Verwaltung – Hauptmenü
     management-title: "Siedler Verwaltung"
@@ -347,7 +347,7 @@ messages:
     team-not-found: "§cTeam '"
   elimination:
     prefix: "[Elemination]: "
-    broadcast-message: "Team wurde eliminiert: "
+    broadcast-message: "Team wurde eliminiert: " # Format: prefix + broadcast-message + Team Name
     welcome-message: "Dein Team wurde leider eliminiert"
     command-usage: ""
   eco:
