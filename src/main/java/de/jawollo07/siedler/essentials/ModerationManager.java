@@ -74,6 +74,16 @@ public final class ModerationManager {
         }
     }
 
+    public synchronized String findPlayerIdByName(String playerName) throws SQLException {
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(
+                "SELECT id FROM players WHERE last_name = ? COLLATE NOCASE ORDER BY last_seen DESC LIMIT 1")) {
+            statement.setString(1, playerName);
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next() ? rs.getString("id") : null;
+            }
+        }
+    }
+
     public synchronized Punishment getActiveBan(String playerId) throws SQLException {
         long now = System.currentTimeMillis();
         try (PreparedStatement statement = storage.getConnection().prepareStatement(
