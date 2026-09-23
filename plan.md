@@ -162,7 +162,13 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [x] Warn, Kick, Ban und TempBan
 - [x] Unban und Moderationshistorie
 - [x] persistente Moderationsdaten
-- [ ] TPA
+- [x] TPA-Anfragen
+- [x] `/tpa <Spieler>`
+- [x] `/tpaccept`
+- [x] `/tpdeny`
+- [x] `/tpacancel`
+- [x] automatische Anfrage-Ablaufzeit (60 Sekunden)
+- [x] nur eine offene Anfrage pro Absender/Ziel
 - [ ] Start-System
 - [ ] Death Points
 - [ ] persistenter 27-Slot `/ec`
@@ -286,4 +292,9 @@ Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `tea
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
 
 
-Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests, Player Stats, Dashboard/Statistiken und Anti-AFK bleiben offen.
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests, Player Stats, Dashboard/Statistiken und Anti-AFK bleiben offen.
+
+
+### TPA-System
+
+Das TPA-System arbeitet mit kurzlebigen, serverseitigen Anfragen. Eine Anfrage ist standardmäßig 60 Sekunden gültig. Pro Spieler kann jeweils nur eine ausgehende bzw. eingehende Anfrage aktiv sein. Annahme teleportiert den anfragenden Spieler zum Zielspieler; Ablehnung und Abbruch entfernen die Anfrage. Offline-/abgelaufene Anfragen werden verworfen.
