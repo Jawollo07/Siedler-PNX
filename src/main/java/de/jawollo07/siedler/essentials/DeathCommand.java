@@ -39,8 +39,6 @@ public final class DeathCommand extends Command {
                 }
 
                 deathManager.teleport(player, point);
-                deathManager.deleteDeathPoint(player);
-
                 player.sendMessage(prefix + messages.getMessage("messages.essentials.death-teleported")
                         .replace("{world}", point.world())
                         .replace("{x}", format(point.x()))
