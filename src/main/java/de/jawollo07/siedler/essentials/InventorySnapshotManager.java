@@ -22,7 +22,21 @@ public final class InventorySnapshotManager {
             String playerId,
             String reason,
             long capturedAt,
-            String inventoryData
+            String inventoryData,
+            Double health,
+            Double maxHealth,
+            Double experience,
+            Integer level,
+            Double food,
+            Double saturation,
+            Integer air,
+            Integer maxAir,
+            String world,
+            Double x,
+            Double y,
+            Double z,
+            Double yaw,
+            Double pitch
     ) {}
 
     private final SiedlerPlugin plugin;
@@ -37,23 +51,56 @@ public final class InventorySnapshotManager {
         if (player == null) return;
 
         ensurePlayer(player);
-
         String data = serializeInventory(player);
         String sql = """
-                INSERT INTO inventory_snapshots
-                    (id, player_id, reason, captured_at, inventory_data)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO player_state_snapshots
+                    (id, player_id, reason, captured_at, health, max_health, experience, level,
+                     food, saturation, air, max_air, world, x, y, z, yaw, pitch, inventory_data)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            long now = System.currentTimeMillis();
             statement.setString(1, UUID.randomUUID().toString());
             statement.setString(2, player.getUniqueId().toString());
             statement.setString(3, normalizeReason(reason));
-            statement.setLong(4, System.currentTimeMillis());
-            statement.setString(5, data);
+            statement.setLong(4, now);
+            setNumber(statement, 5, invokeNumber(player, "getHealth"));
+            setNumber(statement, 6, invokeNumber(player, "getMaxHealth"));
+            setNumber(statement, 7, invokeNumber(player, "getExperience"));
+            setNumber(statement, 8, invokeNumber(player, "getExperienceLevel"));
+            setNumber(statement, 9, invokeNumber(player, "getFood"));
+            setNumber(statement, 10, invokeNumber(player, "getSaturation"));
+            setNumber(statement, 11, invokeNumber(player, "getAir"));
+            setNumber(statement, 12, invokeNumber(player, "getMaxAir"));
+            Object level = invokeOptional(player, "getLevel");
+            setString(statement, 13, invokeOptional(level, "getName"));
+            Object location = invokeOptional(player, "getLocation");
+            setNumber(statement, 14, invokeNumber(location, "getX"));
+            setNumber(statement, 15, invokeNumber(location, "getY"));
+            setNumber(statement, 16, invokeNumber(location, "getZ"));
+            setNumber(statement, 17, invokeNumber(location, "getYaw"));
+            setNumber(statement, 18, invokeNumber(location, "getPitch"));
+            statement.setString(19, data);
             statement.executeUpdate();
         }
     }
+
+    private void setNumber(PreparedStatement statement, int index, Number value) throws SQLException {
+        if (value == null) statement.setObject(index, null);
+        else statement.setDouble(index, value.doubleValue());
+    }
+
+    private void setString(PreparedStatement statement, int index, Object value) throws SQLException {
+        if (value == null) statement.setObject(index, null);
+        else statement.setString(index, String.valueOf(value));
+    }
+
+    private Number invokeNumber(Object target, String method) {
+        Object value = invokeOptional(target, method);
+        return value instanceof Number number ? number : null;
+    }
+
 
     /** Captures all currently online players. Reflection keeps this compatible with Map/Collection/array server APIs. */
     public void snapshotOnlinePlayers(String reason) {
@@ -85,7 +132,7 @@ public final class InventorySnapshotManager {
 
         String sql = """
                 SELECT id, player_id, reason, captured_at, inventory_data
-                FROM inventory_snapshots
+                FROM player_state_snapshots
                 WHERE player_id = ?
                 ORDER BY captured_at DESC
                 LIMIT 1
@@ -106,7 +153,7 @@ public final class InventorySnapshotManager {
         int safeLimit = Math.max(1, Math.min(limit, 500));
         String sql = """
                 SELECT id, player_id, reason, captured_at, inventory_data
-                FROM inventory_snapshots
+                FROM player_state_snapshots
                 WHERE player_id = ?
                 ORDER BY captured_at DESC
                 LIMIT ?
@@ -125,13 +172,30 @@ public final class InventorySnapshotManager {
         return history;
     }
 
+    private Double getDouble(ResultSet resultSet, String column) throws SQLException {
+        double value = resultSet.getDouble(column);
+        return resultSet.wasNull() ? null : value;
+    }
+
+    private Integer getInt(ResultSet resultSet, String column) throws SQLException {
+        int value = resultSet.getInt(column);
+        return resultSet.wasNull() ? null : value;
+    }
+
     private InventorySnapshot map(ResultSet resultSet) throws SQLException {
         return new InventorySnapshot(
                 resultSet.getString("id"),
                 resultSet.getString("player_id"),
                 resultSet.getString("reason"),
                 resultSet.getLong("captured_at"),
-                resultSet.getString("inventory_data")
+                resultSet.getString("inventory_data"),
+                getDouble(resultSet, "health"), getDouble(resultSet, "max_health"),
+                getDouble(resultSet, "experience"), getInt(resultSet, "level"),
+                getDouble(resultSet, "food"), getDouble(resultSet, "saturation"),
+                getInt(resultSet, "air"), getInt(resultSet, "max_air"),
+                resultSet.getString("world"),
+                getDouble(resultSet, "x"), getDouble(resultSet, "y"), getDouble(resultSet, "z"),
+                getDouble(resultSet, "yaw"), getDouble(resultSet, "pitch")
         );
     }
 
