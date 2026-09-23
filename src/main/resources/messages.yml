@@ -100,6 +100,19 @@ messages:
     home-button: "§e{name}\\n§7{world} §8• §f{x} / {y} / {z}"
     home-close: "Schließen"
 
+    # TPA
+    tpa-sent: "§aTeleportanfrage an §f{player}§a gesendet."
+    tpa-received: "§e{player}§f möchte sich zu dir teleportieren. Nutze §a/tpaccept§f zum Annehmen oder §c/tpdeny§f zum Ablehnen."
+    tpa-accepted: "§aTeleportanfrage von §f{player}§a angenommen."
+    tpa-declined: "§cTeleportanfrage von §f{player}§c abgelehnt."
+    tpa-cancelled: "§aDeine Teleportanfrage wurde abgebrochen."
+    tpa-player-not-found: "§cDer Spieler wurde nicht gefunden oder ist nicht online."
+    tpa-self: "§cDu kannst keine Teleportanfrage an dich selbst senden."
+    tpa-already-pending: "§cDu hast bereits eine offene Teleportanfrage oder der Spieler hat bereits eine Anfrage."
+    tpa-none: "§7Du hast keine offene Teleportanfrage."
+    tpa-expired: "§cDie Teleportanfrage ist abgelaufen oder der Spieler ist nicht mehr online."
+    tpa-error: "§cTeleport fehlgeschlagen: §f{error}"
+
     # Befehle
     management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung help §8- §fZeigt diese Hilfe an"
     management-command-usage: "§cVerwendung: /verwaltung [menu|help]"
