@@ -28,7 +28,7 @@ public final class TPACancelCommand extends Command {
             CommandSender sender = context.getSender();
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                return CommandResult.fail("Spieler erforderlich");
+                return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
             }
             TPAManager.Result result = tpa.cancel(player);
             String key = result == TPAManager.Result.DECLINED ? "tpa-cancelled" : "tpa-none";
