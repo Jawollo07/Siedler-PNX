@@ -33,6 +33,39 @@ public class ManagementCommand extends Command {
             return CommandResult.success();
         }));
         tree.getRoot().then(RouteNode.literal("menu").exec(context -> open(context.getSender())));
+
+        tree.getRoot().then(RouteNode.literal("warn")
+                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
+                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
+                            punish(context.getSender(), context.getArg("player"), "warn", context.getArg("reason"), 0);
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("kick")
+                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
+                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
+                            punish(context.getSender(), context.getArg("player"), "kick", context.getArg("reason"), 0);
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("ban")
+                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
+                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
+                            punish(context.getSender(), context.getArg("player"), "ban", context.getArg("reason"), 0);
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("tempban")
+                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
+                        .then(RouteNode.argument("minutes", new org.powernukkitx.command.tree.node.IntNode())
+                                .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
+                                    punish(context.getSender(), context.getArg("player"), "tempban", context.getArg("reason"),
+                                            Integer.parseInt(context.getArg("minutes")));
+                                    return CommandResult.success();
+                                })))));
+        tree.getRoot().then(RouteNode.literal("unban")
+                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
+                    unban(context.getSender(), context.getArg("player"));
+                    return CommandResult.success();
+                })));
+
         tree.getRoot().exec(context -> open(context.getSender()));
     }
 
@@ -43,6 +76,57 @@ public class ManagementCommand extends Command {
         }
         openMainMenu(player);
         return CommandResult.success();
+    }
+
+    private void punish(CommandSender sender, String playerName, String type, String reason, int minutes) {
+        try {
+            String playerId = findPlayerId(playerName);
+            if (playerId == null) {
+                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-player-not-found"));
+                return;
+            }
+            String moderatorId = sender instanceof Player p ? p.getUniqueId().toString() : null;
+            String moderatorName = sender instanceof Player p ? p.getName() : "Console";
+            ModerationManager.Punishment result;
+            if ("warn".equals(type)) result = moderationManager.warn(playerId, playerName, reason, moderatorId, moderatorName);
+            else if ("kick".equals(type)) result = moderationManager.kick(playerId, playerName, reason, moderatorId, moderatorName);
+            else if ("ban".equals(type)) result = moderationManager.ban(playerId, playerName, reason, moderatorId, moderatorName);
+            else result = moderationManager.tempBan(playerId, playerName, reason, moderatorId, moderatorName, minutes * 60_000L);
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
+                    .replace("{type}", type).replace("{player}", playerName));
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void unban(CommandSender sender, String playerName) {
+        try {
+            String playerId = findPlayerId(playerName);
+            if (playerId == null) {
+                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-player-not-found"));
+                return;
+            }
+            String moderatorId = sender instanceof Player p ? p.getUniqueId().toString() : null;
+            if (moderationManager.unban(playerId, moderatorId, "Unban durch Verwaltung")) {
+                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
+                        .replace("{type}", "unban").replace("{player}", playerName));
+            } else {
+                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-no-active-ban"));
+            }
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private String findPlayerId(String playerName) throws java.sql.SQLException {
+        String id = new ModerationManager(plugin).findPlayerIdByName(playerName);
+        if (id != null) return id;
+        for (Player player : plugin.getServer().getOnlinePlayers().values()) {
+            if (player.getName().equalsIgnoreCase(playerName)) return player.getUniqueId().toString();
+        }
+        return null;
     }
 
     private void openMainMenu(Player player) {
