@@ -176,7 +176,7 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [x] Todespunkt wird nach erfolgreicher Nutzung entfernt
 - [ ] persistenter 27-Slot `/ec`
 - [ ] persistenter 54-Slot `/teamchest`
-- [ ] Player Stats
+- [x] Player Stats (`/stats` und `/stats admin`)
 - [ ] Server Dashboard/Statistiken
 - [ ] Anti-AFK
 
@@ -304,4 +304,4 @@ Das TPA-System arbeitet mit kurzlebigen, serverseitigen Anfragen. Eine Anfrage i
 
 ### Death System
 
-Das Death-System speichert den letzten Todespunkt eines Spielers persistent in `death_points`. Mit `/death` kann der Spieler einmalig zu diesem Punkt zurückkehren; nach erfolgreicher Teleportation wird der gespeicherte Punkt entfernt.
+Das Death-System speichert Todespunkte eines Spielers persistent in `death_points`. Mit `/death` kann der Spieler zum letzten Punkt zurückkehren; die Punkte bleiben für die Admin-Todeshistorie erhalten.
