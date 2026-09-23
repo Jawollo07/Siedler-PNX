@@ -36,6 +36,7 @@ public final class SiedlerPlugin extends PluginBase {
     private EcoCommand ecoCommand;
     private TaxManager taxManager;
     private TPAManager tpaManager;
+    private DeathManager deathManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -68,6 +69,7 @@ public final class SiedlerPlugin extends PluginBase {
         taxManager = new TaxManager(this);
         taxManager.start();
         tpaManager = new TPAManager(this);
+        deathManager = new DeathManager(this);
 
         // Registration
         registerCommands();
@@ -107,6 +109,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TPAAcceptCommand(this, tpaManager));
         commandManager.register(new TPADenyCommand(this, tpaManager));
         commandManager.register(new TPACancelCommand(this, tpaManager));
+        commandManager.register(new DeathCommand(this, deathManager));
     }
 
     private void registerEvents() {
@@ -129,6 +132,7 @@ public final class SiedlerPlugin extends PluginBase {
         try {
             getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+            getServer().getPluginManager().registerEvents(new DeathListener(deathManager), this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
