@@ -174,7 +174,8 @@ public final class DeathManager {
                             resultSet.getDouble("z"),
                             resultSet.getFloat("yaw"),
                             resultSet.getFloat("pitch"),
-                            resultSet.getLong("created_at")
+                            resultSet.getLong("created_at"),
+                            resultSet.getString("inventory_data")
                     ));
                 }
             }
