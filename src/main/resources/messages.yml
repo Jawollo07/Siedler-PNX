@@ -26,7 +26,7 @@ messages:
     management-actions-title: "Spieler auswählen"
     management-actions-header: "§7Online: §f{online}\\n\\n§8Wähle einen Spieler für Verwaltungsaktionen."
     management-player-title: "Spielerinformationen"
-    management-player-info: "§eName: §f{name}\\n§eUUID: §f{uuid}\\n§eTeam: §f{team}\\n§eWelt: §f{world}\\n§ePosition: §f{x} / {y} / {z}\\n§eAktiver Bann: §f{ban}\\n§eHistorie: §f{history} Einträge"
+    management-player-info: "§eName: §f{name}\\n§eUUID: §f{uuid}\\n§eTeam: §f{team}\\n§eWelt: §f{world}\\n§ePosition: §f{x} / {y} / {z}\\n§eAktiver Bann: §f{ban}\\n§eModerationshistorie: §f{history} Einträge\\n§eTodespunkte: §f{deathHistory}"
     management-no-players: "§7Keine Spieler online."
     management-player-not-found: "§cSpieler nicht gefunden."
 
@@ -60,6 +60,11 @@ messages:
 
     # Moderationshistorie
     management-history: "Moderationshistorie"
+    management-death-history: "Todeshistorie"
+    management-death-history-title: "Todeshistorie"
+    management-death-history-header: "§7Spieler: §f{player}\\n§7Gespeicherte Todespunkte: §f{count}\\n\\n§8Alle bekannten Todespositionen."
+    management-death-history-entry-title: "Todespunkt"
+    management-death-history-empty: "§7Für diesen Spieler sind keine Todespunkte gespeichert."
     management-history-title: "Moderationshistorie"
     management-history-header: "§7Spieler: §f{player}\\n§7Einträge: §f{count}"
     management-history-entry-title: "Maßnahmendetails"
