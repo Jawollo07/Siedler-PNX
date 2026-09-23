@@ -14,8 +14,9 @@ import org.powernukkitx.utils.Config;
 /** Loads and provides access to the plugin's messages.yml configuration. */
 public class MessageManager {
     private static final Pattern NUMERIC_YAML_KEY = Pattern.compile("^(\\s+)(\\d+):(?=\\s|$)", Pattern.MULTILINE);
-    private static final Pattern BOOLEAN_YAML_VALUE = Pattern.compile("^(\\s*[^#\\n:]+:\\s*)(true|false|yes|no|on|off)(\\s*(?:#.*)?)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    private static final Pattern BOOLEAN_YAML_VALUE = Pattern.compile("^(\\s*(?:[^#\\n:]+:\\s*|-\\s+))(true|false|yes|no|on|off)(\\s*(?:#.*)?)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
     private static final String BUNDLED_MESSAGES = "messages.yml";
+    private static final Pattern BOOLEAN_INLINE_VALUE = Pattern.compile("(:\\s+|-\\s+)(true|false|yes|no|on|off)(?=\\s*(?:#|$))", Pattern.CASE_INSENSITIVE);
 
     private static volatile Config config;
 
