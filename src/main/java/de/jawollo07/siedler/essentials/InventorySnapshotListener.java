@@ -29,7 +29,7 @@ public final class InventorySnapshotListener implements Listener {
         try {
             snapshotManager.snapshot(player, reason);
         } catch (Exception exception) {
-            player.getServer().getLogger().warning(
+            SiedlerPlugin.getInstance().getLogger().warning(
                     "Inventar-Snapshot für " + player.getName() + " fehlgeschlagen: "
                             + exception.getMessage()
             );
