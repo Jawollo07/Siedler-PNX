@@ -7,7 +7,8 @@ messages:
     disable: "Disabled"
     info: "Plugin for the Minecraft Siedler Project"
   essentials:
-    welcome-message: "Willkommen "\n    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
+    welcome-message: "Willkommen "
+    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
     management-title: "Siedler Verwaltung"
     management-header: "§7Zentrale Verwaltung\n\nOnline: §f{online}\n\n§8Weitere Verwaltungsbereiche werden hier ergänzt."
     management-players: "Spieler verwalten"
