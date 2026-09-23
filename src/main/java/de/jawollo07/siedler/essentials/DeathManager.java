@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-/** Stores and retrieves the latest death point of each player. */
+/** Stores and retrieves death points for players. */
 public final class DeathManager {
     public record DeathPoint(String id, String playerId, String world,
                              double x, double y, double z,
@@ -30,12 +30,6 @@ public final class DeathManager {
                     (id, player_id, world, x, y, z, yaw, pitch, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-
-        try (PreparedStatement delete = storage.getConnection().prepareStatement(
-                "DELETE FROM death_points WHERE player_id = ?")) {
-            delete.setString(1, playerId);
-            delete.executeUpdate();
-        }
 
         try (PreparedStatement insert = storage.getConnection().prepareStatement(sql)) {
             insert.setString(1, UUID.randomUUID().toString());
@@ -86,6 +80,39 @@ public final class DeathManager {
         }
     }
 
+    public java.util.List<DeathPoint> getDeathHistory(String playerId) throws SQLException {
+        if (playerId == null || playerId.isBlank()) return java.util.List.of();
+
+        String sql = """
+                SELECT id, player_id, world, x, y, z, yaw, pitch, created_at
+                FROM death_points
+                WHERE player_id = ?
+                ORDER BY created_at DESC
+                """;
+
+        java.util.List<DeathPoint> history = new java.util.ArrayList<>();
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
+            statement.setString(1, playerId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    history.add(new DeathPoint(
+                            resultSet.getString("id"),
+                            resultSet.getString("player_id"),
+                            resultSet.getString("world"),
+                            resultSet.getDouble("x"),
+                            resultSet.getDouble("y"),
+                            resultSet.getDouble("z"),
+                            resultSet.getFloat("yaw"),
+                            resultSet.getFloat("pitch"),
+                            resultSet.getLong("created_at")
+                    ));
+                }
+            }
+        }
+        return history;
+    }
+
+    /** Legacy helper; death points are retained for the admin history. */
     public boolean deleteDeathPoint(Player player) throws SQLException {
         if (player == null) return false;
         try (PreparedStatement statement = storage.getConnection().prepareStatement(
