@@ -27,10 +27,16 @@ public class MessageManager {
         }
         File configFile = new File(dataFolder, BUNDLED_MESSAGES);
         copyDefaultsIfMissing(configFile);
+        validateAndReportSyntax(configFile);
         normalizeLegacyNumericKeys(configFile);
         normalizeLegacyBooleanValues(configFile);
 
-        Config loaded = new Config(configFile, Config.YAML);
+        Config loaded;
+        try {
+            loaded = new Config(configFile, Config.YAML);
+        } catch (RuntimeException e) {
+            throw new IllegalStateException(buildParserError(configFile, e), e);
+        }
         Config defaults = loadBundledDefaults();
         loaded.setDefault(defaults.getRootSection());
         MessageManager.config = loaded;
@@ -60,6 +66,70 @@ public class MessageManager {
         } catch (IOException e) {
             throw new IllegalStateException("Could not create messages.yml", e);
         }
+    }
+
+    private void validateAndReportSyntax(File configFile) {
+        try {
+            String content = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
+            String[] lines = content.split("\\\\R", -1);
+            int booleanCount = 0;
+            int numericKeyCount = 0;
+            int tabCount = 0;
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                if (line.startsWith("\\\\uFEFF") && i == 0) {
+                    throw new IllegalStateException("Invalid messages.yml syntax at line 1: UTF-8 BOM detected. Remove the BOM.");
+                }
+                if (line.indexOf('\\\\t') >= 0) {
+                    tabCount++;
+                }
+                if (NUMERIC_YAML_KEY.matcher(line).find()) {
+                    numericKeyCount++;
+                }
+                if (BOOLEAN_YAML_VALUE.matcher(line).find()) {
+                    booleanCount++;
+                }
+            }
+            if (tabCount > 0) {
+                throw new IllegalStateException("Invalid messages.yml indentation: " + tabCount
+                        + " line(s) contain tab characters. Use spaces for YAML indentation.");
+            }
+            if (booleanCount > 0) {
+                System.err.println("[Siedler] messages.yml: found " + booleanCount
+                        + " unquoted boolean-like value(s); automatically converting them to strings.");
+            }
+            if (numericKeyCount > 0) {
+                System.err.println("[Siedler] messages.yml: found " + numericKeyCount
+                        + " numeric YAML key(s); automatically quoting them for PowerNukkitX compatibility.");
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read messages.yml for syntax validation: " + e.getMessage(), e);
+        }
+    }
+
+    private String buildParserError(File configFile, RuntimeException cause) {
+        StringBuilder message = new StringBuilder();
+        message.append("Could not parse messages.yml: ").append(configFile.getAbsolutePath()).append('\\n');
+        message.append("PowerNukkitX rejected the YAML syntax after compatibility normalization.").append('\\n');
+        message.append("Check indentation (spaces only), matching quotes, ':' characters, and YAML structure.");
+        if (cause.getMessage() != null && !cause.getMessage().isBlank()) {
+            message.append(" Parser: ").append(cause.getMessage());
+        }
+        try {
+            String content = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
+            String[] lines = content.split("\\\\R", -1);
+            for (int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                if (line.indexOf('\\\\t') >= 0) {
+                    message.append("\\nPossible problem at line ").append(i + 1)
+                            .append(": tab indentation is not valid YAML here.");
+                    break;
+                }
+            }
+        } catch (IOException ignored) {
+            // Keep the original parser diagnostic if the file cannot be read again.
+        }
+        return message.toString();
     }
 
     private void normalizeLegacyNumericKeys(File configFile) {
