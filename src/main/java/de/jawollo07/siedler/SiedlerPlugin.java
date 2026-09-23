@@ -134,7 +134,7 @@ public final class SiedlerPlugin extends PluginBase {
                         inventorySnapshotManager.snapshotOnlinePlayers("PERIODIC");
                     }
                 }
-            }, 20 * 60);
+            }, 20 * 60 * 3);
         } catch (Exception e) {
             this.getLogger().error("Error with Task registration: " + e);
         }
