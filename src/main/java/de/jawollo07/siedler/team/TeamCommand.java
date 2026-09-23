@@ -88,58 +88,58 @@ public final class TeamCommand extends Command {
     }
 
     private void sendAdminHelp(CommandSender sender) {
-        sender.sendMessage(prefix + "§eTeam-Admin-Befehle:");
-        sender.sendMessage("§7/team admin create <Name> <Farbe> §8- §fErstellt ein Team");
-        sender.sendMessage("§7/team admin delete <Name> §8- §fLöscht ein Team");
-        sender.sendMessage("§7/team admin add <Spieler> <Team> §8- §fFügt einen Spieler hinzu");
-        sender.sendMessage("§7/team admin remove <Spieler> §8- §fEntfernt einen Spieler");
-        sender.sendMessage("§7/team admin setcolor <Name> <Farbe> §8- §fÄndert die Teamfarbe");
+        sender.sendMessage(prefix + messages.getMessage("messages.team.admin-help-title"));
+        sender.sendMessage(messages.getMessage("messages.team.admin-help-create"));
+        sender.sendMessage(messages.getMessage("messages.team.admin-help-delete"));
+        sender.sendMessage(messages.getMessage("messages.team.admin-help-add"));
+        sender.sendMessage(messages.getMessage("messages.team.admin-help-remove"));
+        sender.sendMessage(messages.getMessage("messages.team.admin-help-setcolor"));
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(prefix + "§eTeam-Befehle:");
-        sender.sendMessage("§7/team create <Name> <Farbe> §8- §fErstellt ein Team");
-        sender.sendMessage("§7/team delete <Name> §8- §fLöscht ein Team");
-        sender.sendMessage("§7/team add <Spieler> <Team> §8- §fFügt einen Online-Spieler hinzu");
-        sender.sendMessage("§7/team remove <Spieler> §8- §fEntfernt einen Spieler");
-        sender.sendMessage("§7/team list §8- §fListet Teams auf");
-        sender.sendMessage("§7/team info <Name> §8- §fZeigt Team-Informationen");
-        sender.sendMessage("§7/team setcolor <Name> <Farbe> §8- §fÄndert die Teamfarbe");
+        sender.sendMessage(prefix + messages.getMessage("messages.team.help-title"));
+        sender.sendMessage(messages.getMessage("messages.team.help-create"));
+        sender.sendMessage(messages.getMessage("messages.team.help-delete"));
+        sender.sendMessage(messages.getMessage("messages.team.help-add"));
+        sender.sendMessage(messages.getMessage("messages.team.help-remove"));
+        sender.sendMessage(messages.getMessage("messages.team.help-list"));
+        sender.sendMessage(messages.getMessage("messages.team.help-info"));
+        sender.sendMessage(messages.getMessage("messages.team.help-setcolor"));
     }
 
     private void create(CommandSender sender, String name, String color) {
         try {
             Team team = teamManager.createTeam(name, color);
-            sender.sendMessage(prefix + "Team §f" + team.name() + "§a wurde mit der Farbe §f" + team.color() + "§a erstellt.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.created").replace("{team}", team.name()).replace("{color}", team.color()));
         } catch (Exception e) {
-            sender.sendMessage(prefix + "§cTeam konnte nicht erstellt werden: " + e.getMessage());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.create-error").replace("{error}", safe(e)));
         }
     }
 
     private void delete(CommandSender sender, String name) {
         try {
             teamManager.deleteTeam(name);
-            sender.sendMessage(prefix + "§aTeam §f" + name + "§a wurde gelöscht.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.deleted").replace("{team}", name));
         } catch (Exception e) {
-            sender.sendMessage(prefix + "§cTeam konnte nicht gelöscht werden: " + e.getMessage());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.delete-error").replace("{error}", safe(e)));
         }
     }
 
     private void add(CommandSender sender, String player, String team) {
         try {
             teamManager.addPlayerToTeam(player, team);
-            sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde Team §f" + team + "§a hinzugefügt.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.player-added").replace("{player}", player).replace("{team}", team));
         } catch (Exception e) {
-            sender.sendMessage(prefix + "§cSpieler konnte nicht hinzugefügt werden: " + e.getMessage());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.player-add-error").replace("{error}", safe(e)));
         }
     }
 
     private void remove(CommandSender sender, String player) {
         try {
             teamManager.removePlayerFromTeam(player);
-            sender.sendMessage(prefix + "§aSpieler §f" + player + "§a wurde aus seinem Team entfernt.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.player-removed").replace("{player}", player));
         } catch (Exception e) {
-            sender.sendMessage(prefix + "§cSpieler konnte nicht entfernt werden: " + e.getMessage());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.player-remove-error").replace("{error}", safe(e)));
         }
     }
 
@@ -147,15 +147,15 @@ public final class TeamCommand extends Command {
         try {
             List<Team> teams = teamManager.getTeams();
             if (teams.isEmpty()) {
-                sender.sendMessage(prefix + "§7Es sind keine Teams vorhanden.");
+                sender.sendMessage(prefix + messages.getMessage("messages.team.none"));
                 return;
             }
-            sender.sendMessage(prefix + "§eTeams:");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.list-title"));
             for (Team team : teams) {
-                sender.sendMessage("§8- §f" + team.name() + " §8(§f" + team.color() + "§8)");
+                sender.sendMessage(messages.getMessage("messages.team.list-entry").replace("{team}", team.name()).replace("{color}", team.color()));
             }
         } catch (SQLException e) {
-            sender.sendMessage(prefix + "§cTeams konnten nicht geladen werden.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.list-error"));
             plugin.getLogger().warning("Could not list teams: " + e.getMessage());
         }
     }
@@ -163,23 +163,25 @@ public final class TeamCommand extends Command {
     private void info(CommandSender sender, String name) {
         try {
             Team team = teamManager.getTeamByName(name);
-            sender.sendMessage(prefix + "§eTeam-Informationen:");
-            sender.sendMessage("§7Name: §f" + team.name());
-            sender.sendMessage("§7Farbe: §f" + team.color());
-            sender.sendMessage("§7Steuerbonus: §f" + team.taxBonus());
-            sender.sendMessage("§7Eliminiert: §f" + (team.eliminated() == 1 ? "Ja" : "Nein"));
-            sender.sendMessage("§7Kontostand: §f" + team.balance());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.info-title"));
+            sender.sendMessage(messages.getMessage("messages.team.info-name").replace("{name}", team.name()));
+            sender.sendMessage(messages.getMessage("messages.team.info-color").replace("{color}", team.color()));
+            sender.sendMessage(messages.getMessage("messages.team.info-tax-bonus").replace("{bonus}", String.valueOf(team.taxBonus())));
+            sender.sendMessage(messages.getMessage("messages.team.info-eliminated").replace("{status}", team.eliminated() == 1 ? messages.getMessage("messages.team.yes") : messages.getMessage("messages.team.no")));
+            sender.sendMessage(messages.getMessage("messages.team.info-balance").replace("{balance}", String.valueOf(team.balance())));
         } catch (SQLException e) {
-            sender.sendMessage(prefix + "§cTeam §f" + name + "§c wurde nicht gefunden.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.not-found").replace("{team}", name));
         }
     }
+
+    private String safe(Exception e) { return e.getMessage() == null ? messages.getMessage("messages.essentials.error-unknown") : e.getMessage(); }
 
     private void setColor(CommandSender sender, String name, String color) {
         try {
             teamManager.setTeamColor(name, color);
-            sender.sendMessage(prefix + "§aDie Farbe von Team §f" + name + "§a wurde auf §f" + color + "§a gesetzt.");
+            sender.sendMessage(prefix + messages.getMessage("messages.team.color-updated").replace("{team}", name).replace("{color}", color));
         } catch (Exception e) {
-            sender.sendMessage(prefix + "§cTeamfarbe konnte nicht geändert werden: " + e.getMessage());
+            sender.sendMessage(prefix + messages.getMessage("messages.team.color-error").replace("{error}", safe(e)));
         }
     }
 }
