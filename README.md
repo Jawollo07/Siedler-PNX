@@ -98,6 +98,10 @@ Current command structure:
 | `/home` | `<Name>` | – |
 | `/homes` | Home-GUI | – |
 | `/delhome` | `<Name>` | – |
+| `/tpa` | `<Spieler>` | – |
+| `/tpaccept` | – | – |
+| `/tpdeny` | – | – |
+| `/tpacancel` | – | – |
 
 Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
 
@@ -151,6 +155,8 @@ src/main/java/de/jawollo07/siedler/
 ├── essentials/
 └── mines/
 ```
+
+The TPA system uses short-lived in-memory requests with a 60-second timeout and explicit accept/deny/cancel commands.
 
 The systems from Siedler 1.x are migrated in dependency order:
 
