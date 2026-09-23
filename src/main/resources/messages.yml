@@ -212,6 +212,13 @@ messages:
     here-is-no-claim: "§cHier befindet sich kein Claim."
     succesfull-deleted: "Claim erfolgreich gelöscht"
     succesfull-created: "Claim erfolgreich erstellt"
+    create-failed: "§cClaim konnte nicht erstellt werden"
+    delete-failed: "§cClaim konnte nicht gelöscht werden"
+    info-title: "§6Claim-Informationen:"
+    info-id: "§7ID: §f{id}"
+    info-team: "§7Team: §f{team}"
+    info-world: "§7Welt: §f{world}"
+    info-chunks: "§7Chunks: §f{minX}, {minZ} §7bis §f{maxX}, {maxZ}"
     claim-in-other-claim: "Der Bereich überschneidet sich mit einem bestehenden Claim"
   team: 
     prefix: "[Teams]: "
