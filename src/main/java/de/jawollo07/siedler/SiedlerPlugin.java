@@ -17,6 +17,8 @@ import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
 import de.jawollo07.siedler.essentials.ManagementCommand;
 import de.jawollo07.siedler.essentials.PermanentEffect;
+import de.jawollo07.siedler.essentials.InventorySnapshotManager;
+import de.jawollo07.siedler.essentials.InventorySnapshotListener;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
@@ -37,6 +39,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TaxManager taxManager;
     private TPAManager tpaManager;
     private DeathManager deathManager;
+    private InventorySnapshotManager inventorySnapshotManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -70,6 +73,7 @@ public final class SiedlerPlugin extends PluginBase {
         taxManager.start();
         tpaManager = new TPAManager(this);
         deathManager = new DeathManager(this);
+        inventorySnapshotManager = new InventorySnapshotManager(this);
 
         // Registration
         registerCommands();
@@ -123,6 +127,14 @@ public final class SiedlerPlugin extends PluginBase {
     private void registerTasks() {
         try {
             this.getServer().getScheduler().scheduleRepeatingTask(this, new PermanentEffect(), 20);
+            this.getServer().getScheduler().scheduleRepeatingTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    if (inventorySnapshotManager != null) {
+                        inventorySnapshotManager.snapshotOnlinePlayers("PERIODIC");
+                    }
+                }
+            }, 20 * 60);
         } catch (Exception e) {
             this.getLogger().error("Error with Task registration: " + e);
         }
@@ -133,6 +145,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
             getServer().getPluginManager().registerEvents(new DeathListener(deathManager), this);
+            getServer().getPluginManager().registerEvents(new InventorySnapshotListener(inventorySnapshotManager), this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
@@ -140,6 +153,10 @@ public final class SiedlerPlugin extends PluginBase {
     }
     @Override
     public void onDisable() {
+        if (inventorySnapshotManager != null) {
+            inventorySnapshotManager.snapshotOnlinePlayers("SHUTDOWN");
+        }
+
         if (taxManager != null) {
             taxManager.stop();
             taxManager = null;
