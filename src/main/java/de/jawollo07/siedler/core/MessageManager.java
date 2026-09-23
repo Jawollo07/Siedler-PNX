@@ -14,6 +14,7 @@ import org.powernukkitx.utils.Config;
 /** Loads and provides access to the plugin's messages.yml configuration. */
 public class MessageManager {
     private static final Pattern NUMERIC_YAML_KEY = Pattern.compile("^(\\s+)(\\d+):(?=\\s|$)", Pattern.MULTILINE);
+    private static final Pattern BOOLEAN_YAML_VALUE = Pattern.compile("^(\\s*[^#\\n:]+:\\s*)(true|false|yes|no|on|off)(\\s*(?:#.*)?)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
     private static final String BUNDLED_MESSAGES = "messages.yml";
 
     private static volatile Config config;
@@ -26,6 +27,7 @@ public class MessageManager {
         File configFile = new File(dataFolder, BUNDLED_MESSAGES);
         copyDefaultsIfMissing(configFile);
         normalizeLegacyNumericKeys(configFile);
+        normalizeLegacyBooleanValues(configFile);
 
         Config loaded = new Config(configFile, Config.YAML);
         Config defaults = loadBundledDefaults();
@@ -75,6 +77,28 @@ public class MessageManager {
         } catch (IOException e) {
             throw new IllegalStateException("Could not migrate messages.yml", e);
         }
+    }
+
+    private void normalizeLegacyBooleanValues(File configFile) {
+        try {
+            String content = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
+            Matcher matcher = BOOLEAN_YAML_VALUE.matcher(content);
+            StringBuffer normalized = new StringBuffer();
+            while (matcher.find()) {
+                matcher.appendReplacement(normalized, Matcher.quoteReplacement(
+                        matcher.group(1) + "\"" + matcher.group(2) + "\"" + matcher.group(3)));
+            }
+            matcher.appendTail(normalized);
+            if (!content.equals(normalized.toString())) {
+                Files.writeString(configFile.toPath(), normalized.toString(), StandardCharsets.UTF_8);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not migrate boolean values in messages.yml", e);
+        }
+    }
+
+    public boolean isInitialized() {
+        return config != null;
     }
 
     public void save() {
