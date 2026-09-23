@@ -32,7 +32,7 @@ public final class HomesCommand extends Command {
             CommandSender sender = context.getSender();
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                return CommandResult.fail("Spieler erforderlich");
+                return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
             }
 
             openHomes(player);
