@@ -170,7 +170,10 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [x] automatische Anfrage-Ablaufzeit (60 Sekunden)
 - [x] nur eine offene Anfrage pro Absender/Ziel
 - [ ] Start-System
-- [ ] Death Points
+- [x] Death Points
+- [x] `/death` Teleport zum letzten Todespunkt
+- [x] Persistenter letzter Todespunkt mit Welt, Position und Rotation
+- [x] Todespunkt wird nach erfolgreicher Nutzung entfernt
 - [ ] persistenter 27-Slot `/ec`
 - [ ] persistenter 54-Slot `/teamchest`
 - [ ] Player Stats
@@ -298,3 +301,7 @@ Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-Sy
 ### TPA-System
 
 Das TPA-System arbeitet mit kurzlebigen, serverseitigen Anfragen. Eine Anfrage ist standardmäßig 60 Sekunden gültig. Pro Spieler kann jeweils nur eine ausgehende bzw. eingehende Anfrage aktiv sein. Annahme teleportiert den anfragenden Spieler zum Zielspieler; Ablehnung und Abbruch entfernen die Anfrage. Offline-/abgelaufene Anfragen werden verworfen.
+
+### Death System
+
+Das Death-System speichert den letzten Todespunkt eines Spielers persistent in `death_points`. Mit `/death` kann der Spieler einmalig zu diesem Punkt zurückkehren; nach erfolgreicher Teleportation wird der gespeicherte Punkt entfernt.
