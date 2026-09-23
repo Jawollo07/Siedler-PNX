@@ -93,7 +93,6 @@ messages:
     management-offline: "§7Offline"
     management-no-team: "Kein Team"
     management-history-console: "Console"
-    management-history-permanent: "Dauerhaft"
     management-label-warn: "Verwarnung"
     management-label-kick: "Kick"
     management-label-ban: "Permanenter Bann"
