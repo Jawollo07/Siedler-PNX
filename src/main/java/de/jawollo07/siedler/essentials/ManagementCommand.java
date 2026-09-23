@@ -308,7 +308,7 @@ public class ManagementCommand extends Command {
                 messageManager.getMessage("messages.essentials.management-confirm-header")
                         .replace("{player}", target.getName())
                         .replace("{type}", label)
-                        .replace("{reason}", reason)
+                        .replace("{reason}", reason))
                 .addButton(messageManager.getMessage("messages.essentials.management-confirm-action"), ignored -> executePunishment(admin, target, action, reason))
                 .addButton(messageManager.getMessage("messages.essentials.management-confirm-cancel"), ignored -> openModerationMenu(admin, target))
                 .send(admin);
@@ -341,7 +341,7 @@ public class ManagementCommand extends Command {
     private void confirmUnban(Player admin, Player target) {
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-unban-confirm-title"),
-                messageManager.getMessage("messages.essentials.management-unban-confirm-header").replace("{player}", target.getName())
+                messageManager.getMessage("messages.essentials.management-unban-confirm-header").replace("{player}", target.getName()))
                 .addButton(messageManager.getMessage("messages.essentials.management-confirm-unban"), ignored -> executeUnban(admin, target))
                 .addButton(messageManager.getMessage("messages.essentials.management-confirm-cancel"), ignored -> openModerationMenu(admin, target))
                 .send(admin);

@@ -22,6 +22,8 @@ import de.jawollo07.siedler.essentials.InventorySnapshotListener;
 import de.jawollo07.siedler.essentials.StatsManager;
 import de.jawollo07.siedler.essentials.StatsListener;
 import de.jawollo07.siedler.essentials.StatsCommand;
+import de.jawollo07.siedler.essentials.TPAManager;
+import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
