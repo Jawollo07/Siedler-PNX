@@ -94,6 +94,15 @@ public final class ModerationManager {
         }
     }
 
+    public synchronized boolean enforce(Player player) throws SQLException {
+        Punishment punishment = getActiveBan(player.getUniqueId().toString());
+        if (punishment == null) return false;
+        String expiry = punishment.expiresAt() == null ? "" :
+                "\\nAblauf: " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(new java.util.Date(punishment.expiresAt()));
+        disconnect(player, "Du bist gebannt.\\nGrund: " + punishment.reason() + expiry);
+        return true;
+    }
+
     public synchronized List<Punishment> getHistory(String playerId) throws SQLException {
         List<Punishment> result = new ArrayList<>();
         try (PreparedStatement statement = storage.getConnection().prepareStatement(
