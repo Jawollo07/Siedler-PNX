@@ -13,7 +13,7 @@ import java.util.UUID;
 public final class DeathManager {
     public record DeathPoint(String id, String playerId, String world,
                              double x, double y, double z,
-                             float yaw, float pitch, long createdAt) {}
+                             float yaw, float pitch, long createdAt, String inventoryData) {}
 
     private final StorageManager storage;
 
@@ -24,16 +24,16 @@ public final class DeathManager {
     public void saveDeath(Player player) throws SQLException {
         if (player == null || player.getLevel() == null) return;
 
-        String playerId = player.getUniqueId().toString();
+        String inventoryData = serializeInventory(player);
         String sql = """
                 INSERT INTO death_points
-                    (id, player_id, world, x, y, z, yaw, pitch, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (id, player_id, world, x, y, z, yaw, pitch, created_at, inventory_data)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement insert = storage.getConnection().prepareStatement(sql)) {
             insert.setString(1, UUID.randomUUID().toString());
-            insert.setString(2, playerId);
+            insert.setString(2, player.getUniqueId().toString());
             insert.setString(3, player.getLevel().getName());
             insert.setDouble(4, player.getPosition().getX());
             insert.setDouble(5, player.getPosition().getY());
@@ -41,8 +41,79 @@ public final class DeathManager {
             insert.setFloat(7, (float) player.getYaw());
             insert.setFloat(8, (float) player.getPitch());
             insert.setLong(9, System.currentTimeMillis());
+            insert.setString(10, inventoryData);
             insert.executeUpdate();
         }
+    }
+
+    private String serializeInventory(Player player) {
+        StringBuilder out = new StringBuilder();
+        try {
+            Object inventory = player.getClass().getMethod("getInventory").invoke(player);
+            appendInventory(out, "main", inventory);
+            appendInventoryMethod(out, "armor", inventory, "getArmorContents");
+            appendInventoryMethod(out, "offhand", player, "getOffhandInventory");
+        } catch (Exception e) {
+            out.append("inventory_error=").append(escapeInventoryValue(e.getMessage())).append("\n");
+        }
+        return out.toString();
+    }
+
+    private void appendInventoryMethod(StringBuilder out, String section, Object owner, String method) {
+        try {
+            appendInventory(out, section, owner.getClass().getMethod(method).invoke(owner));
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void appendInventory(StringBuilder out, String section, Object inventory) {
+        if (inventory == null) return;
+        try {
+            if (inventory.getClass().isArray()) {
+                int length = java.lang.reflect.Array.getLength(inventory);
+                for (int i = 0; i < length; i++) {
+                    appendItem(out, section, i, java.lang.reflect.Array.get(inventory, i));
+                }
+                return;
+            }
+            int size = ((Number) inventory.getClass().getMethod("getSize").invoke(inventory)).intValue();
+            for (int i = 0; i < size; i++) {
+                Object item = inventory.getClass().getMethod("getItem", int.class).invoke(inventory, i);
+                appendItem(out, section, i, item);
+            }
+        } catch (Exception e) {
+            out.append(section).append("|error=")
+                    .append(escapeInventoryValue(e.getMessage())).append("\n");
+        }
+    }
+
+    private void appendItem(StringBuilder out, String section, int slot, Object item) {
+        if (item == null) return;
+        Object count = invokeOptional(item, "getCount");
+        if (count == null) count = invokeOptional(item, "getAmount");
+        if (count instanceof Number n && n.intValue() <= 0) return;
+
+        out.append(section).append("|slot=").append(slot)
+                .append("|id=").append(escapeInventoryValue(invokeOptional(item, "getId")))
+                .append("|name=").append(escapeInventoryValue(invokeOptional(item, "getName")))
+                .append("|count=").append(escapeInventoryValue(count))
+                .append("|damage=").append(escapeInventoryValue(invokeOptional(item, "getDamage")))
+                .append("|nbt=").append(escapeInventoryValue(invokeOptional(item, "getCompoundTag")))
+                .append("\n");
+    }
+
+    private Object invokeOptional(Object target, String method) {
+        try {
+            return target.getClass().getMethod(method).invoke(target);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private String escapeInventoryValue(Object value) {
+        if (value == null) return "";
+        return String.valueOf(value).replace("\\", "\\\\")
+                .replace("\n", "\\n").replace("|", "\\|");
     }
 
     public DeathPoint getDeathPoint(Player player) throws SQLException {
@@ -54,8 +125,7 @@ public final class DeathManager {
         if (playerId == null || playerId.isBlank()) return null;
 
         String sql = """
-                SELECT id, player_id, world, x, y, z, yaw, pitch, created_at
-                FROM death_points
+                SELECT id, player_id, world, x, y, z, yaw, pitch, created_at, inventory_data FROM death_points
                 WHERE player_id = ?
                 ORDER BY created_at DESC
                 LIMIT 1
@@ -84,8 +154,7 @@ public final class DeathManager {
         if (playerId == null || playerId.isBlank()) return java.util.List.of();
 
         String sql = """
-                SELECT id, player_id, world, x, y, z, yaw, pitch, created_at
-                FROM death_points
+                SELECT id, player_id, world, x, y, z, yaw, pitch, created_at, inventory_data FROM death_points
                 WHERE player_id = ?
                 ORDER BY created_at DESC
                 """;
