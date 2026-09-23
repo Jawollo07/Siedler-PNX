@@ -121,7 +121,6 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 - [x] Economy-Service
 - [x] Villager-basierte Tagessteuer
 - [x] Online-Team-Bedingung
-- [ ] TaxBonusManager
 - [x] `taxBonus=1` als Standard für bestehende/neue Teams
 - [ ] Token-Bonus als permanente TaxBonus-Quelle
 - [ ] Outpost-Bonus als permanente TaxBonus-Quelle
