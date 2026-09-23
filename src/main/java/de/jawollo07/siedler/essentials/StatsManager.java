@@ -135,13 +135,13 @@ public final class StatsManager {
     }
 
     public GlobalStats getGlobalStats() throws SQLException {
-        String sql = "SELECT COUNT(*) AS players, " +
-                "COALESCE(SUM(kills), 0) AS kills, " +
-                "COALESCE(SUM(deaths), 0) AS deaths, " +
-                "COALESCE(SUM(soldier_kills), 0) AS soldier_kills, " +
-                "COALESCE(SUM(monster_kills), 0) AS monster_kills, " +
-                "COALESCE(SUM(playtime_seconds), 0) AS playtime_seconds " +
-                "FROM player_stats";
+        String sql = "SELECT COUNT(p.id) AS players, " +
+                "COALESCE(SUM(COALESCE(s.kills, 0)), 0) AS kills, " +
+                "COALESCE(SUM(COALESCE(s.deaths, 0)), 0) AS deaths, " +
+                "COALESCE(SUM(COALESCE(s.soldier_kills, 0)), 0) AS soldier_kills, " +
+                "COALESCE(SUM(COALESCE(s.monster_kills, 0)), 0) AS monster_kills, " +
+                "COALESCE(SUM(COALESCE(s.playtime_seconds, 0)), 0) AS playtime_seconds " +
+                "FROM players p LEFT JOIN player_stats s ON s.player_id = p.id";
         try (PreparedStatement statement = connection().prepareStatement(sql);
              ResultSet result = statement.executeQuery()) {
             result.next();
