@@ -28,14 +28,14 @@ public final class DeathCommand extends Command {
             CommandSender sender = context.getSender();
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                return CommandResult.fail("Spieler erforderlich");
+                return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
             }
 
             try {
                 DeathManager.DeathPoint point = deathManager.getDeathPoint(player);
                 if (point == null) {
                     player.sendMessage(prefix + messages.getMessage("messages.essentials.death-none"));
-                    return CommandResult.fail("Kein Todespunkt");
+                    return CommandResult.fail(messages.getMessage("messages.essentials.death-none"));
                 }
 
                 deathManager.teleport(player, point);
@@ -48,7 +48,7 @@ public final class DeathCommand extends Command {
             } catch (Exception e) {
                 player.sendMessage(prefix + messages.getMessage("messages.essentials.death-error")
                         .replace("{error}", e.getMessage() == null ? "Unbekannter Fehler" : e.getMessage()));
-                return CommandResult.fail("Teleport fehlgeschlagen");
+                return CommandResult.fail(messages.getMessage("messages.essentials.death-error"));
             }
         });
     }
