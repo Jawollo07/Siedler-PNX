@@ -16,7 +16,6 @@ public class MessageManager {
     private static final Pattern NUMERIC_YAML_KEY = Pattern.compile("^(\\s+)(\\d+):(?=\\s|$)", Pattern.MULTILINE);
     private static final Pattern BOOLEAN_YAML_VALUE = Pattern.compile("^(\\s*(?:[^#\\n:]+:\\s*|-\\s+))(true|false|yes|no|on|off)(\\s*(?:#.*)?)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
     private static final String BUNDLED_MESSAGES = "messages.yml";
-    private static final Pattern BOOLEAN_INLINE_VALUE = Pattern.compile("(:\\s+|-\\s+)(true|false|yes|no|on|off)(?=\\s*(?:#|$))", Pattern.CASE_INSENSITIVE);
 
     private static volatile Config config;
 
@@ -71,16 +70,16 @@ public class MessageManager {
     private void validateAndReportSyntax(File configFile) {
         try {
             String content = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
-            String[] lines = content.split("\\\\R", -1);
+            String[] lines = content.split("\\R", -1);
             int booleanCount = 0;
             int numericKeyCount = 0;
             int tabCount = 0;
             for (int i = 0; i < lines.length; i++) {
                 String line = lines[i];
-                if (line.startsWith("\\\\uFEFF") && i == 0) {
+                if (line.startsWith("\uFEFF") && i == 0) {
                     throw new IllegalStateException("Invalid messages.yml syntax at line 1: UTF-8 BOM detected. Remove the BOM.");
                 }
-                if (line.indexOf('\\\\t') >= 0) {
+                if (line.indexOf('\t') >= 0) {
                     tabCount++;
                 }
                 if (NUMERIC_YAML_KEY.matcher(line).find()) {
@@ -121,7 +120,7 @@ public class MessageManager {
             for (int i = 0; i < lines.length; i++) {
                 String line = lines[i];
                 if (line.indexOf('\\\\t') >= 0) {
-                    message.append("\\nPossible problem at line ").append(i + 1)
+                    message.append("\nPossible problem at line ").append(i + 1)
                             .append(": tab indentation is not valid YAML here.");
                     break;
                 }
