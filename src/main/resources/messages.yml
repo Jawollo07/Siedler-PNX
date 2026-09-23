@@ -9,31 +9,108 @@ messages:
   essentials:
     welcome-message: "Willkommen "
     player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
+
+    # Verwaltung – Hauptmenü
     management-title: "Siedler Verwaltung"
-    management-header: "§7Zentrale Verwaltung\n\nOnline: §f{online}\n\n§8Weitere Verwaltungsbereiche werden hier ergänzt."
+    management-header: "§7Zentrale Verwaltung\\n\\n§eOnline: §f{online}\\n\\n§8Spieler, Moderation und weitere Verwaltungsfunktionen."
     management-players: "Spieler verwalten"
-    management-close: "Schließen"
     management-online-actions: "Moderation / Spieleraktionen"
+    management-close: "Schließen"
+    management-back: "Zurück"
+    management-cancel: "Abbrechen"
+    management-confirm: "Bestätigen"
+
+    # Spielerübersicht
+    management-players-title: "Spielerverwaltung"
+    management-players-header: "§7Online: §f{online}\\n\\n§8Wähle einen Spieler aus."
     management-actions-title: "Spieler auswählen"
     management-actions-header: "§7Online: §f{online}\\n\\n§8Wähle einen Spieler für Verwaltungsaktionen."
+    management-player-title: "Spielerinformationen"
+    management-player-info: "§eName: §f{name}\\n§eUUID: §f{uuid}\\n§eTeam: §f{team}\\n§eWelt: §f{world}\\n§ePosition: §f{x} / {y} / {z}\\n§eAktiver Bann: §f{ban}\\n§eHistorie: §f{history} Einträge"
+    management-no-players: "§7Keine Spieler online."
+    management-player-not-found: "§cSpieler nicht gefunden."
+
+    # Moderation
     management-moderate: "Moderation"
-    management-history: "Moderationshistorie"
     management-moderation-title: "Moderation"
     management-moderation-header: "§7Spieler: §f{player}\\n§7Status: {status}\\n\\n§8Wähle eine Maßnahme."
     management-reason-title: "Grund auswählen"
     management-confirm-title: "Maßnahme bestätigen"
+    management-confirm-header: "§7Spieler: §f{player}\\n§7Maßnahme: §f{type}\\n§7Grund: §f{reason}\\n\\n§cDiese Aktion kann den Spieler sofort vom Server trennen."
+    management-action-warn: "§e⚠ Verwarnen"
+    management-action-kick: "§6⛔ Kicken"
+    management-action-ban: "§c🔨 Permanent bannen"
+    management-action-tempban-30: "§c⏱ 30 Minuten bannen"
+    management-action-tempban-120: "§c⏱ 2 Stunden bannen"
+    management-action-tempban-1440: "§c⏱ 24 Stunden bannen"
+    management-action-unban: "§a✓ Bann aufheben"
+
+    # Moderationsgründe
+    management-reason-rules: "Verstoß gegen die Serverregeln"
+    management-reason-harassment: "Belästigung / Beleidigung"
+    management-reason-cheating: "Cheating / Exploiting"
+    management-reason-behavior: "Unangemessenes Verhalten"
+    management-reason-other: "Sonstiger Regelverstoß"
+
+    # Moderationsstatus
+    management-status-no-ban: "§aKein aktiver Bann"
+    management-status-ban: "§c{type}"
+    management-no-active-ban: "§eFür diesen Spieler ist kein aktiver Bann vorhanden."
+    management-no-history: "§7Für diesen Spieler sind keine Moderationsmaßnahmen vorhanden."
+
+    # Moderationshistorie
+    management-history: "Moderationshistorie"
     management-history-title: "Moderationshistorie"
+    management-history-header: "§7Spieler: §f{player}\\n§7Einträge: §f{count}"
     management-history-entry-title: "Maßnahmendetails"
-    management-players-title: "Spielerverwaltung"
-    management-players-header: "§7Online: §f{online}\n\n§8Wähle einen Spieler aus."
-    management-player-title: "Spielerinformationen"
-    management-player-info: "§eName: §f{name}\n§eUUID: §f{uuid}\n§eWelt: §f{world}\n§ePosition: §f{x} / {y} / {z}"
-    management-back: "Zurück"
-    management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche"
-    management-player-not-found: "§cSpieler nicht gefunden."
+    management-history-entry: "§7Typ: §f{type}\\n§7Grund: §f{reason}\\n§7Moderator: §f{moderator}\\n§7Erstellt: §f{created}\\n§7Ablauf: §f{expires}\\n§7Status: §f{status}"
+    management-history-active: "§cAKTIV"
+    management-history-inactive: "§7Beendet"
+    management-history-permanent: "Dauerhaft"
+    management-history-no-expiry: "Kein Ablauf"
+
+    # Bestätigungen
+    management-confirm-action: "§c✓ Maßnahme ausführen"
+    management-confirm-unban: "§a✓ Bann aufheben"
+    management-confirm-cancel: "§7Abbrechen"
+    management-unban-confirm-title: "Bann aufheben"
+    management-unban-confirm-header: "§7Spieler: §f{player}\\n\\n§eSoll der aktive Bann wirklich aufgehoben werden?"
+
+    # Rückmeldungen
     management-action-success: "§aMaßnahme §f{type}§a für §f{player}§a wurde ausgeführt."
     management-action-error: "§cModerationsfehler: §f{error}"
-    management-no-active-ban: "§eFür diesen Spieler ist kein aktiver Bann vorhanden."
+    management-unban-success: "§aDer Bann von §f{player}§a wurde aufgehoben."
+    management-unban-error: "§cDer Bann konnte nicht aufgehoben werden."
+    management-refresh-error: "§cVerwaltungsdaten konnten nicht geladen werden: §f{error}"
+    management-invalid-duration: "§cDie Bann-Dauer ist ungültig."
+    management-no-reason: "Kein Grund angegeben"
+    management-online: "§aOnline"
+    management-offline: "§7Offline"
+
+    # Befehle
+    management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung help §8- §fZeigt diese Hilfe an"
+    management-command-usage: "§cVerwendung: /verwaltung [menu|help]"
+    management-no-permission: "§cDu hast keine Berechtigung für die Verwaltung."
+
+    # Weitere Verwaltungsbereiche – vorbereitete Nachrichten
+    management-actions: "Aktionen"
+    management-teleport: "Teleportieren"
+    management-freeze: "Spieler einfrieren"
+    management-unfreeze: "Spieler freigeben"
+    management-inventory: "Inventar verwalten"
+    management-gamemode: "Spielmodus ändern"
+    management-kill: "Spieler töten"
+    management-heal: "Spieler heilen"
+    management-feed: "Spieler sättigen"
+    management-clear-inventory: "Inventar leeren"
+    management-kick: "Kicken"
+    management-ban: "Bannen"
+    management-tempban: "Temporär bannen"
+    management-warn: "Verwarnen"
+    management-mute: "Stummschalten"
+    management-unmute: "Stummschaltung aufheben"
+    management-jail: "Ins Gefängnis setzen"
+    management-unjail: "Aus dem Gefängnis entlassen"
   chat:
     prefix: "[Chat]: "
     global-chat:
