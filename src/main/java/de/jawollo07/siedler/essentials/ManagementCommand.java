@@ -88,8 +88,8 @@ public class ManagementCommand extends Command {
 
     private void openPlayerInfo(Player admin, Player target) {
         String playerId = target.getUniqueId().toString();
-        String team = "Kein Team";
-        String ban = "Kein aktiver Bann";
+        String team = messageManager.getMessage("messages.essentials.management-no-team");
+        String ban = messageManager.getMessage("messages.essentials.management-status-no-ban");
         int history = 0;
         int deathHistory = 0;
         try {
@@ -102,7 +102,7 @@ public class ManagementCommand extends Command {
             history = moderationManager.getHistory(playerId).size();
             deathHistory = deathManager.getDeathHistory(playerId).size();
         } catch (Exception exception) {
-            plugin.getLogger().warning("Verwaltungsdaten konnten nicht geladen werden: " + exception.getMessage());
+            plugin.getLogger().warning(messageManager.getMessage("messages.essentials.management-refresh-error").replace("{error}", exception.getMessage() == null ? messageManager.getMessage("messages.essentials.error-unknown") : exception.getMessage()));
         }
 
         String info = messageManager.getMessage("messages.essentials.management-player-info")
@@ -174,7 +174,7 @@ public class ManagementCommand extends Command {
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-death-history-entry-title"),
                 details)
-                .addButton("§eInventar anzeigen",
+                .addButton(messageManager.getMessage("messages.essentials.management-death-inventory-button"),
                         ignored -> openDeathInventory(admin, target, point))
                 .addButton(messageManager.getMessage("messages.essentials.management-back"),
                         ignored -> openDeathHistory(admin, target))
@@ -183,7 +183,7 @@ public class ManagementCommand extends Command {
 
     private void openDeathInventory(Player admin, Player target, DeathManager.DeathPoint point) {
         String inventory = point.inventoryData();
-        StringBuilder details = new StringBuilder("§7Spieler: §f")
+        StringBuilder details = new StringBuilder(messageManager.getMessage("messages.essentials.management-death-inventory-header")
                 .append(target.getName())
                 .append("\n§7Todespunkt: §f")
                 .append(formatCoordinate(point.x())).append(" ")
@@ -192,7 +192,7 @@ public class ManagementCommand extends Command {
                 .append("\n\n");
 
         if (inventory == null || inventory.isBlank()) {
-            details.append("§7Kein Inventar-Snapshot gespeichert.");
+            details.append(messageManager.getMessage("messages.essentials.management-death-inventory-empty"));
         } else if (inventory.startsWith("inventory_error=")) {
             details.append("§cInventar konnte nicht vollständig erfasst werden:\n§7")
                     .append(unescapeInventoryValue(inventory.substring("inventory_error=".length())));
@@ -225,7 +225,7 @@ public class ManagementCommand extends Command {
         }
 
         new SimpleForm(
-                "§eInventar beim Tod",
+                messageManager.getMessage("messages.essentials.management-death-inventory-title"),
                 details.toString())
                 .addButton(messageManager.getMessage("messages.essentials.management-back"),
                         ignored -> openDeathHistoryEntry(admin, target, point))
@@ -267,15 +267,15 @@ public class ManagementCommand extends Command {
                     messageManager.getMessage("messages.essentials.management-moderation-title"),
                     messageManager.getMessage("messages.essentials.management-moderation-header")
                             .replace("{player}", target.getName())
-                            .replace("{status}", activeBan == null ? "§aKein aktiver Bann" : "§c" + activeBan.type()));
-            form.addButton("§e⚠ Verwarnen", ignored -> openReasonMenu(admin, target, "warn"));
-            form.addButton("§6⛔ Kicken", ignored -> openReasonMenu(admin, target, "kick"));
-            form.addButton("§c🔨 Permanent bannen", ignored -> openReasonMenu(admin, target, "ban"));
-            form.addButton("§c⏱ 30 Minuten bannen", ignored -> openReasonMenu(admin, target, "tempban30"));
-            form.addButton("§c⏱ 2 Stunden bannen", ignored -> openReasonMenu(admin, target, "tempban120"));
-            form.addButton("§c⏱ 24 Stunden bannen", ignored -> openReasonMenu(admin, target, "tempban1440"));
+                            .replace("{status}", activeBan == null ? messageManager.getMessage("messages.essentials.management-status-no-ban") : messageManager.getMessage("messages.essentials.management-status-ban").replace("{type}", activeBan.type())));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-warn"), ignored -> openReasonMenu(admin, target, "warn"));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-kick"), ignored -> openReasonMenu(admin, target, "kick"));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-ban"), ignored -> openReasonMenu(admin, target, "ban"));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-tempban-30"), ignored -> openReasonMenu(admin, target, "tempban30"));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-tempban-120"), ignored -> openReasonMenu(admin, target, "tempban120"));
+            form.addButton(messageManager.getMessage("messages.essentials.management-action-tempban-1440"), ignored -> openReasonMenu(admin, target, "tempban1440"));
             if (activeBan != null) {
-                form.addButton("§a✓ Bann aufheben", ignored -> confirmUnban(admin, target));
+                form.addButton(messageManager.getMessage("messages.essentials.management-action-unban"), ignored -> confirmUnban(admin, target));
             }
             form.addButton(messageManager.getMessage("messages.essentials.management-back"),
                     ignored -> openPlayerInfo(admin, target));
@@ -289,11 +289,11 @@ public class ManagementCommand extends Command {
     private void openReasonMenu(Player admin, Player target, String action) {
         String title = messageManager.getMessage("messages.essentials.management-reason-title");
         SimpleForm form = new SimpleForm(title, "§7Spieler: §f" + target.getName() + "\n§7Wähle einen Grund:");
-        form.addButton("Verstoß gegen Regeln", ignored -> confirmPunishment(admin, target, action, "Verstoß gegen die Serverregeln"));
-        form.addButton("Belästigung / Beleidigung", ignored -> confirmPunishment(admin, target, action, "Belästigung / Beleidigung"));
-        form.addButton("Cheating / Exploiting", ignored -> confirmPunishment(admin, target, action, "Cheating / Exploiting"));
-        form.addButton("Unangemessenes Verhalten", ignored -> confirmPunishment(admin, target, action, "Unangemessenes Verhalten"));
-        form.addButton("Sonstiger Regelverstoß", ignored -> confirmPunishment(admin, target, action, "Sonstiger Regelverstoß"));
+        form.addButton(messageManager.getMessage("messages.essentials.management-reason-rules"), ignored -> confirmPunishment(admin, target, action, messageManager.getMessage("messages.essentials.management-reason-rules")));
+        form.addButton(messageManager.getMessage("messages.essentials.management-reason-harassment"), ignored -> confirmPunishment(admin, target, action, messageManager.getMessage("messages.essentials.management-reason-harassment")));
+        form.addButton(messageManager.getMessage("messages.essentials.management-reason-cheating"), ignored -> confirmPunishment(admin, target, action, messageManager.getMessage("messages.essentials.management-reason-cheating")));
+        form.addButton(messageManager.getMessage("messages.essentials.management-reason-behavior"), ignored -> confirmPunishment(admin, target, action, messageManager.getMessage("messages.essentials.management-reason-behavior")));
+        form.addButton(messageManager.getMessage("messages.essentials.management-reason-other"), ignored -> confirmPunishment(admin, target, action, messageManager.getMessage("messages.essentials.management-reason-other")));
         form.addButton(messageManager.getMessage("messages.essentials.management-back"),
                 ignored -> openModerationMenu(admin, target));
         form.send(admin);
@@ -307,8 +307,8 @@ public class ManagementCommand extends Command {
                         + "\n§7Maßnahme: §f" + label
                         + "\n§7Grund: §f" + reason
                         + "\n\n§cDiese Aktion kann den Spieler sofort vom Server trennen.")
-                .addButton("§c✓ Bestätigen", ignored -> executePunishment(admin, target, action, reason))
-                .addButton("§7Abbrechen", ignored -> openModerationMenu(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-confirm-action"), ignored -> executePunishment(admin, target, action, reason))
+                .addButton(messageManager.getMessage("messages.essentials.management-confirm-cancel"), ignored -> openModerationMenu(admin, target))
                 .send(admin);
     }
 
@@ -348,12 +348,12 @@ public class ManagementCommand extends Command {
     private void executeUnban(Player admin, Player target) {
         try {
             boolean changed = moderationManager.unban(target.getUniqueId().toString(),
-                    admin.getUniqueId().toString(), "Unban durch Verwaltung");
+                    admin.getUniqueId().toString(), messageManager.getMessage("messages.essentials.management-unban-reason"));
             if (!changed) {
                 admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-no-active-ban"));
             } else {
                 admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
-                        .replace("{type}", "Bann aufgehoben").replace("{player}", target.getName()));
+                        .replace("{type}", messageManager.getMessage("messages.essentials.management-action-unban-label")).replace("{player}", target.getName()));
             }
             openPlayerInfo(admin, target);
         } catch (Exception exception) {
@@ -369,7 +369,7 @@ public class ManagementCommand extends Command {
                     messageManager.getMessage("messages.essentials.management-history-title"),
                     "§7Spieler: §f" + target.getName() + "\n§7Einträge: §f" + history.size());
             if (history.isEmpty()) {
-                form.addButton("§7Keine Maßnahmen vorhanden");
+                form.addButton(messageManager.getMessage("messages.essentials.management-no-history"));
             } else {
                 for (ModerationManager.Punishment punishment : history) {
                     form.addButton(formatHistory(punishment), ignored -> openHistoryEntry(admin, target, punishment));
@@ -386,14 +386,14 @@ public class ManagementCommand extends Command {
 
     private void openHistoryEntry(Player admin, Player target, ModerationManager.Punishment punishment) {
         String created = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.createdAt()));
-        String expires = punishment.expiresAt() == null ? "dauerhaft" :
+        String expires = punishment.expiresAt() == null ? messageManager.getMessage("messages.essentials.management-history-permanent") :
                 new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.expiresAt()));
         String details = "§7Typ: §f" + punishment.type()
                 + "\n§7Grund: §f" + punishment.reason()
-                + "\n§7Moderator: §f" + (punishment.moderatorName() == null ? "Console" : punishment.moderatorName())
+                + "\n§7Moderator: §f" + (punishment.moderatorName() == null ? messageManager.getMessage("messages.essentials.management-history-console") : punishment.moderatorName())
                 + "\n§7Erstellt: §f" + created
                 + "\n§7Ablauf: §f" + expires
-                + "\n§7Status: §f" + (punishment.active() ? "Aktiv" : "Beendet");
+                + "\n§7Status: §f" + (punishment.active() ? messageManager.getMessage("messages.essentials.management-history-active") : messageManager.getMessage("messages.essentials.management-history-inactive"));
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-history-entry-title"),
                 details)
@@ -403,7 +403,7 @@ public class ManagementCommand extends Command {
     }
 
     private String formatHistory(ModerationManager.Punishment p) {
-        String status = p.active() ? "§cAKTIV" : "§7beendet";
+        String status = p.active() ? messageManager.getMessage("messages.essentials.management-history-active") : messageManager.getMessage("messages.essentials.management-history-inactive");
         String date = new SimpleDateFormat("dd.MM HH:mm").format(new Date(p.createdAt()));
         return status + " §f" + p.type() + " §8• §7" + date + "\n§8" + p.reason();
     }
