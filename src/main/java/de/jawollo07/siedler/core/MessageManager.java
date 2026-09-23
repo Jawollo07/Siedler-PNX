@@ -116,10 +116,10 @@ public class MessageManager {
         }
         try {
             String content = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
-            String[] lines = content.split("\\\\R", -1);
+            String[] lines = content.split("\\R", -1);
             for (int i = 0; i < lines.length; i++) {
                 String line = lines[i];
-                if (line.indexOf('\\\\t') >= 0) {
+                if (line.indexOf('\t') >= 0) {
                     message.append("\nPossible problem at line ").append(i + 1)
                             .append(": tab indentation is not valid YAML here.");
                     break;
