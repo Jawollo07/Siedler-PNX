@@ -715,3 +715,32 @@ CREATE INDEX IF NOT EXISTS idx_inventory_snapshots_player
 
 CREATE INDEX IF NOT EXISTS idx_inventory_snapshots_captured
     ON inventory_snapshots(captured_at);
+
+
+-- Persistent player state snapshots
+CREATE TABLE IF NOT EXISTS player_state_snapshots (
+    id VARCHAR(36) PRIMARY KEY,
+    player_id VARCHAR(36) NOT NULL,
+    reason VARCHAR(32) NOT NULL,
+    captured_at BIGINT NOT NULL,
+    health REAL,
+    max_health REAL,
+    experience REAL,
+    level INTEGER,
+    food REAL,
+    saturation REAL,
+    air INTEGER,
+    max_air INTEGER,
+    world VARCHAR(255),
+    x DOUBLE,
+    y DOUBLE,
+    z DOUBLE,
+    yaw DOUBLE,
+    pitch DOUBLE,
+    inventory_data TEXT NOT NULL,
+    FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_player_state_snapshots_player
+    ON player_state_snapshots(player_id);
+CREATE INDEX IF NOT EXISTS idx_player_state_snapshots_captured
+    ON player_state_snapshots(captured_at);
