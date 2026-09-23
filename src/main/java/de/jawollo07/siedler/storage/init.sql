@@ -503,6 +503,8 @@ CREATE TABLE IF NOT EXISTS death_points (
 
     created_at INTEGER NOT NULL,
 
+    inventory_data TEXT,
+
     FOREIGN KEY (player_id)
         REFERENCES players(id)
         ON DELETE CASCADE
