@@ -20,7 +20,7 @@ public class PlayerListener implements Listener{
     private final Elimination elimination;
     private final SiedlerPlugin plugin;
     private final ConfigManager configManager;
-    private final Config config;
+    private final Config config;\n    private final ModerationManager moderationManager;
     public PlayerListener() {
         this.plugin = SiedlerPlugin.getInstance();
         this.messageManager = new MessageManager();
@@ -29,7 +29,7 @@ public class PlayerListener implements Listener{
             this.configManager.initialize(this.plugin.getDataFolder());
         }
         this.config = this.configManager.getConfig();
-        this.elimination = new Elimination(plugin);
+        this.elimination = new Elimination(plugin);\n        this.moderationManager = new ModerationManager(plugin);
     }
     public void give_weakness(Player player) {
         if (config == null) {
