@@ -177,7 +177,6 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [ ] persistenter 27-Slot `/ec`
 - [ ] persistenter 54-Slot `/teamchest`
 - [x] Player Stats (`/stats` und `/stats admin`)
-- [ ] Server Dashboard/Statistiken
 - [ ] Anti-AFK
 
 ### Home-System
