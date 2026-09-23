@@ -692,3 +692,26 @@ CREATE INDEX IF NOT EXISTS idx_moderation_active
 
 CREATE INDEX IF NOT EXISTS idx_moderation_expires
     ON moderation_punishments(expires_at);
+
+
+-- ============================================================
+-- Persistent Inventory Snapshots
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS inventory_snapshots (
+    id VARCHAR(36) PRIMARY KEY,
+    player_id VARCHAR(36) NOT NULL,
+    reason VARCHAR(32) NOT NULL,
+    captured_at BIGINT NOT NULL,
+    inventory_data TEXT NOT NULL,
+
+    FOREIGN KEY (player_id)
+        REFERENCES players(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_inventory_snapshots_player
+    ON inventory_snapshots(player_id);
+
+CREATE INDEX IF NOT EXISTS idx_inventory_snapshots_captured
+    ON inventory_snapshots(captured_at);
