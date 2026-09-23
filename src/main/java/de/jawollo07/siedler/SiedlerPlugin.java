@@ -19,6 +19,9 @@ import de.jawollo07.siedler.essentials.ManagementCommand;
 import de.jawollo07.siedler.essentials.PermanentEffect;
 import de.jawollo07.siedler.essentials.InventorySnapshotManager;
 import de.jawollo07.siedler.essentials.InventorySnapshotListener;
+import de.jawollo07.siedler.essentials.StatsManager;
+import de.jawollo07.siedler.essentials.StatsListener;
+import de.jawollo07.siedler.essentials.StatsCommand;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
@@ -40,6 +43,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TPAManager tpaManager;
     private DeathManager deathManager;
     private InventorySnapshotManager inventorySnapshotManager;
+    private StatsManager statsManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -74,6 +78,7 @@ public final class SiedlerPlugin extends PluginBase {
         tpaManager = new TPAManager(this);
         deathManager = new DeathManager(this);
         inventorySnapshotManager = new InventorySnapshotManager(this);
+        statsManager = new StatsManager(this);
 
         // Registration
         registerCommands();
@@ -114,6 +119,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TPADenyCommand(this, tpaManager));
         commandManager.register(new TPACancelCommand(this, tpaManager));
         commandManager.register(new DeathCommand(this, deathManager));
+        commandManager.register(new StatsCommand(this, statsManager));
     }
 
     private void registerEvents() {
@@ -146,6 +152,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
             getServer().getPluginManager().registerEvents(new DeathListener(deathManager), this);
             getServer().getPluginManager().registerEvents(new InventorySnapshotListener(inventorySnapshotManager), this);
+            getServer().getPluginManager().registerEvents(new StatsListener(statsManager), this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
@@ -155,6 +162,10 @@ public final class SiedlerPlugin extends PluginBase {
     public void onDisable() {
         if (inventorySnapshotManager != null) {
             inventorySnapshotManager.snapshotOnlinePlayers("SHUTDOWN");
+        }
+
+        if (statsManager != null) {
+            statsManager.flushOnlineSessions();
         }
 
         if (taxManager != null) {
