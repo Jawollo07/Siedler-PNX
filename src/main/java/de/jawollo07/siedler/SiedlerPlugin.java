@@ -189,7 +189,7 @@ public final class SiedlerPlugin extends PluginBase {
             storage.close();
         }
 
-        if (messageManager != null && messageManager.getConfig() != null) {
+        if (messageManager != null && messageManager.isInitialized()) {
             getLogger().info(
                 TextFormat.RED + messageManager.getPrefix("main") + messageManager.getMessage("main", "disable")
             );
