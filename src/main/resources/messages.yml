@@ -92,6 +92,22 @@ messages:
     management-online: "§aOnline"
     management-offline: "§7Offline"
 
+    # Spielerstatistiken
+    stats-title: "Meine Statistiken"
+    stats-header: "§eSpieler: §f{player}\\n§eTeam: §f{team}\\n\\n§6Kills: §f{kills}\\n§6Tode: §f{deaths}\\n§6K/D: §f{ratio}\\n§6Soldaten-Kills: §f{soldierKills}\\n§6Monster-Kills: §f{monsterKills}\\n§6Spielzeit: §f{playtime}"
+    stats-close: "Schließen"
+    stats-player-required: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
+    stats-error: "§cStatistiken konnten nicht geladen werden: §f{error}"
+    stats-admin-title: "Admin-Statistiken"
+    stats-admin-header: "§eSpieler: §f{players}\\n\\n§6Kills gesamt: §f{kills}\\n§6Tode gesamt: §f{deaths}\\n§6Soldaten-Kills: §f{soldierKills}\\n§6Monster-Kills: §f{monsterKills}\\n§6Spielzeit gesamt: §f{playtime}"
+    stats-admin-players: "Spielerstatistiken"
+    stats-admin-player-list-title: "Spielerstatistiken"
+    stats-admin-player-list-header: "§7Seite §f{page}§7/§f{pages} §8• §7Spieler: §f{count}\\n\\n§8Wähle einen Spieler aus."
+    stats-admin-detail-title: "Spielerstatistik"
+    stats-admin-detail: "§eSpieler: §f{player}\\n§eTeam: §f{team}\\n\\n§6Kills: §f{kills}\\n§6Tode: §f{deaths}\\n§6K/D: §f{ratio}\\n§6Soldaten-Kills: §f{soldierKills}\\n§6Monster-Kills: §f{monsterKills}\\n§6Spielzeit: §f{playtime}"
+    stats-admin-previous: "← Vorherige Seite"
+    stats-admin-next: "Nächste Seite →"
+
     # Homes
     home-created: "§aHome §f{name}§a wurde gespeichert."
     home-deleted: "§aHome §f{name}§a wurde gelöscht."
