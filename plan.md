@@ -1,6 +1,6 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 22.09.2026
+Stand: 23.09.2026
 
 ## Versionsschema
 
