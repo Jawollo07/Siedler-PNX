@@ -335,7 +335,7 @@ public class HomeManager {
                 plugin.getServer().getLevelByName(home.getWorld());
         if (level == null) {
             throw new IllegalStateException(
-                    "Die Welt \\"" + home.getWorld() + "\\" ist nicht geladen."
+                    "Die gespeicherte Welt " + home.getWorld() + " ist nicht geladen."
             );
         }
 
