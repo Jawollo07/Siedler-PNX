@@ -174,9 +174,76 @@ public class ManagementCommand extends Command {
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-death-history-entry-title"),
                 details)
+                .addButton("§eInventar anzeigen",
+                        ignored -> openDeathInventory(admin, target, point))
                 .addButton(messageManager.getMessage("messages.essentials.management-back"),
                         ignored -> openDeathHistory(admin, target))
                 .send(admin);
+    }
+
+    private void openDeathInventory(Player admin, Player target, DeathManager.DeathPoint point) {
+        String inventory = point.inventoryData();
+        StringBuilder details = new StringBuilder("§7Spieler: §f")
+                .append(target.getName())
+                .append("\n§7Todespunkt: §f")
+                .append(formatCoordinate(point.x())).append(" ")
+                .append(formatCoordinate(point.y())).append(" ")
+                .append(formatCoordinate(point.z()))
+                .append("\n\n");
+
+        if (inventory == null || inventory.isBlank()) {
+            details.append("§7Kein Inventar-Snapshot gespeichert.");
+        } else if (inventory.startsWith("inventory_error=")) {
+            details.append("§cInventar konnte nicht vollständig erfasst werden:\n§7")
+                    .append(unescapeInventoryValue(inventory.substring("inventory_error=".length())));
+        } else {
+            String[] lines = inventory.split("\\\\n");
+            for (String line : lines) {
+                if (line.isBlank()) continue;
+                String[] parts = line.split("\\\\|", -1);
+                if (parts.length < 2) {
+                    details.append("§7").append(unescapeInventoryValue(line)).append("\n");
+                    continue;
+                }
+
+                String section = parts[0];
+                String slot = value(parts, "slot");
+                String name = value(parts, "name");
+                String id = value(parts, "id");
+                String count = value(parts, "count");
+                String damage = value(parts, "damage");
+
+                details.append("§e").append(section)
+                        .append(" §8Slot ").append(slot)
+                        .append(": §f").append(name.isBlank() ? id : name)
+                        .append(" §7x").append(count);
+                if (!damage.isBlank() && !"0".equals(damage)) {
+                    details.append(" §8(Damage ").append(damage).append(")");
+                }
+                details.append("\n");
+            }
+        }
+
+        new SimpleForm(
+                "§eInventar beim Tod",
+                details.toString())
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openDeathHistoryEntry(admin, target, point))
+                .send(admin);
+    }
+
+    private String value(String[] parts, String key) {
+        String prefix = key + "=";
+        for (int i = 1; i < parts.length; i++) {
+            if (parts[i].startsWith(prefix)) {
+                return unescapeInventoryValue(parts[i].substring(prefix.length()));
+            }
+        }
+        return "";
+    }
+
+    private String unescapeInventoryValue(String value) {
+        return value.replace("\\\\|", "|").replace("\\\\n", "\n").replace("\\\\\\\\", "\\");
     }
 
     private String formatDeathHistory(String playerName, DeathManager.DeathPoint point) {
