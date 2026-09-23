@@ -31,7 +31,7 @@ public final class SetHomeCommand extends Command {
                     CommandSender sender = context.getSender();
                     if (!(sender instanceof Player player)) {
                         sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                        return CommandResult.fail("Spieler erforderlich");
+                        return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
                     }
 
                     try {
@@ -42,7 +42,7 @@ public final class SetHomeCommand extends Command {
                     } catch (Exception exception) {
                         sender.sendMessage(prefix + messages.getMessage("messages.essentials.home-error")
                                 .replace("{error}", safe(exception)));
-                        return CommandResult.fail(safe(exception));
+                        return CommandResult.fail(messages.getMessage("messages.essentials.home-error").replace("{error}", safe(exception)));
                     }
                 })
         );
