@@ -320,7 +320,90 @@ public class HomeManager {
         }
     }
 
-    /**\n     * Teleportiert einen Spieler zu einem Home.\n     * Die Location-Erzeugung und Teleport-Methode werden reflektiv aufgelöst,\n     * damit das Plugin mit den unterschiedlichen PNX-API-Ständen kompatibel bleibt.\n     */\n    public void teleport(Player player, Home home) throws Exception {\n        validatePlayer(player);\n        if (home == null) {\n            throw new IllegalArgumentException("Home darf nicht null sein.");\n        }\n\n        org.powernukkitx.level.Level level =\n                plugin.getServer().getLevelByName(home.getWorld());\n        if (level == null) {\n            throw new IllegalStateException(\n                    "Die Welt \\"" + home.getWorld() + "\\" ist nicht geladen."\n            );\n        }\n\n        Class<?> locationClass = Class.forName("org.powernukkitx.level.Location");\n        Object location = null;\n\n        for (java.lang.reflect.Constructor<?> constructor : locationClass.getConstructors()) {\n            Class<?>[] types = constructor.getParameterTypes();\n            if (types.length == 6\n                    && types[0] == double.class\n                    && types[1] == double.class\n                    && types[2] == double.class\n                    && types[3] == float.class\n                    && types[4] == float.class\n                    && types[5].isAssignableFrom(level.getClass())) {\n                location = constructor.newInstance(\n                        home.getX(),\n                        home.getY(),\n                        home.getZ(),\n                        (float) home.getYaw(),\n                        (float) home.getPitch(),\n                        level\n                );\n                break;\n            }\n        }\n\n        if (location == null) {\n            throw new IllegalStateException("Die PNX-Location-API konnte nicht aufgelöst werden.");\n        }\n\n        java.lang.reflect.Method teleportMethod = null;\n        for (java.lang.reflect.Method method : player.getClass().getMethods()) {\n            if (!"teleport".equals(method.getName()) || method.getParameterCount() != 2) {\n                continue;\n            }\n            if (!method.getParameterTypes()[0].isAssignableFrom(locationClass)) {\n                continue;\n            }\n            Class<?> causeType = method.getParameterTypes()[1];\n            if (!causeType.isEnum()) {\n                continue;\n            }\n            teleportMethod = method;\n            Object cause = null;\n            for (Object constant : causeType.getEnumConstants()) {\n                if ("COMMAND".equals(String.valueOf(constant))) {\n                    cause = constant;\n                    break;\n                }\n            }\n            if (cause == null && causeType.getEnumConstants().length > 0) {\n                cause = causeType.getEnumConstants()[0];\n            }\n            if (cause == null) {\n                throw new IllegalStateException("Keine gültige Teleport-Ursache gefunden.");\n            }\n            Object result = method.invoke(player, location, cause);\n            if (result instanceof Boolean success && !success) {\n                throw new IllegalStateException("Der Teleport wurde vom Server abgelehnt.");\n            }\n            return;\n        }\n\n        throw new IllegalStateException("Die PNX-Teleport-API konnte nicht aufgelöst werden.");\n    }\n\n    private void validatePlayer(Player player) {
+    /**
+     * Teleportiert einen Spieler zu einem Home.
+     * Die Location-Erzeugung und Teleport-Methode werden reflektiv aufgelöst,
+     * damit das Plugin mit den unterschiedlichen PNX-API-Ständen kompatibel bleibt.
+     */
+    public void teleport(Player player, Home home) throws Exception {
+        validatePlayer(player);
+        if (home == null) {
+            throw new IllegalArgumentException("Home darf nicht null sein.");
+        }
+
+        org.powernukkitx.level.Level level =
+                plugin.getServer().getLevelByName(home.getWorld());
+        if (level == null) {
+            throw new IllegalStateException(
+                    "Die Welt \\"" + home.getWorld() + "\\" ist nicht geladen."
+            );
+        }
+
+        Class<?> locationClass = Class.forName("org.powernukkitx.level.Location");
+        Object location = null;
+
+        for (java.lang.reflect.Constructor<?> constructor : locationClass.getConstructors()) {
+            Class<?>[] types = constructor.getParameterTypes();
+            if (types.length == 6
+                    && types[0] == double.class
+                    && types[1] == double.class
+                    && types[2] == double.class
+                    && types[3] == float.class
+                    && types[4] == float.class
+                    && types[5].isAssignableFrom(level.getClass())) {
+                location = constructor.newInstance(
+                        home.getX(),
+                        home.getY(),
+                        home.getZ(),
+                        (float) home.getYaw(),
+                        (float) home.getPitch(),
+                        level
+                );
+                break;
+            }
+        }
+
+        if (location == null) {
+            throw new IllegalStateException("Die PNX-Location-API konnte nicht aufgelöst werden.");
+        }
+
+        java.lang.reflect.Method teleportMethod = null;
+        for (java.lang.reflect.Method method : player.getClass().getMethods()) {
+            if (!"teleport".equals(method.getName()) || method.getParameterCount() != 2) {
+                continue;
+            }
+            if (!method.getParameterTypes()[0].isAssignableFrom(locationClass)) {
+                continue;
+            }
+            Class<?> causeType = method.getParameterTypes()[1];
+            if (!causeType.isEnum()) {
+                continue;
+            }
+            teleportMethod = method;
+            Object cause = null;
+            for (Object constant : causeType.getEnumConstants()) {
+                if ("COMMAND".equals(String.valueOf(constant))) {
+                    cause = constant;
+                    break;
+                }
+            }
+            if (cause == null && causeType.getEnumConstants().length > 0) {
+                cause = causeType.getEnumConstants()[0];
+            }
+            if (cause == null) {
+                throw new IllegalStateException("Keine gültige Teleport-Ursache gefunden.");
+            }
+            Object result = method.invoke(player, location, cause);
+            if (result instanceof Boolean success && !success) {
+                throw new IllegalStateException("Der Teleport wurde vom Server abgelehnt.");
+            }
+            return;
+        }
+
+        throw new IllegalStateException("Die PNX-Teleport-API konnte nicht aufgelöst werden.");
+    }
+
+    private void validatePlayer(Player player) {
         if (player == null) {
             throw new IllegalArgumentException(
                     "Player darf nicht null sein."
