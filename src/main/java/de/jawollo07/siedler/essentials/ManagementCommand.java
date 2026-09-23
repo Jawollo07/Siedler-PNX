@@ -23,6 +23,7 @@ public class ManagementCommand extends Command {
     private final String prefix;
     private final ModerationManager moderationManager;
     private final TeamManager teamManager;
+    private final DeathManager deathManager;
 
     public ManagementCommand(SiedlerPlugin plugin) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
@@ -31,6 +32,7 @@ public class ManagementCommand extends Command {
         this.prefix = messageManager.getPrefix("essentials");
         this.moderationManager = new ModerationManager(plugin);
         this.teamManager = new TeamManager(plugin);
+        this.deathManager = new DeathManager(plugin);
         setPermission("siedler.admin");
         setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         enableCommandTree();
@@ -89,6 +91,7 @@ public class ManagementCommand extends Command {
         String team = "Kein Team";
         String ban = "Kein aktiver Bann";
         int history = 0;
+        int deathHistory = 0;
         try {
             Team targetTeam = teamManager.getTeamForPlayer(playerId);
             if (targetTeam != null) team = targetTeam.name();
@@ -97,6 +100,7 @@ public class ManagementCommand extends Command {
                 ban = activeBan.type() + ": " + activeBan.reason();
             }
             history = moderationManager.getHistory(playerId).size();
+            deathHistory = deathManager.getDeathHistory(playerId).size();
         } catch (Exception exception) {
             plugin.getLogger().warning("Verwaltungsdaten konnten nicht geladen werden: " + exception.getMessage());
         }
@@ -110,7 +114,8 @@ public class ManagementCommand extends Command {
                 .replace("{z}", String.valueOf((int) target.getFloorZ()))
                 .replace("{team}", team)
                 .replace("{ban}", ban)
-                .replace("{history}", String.valueOf(history));
+                .replace("{history}", String.valueOf(history))
+                .replace("{deathHistory}", String.valueOf(deathHistory));
 
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-player-title"),
@@ -119,9 +124,73 @@ public class ManagementCommand extends Command {
                         ignored -> openModerationMenu(admin, target))
                 .addButton(messageManager.getMessage("messages.essentials.management-history"),
                         ignored -> openHistory(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-death-history"),
+                        ignored -> openDeathHistory(admin, target))
                 .addButton(messageManager.getMessage("messages.essentials.management-back"),
                         ignored -> openOnlineActions(admin))
                 .send(admin);
+    }
+
+    private void openDeathHistory(Player admin, Player target) {
+        try {
+            List<DeathManager.DeathPoint> history =
+                    deathManager.getDeathHistory(target.getUniqueId().toString());
+
+            SimpleForm form = new SimpleForm(
+                    messageManager.getMessage("messages.essentials.management-death-history-title"),
+                    messageManager.getMessage("messages.essentials.management-death-history-header")
+                            .replace("{player}", target.getName())
+                            .replace("{count}", String.valueOf(history.size())));
+
+            if (history.isEmpty()) {
+                form.addButton(messageManager.getMessage("messages.essentials.management-death-history-empty"));
+            } else {
+                for (DeathManager.DeathPoint point : history) {
+                    form.addButton(formatDeathHistory(target.getName(), point),
+                            ignored -> openDeathHistoryEntry(admin, target, point));
+                }
+            }
+
+            form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                    ignored -> openPlayerInfo(admin, target));
+            form.send(admin);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void openDeathHistoryEntry(Player admin, Player target, DeathManager.DeathPoint point) {
+        String created = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(point.createdAt()));
+        String details = "§7Spieler: §f" + target.getName()
+                + "\n§7Datum: §f" + created
+                + "\n§7Welt: §f" + point.world()
+                + "\n§7Position: §f" + formatCoordinate(point.x())
+                + " / " + formatCoordinate(point.y())
+                + " / " + formatCoordinate(point.z())
+                + "\n§7Rotation: §f" + formatCoordinate(point.yaw())
+                + " / " + formatCoordinate(point.pitch());
+
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-death-history-entry-title"),
+                details)
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openDeathHistory(admin, target))
+                .send(admin);
+    }
+
+    private String formatDeathHistory(String playerName, DeathManager.DeathPoint point) {
+        String date = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(point.createdAt()));
+        return "§f" + playerName + " §8(" + date + ")\n"
+                + "§7" + point.world() + " §8• §f"
+                + formatCoordinate(point.x()) + " "
+                + formatCoordinate(point.y()) + " "
+                + formatCoordinate(point.z());
+    }
+
+    private String formatCoordinate(double value) {
+        if (value == Math.rint(value)) return String.valueOf((long) value);
+        return String.format(java.util.Locale.US, "%.1f", value);
     }
 
     private void openModerationMenu(Player admin, Player target) {
