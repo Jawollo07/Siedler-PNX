@@ -108,7 +108,7 @@ public class MessageManager {
 
     private String buildParserError(File configFile, RuntimeException cause) {
         StringBuilder message = new StringBuilder();
-        message.append("Could not parse messages.yml: ").append(configFile.getAbsolutePath()).append('\\n');
+        message.append("Could not parse messages.yml: ").append(configFile.getAbsolutePath()).append('\n');
         message.append("PowerNukkitX rejected the YAML syntax after compatibility normalization.").append('\\n');
         message.append("Check indentation (spaces only), matching quotes, ':' characters, and YAML structure.");
         if (cause.getMessage() != null && !cause.getMessage().isBlank()) {
