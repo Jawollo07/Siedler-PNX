@@ -131,7 +131,9 @@ public final class InventorySnapshotManager {
         if (playerId == null || playerId.isBlank()) return null;
 
         String sql = """
-                SELECT id, player_id, reason, captured_at, inventory_data
+                SELECT id, player_id, reason, captured_at,
+                       health, max_health, experience, level, food, saturation, air, max_air,
+                       world, x, y, z, yaw, pitch, inventory_data
                 FROM player_state_snapshots
                 WHERE player_id = ?
                 ORDER BY captured_at DESC
@@ -152,7 +154,9 @@ public final class InventorySnapshotManager {
 
         int safeLimit = Math.max(1, Math.min(limit, 500));
         String sql = """
-                SELECT id, player_id, reason, captured_at, inventory_data
+                SELECT id, player_id, reason, captured_at,
+                       health, max_health, experience, level, food, saturation, air, max_air,
+                       world, x, y, z, yaw, pitch, inventory_data
                 FROM player_state_snapshots
                 WHERE player_id = ?
                 ORDER BY captured_at DESC
