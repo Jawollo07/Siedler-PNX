@@ -5,6 +5,7 @@ import org.powernukkitx.event.EventHandler;
 import org.powernukkitx.event.Listener;
 import org.powernukkitx.event.player.PlayerJoinEvent;
 import org.powernukkitx.event.player.PlayerQuitEvent;
+import de.jawollo07.siedler.SiedlerPlugin;
 
 /** Captures player inventories when players enter or leave the server. */
 public final class InventorySnapshotListener implements Listener {
