@@ -28,12 +28,12 @@ public final class TPADenyCommand extends Command {
             CommandSender sender = context.getSender();
             if (!(sender instanceof Player target)) {
                 sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                return CommandResult.fail("Spieler erforderlich");
+                return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
             }
             TPAManager.Request request = tpa.getIncoming(target);
             if (request == null) {
                 target.sendMessage(prefix + messages.getMessage("messages.essentials.tpa-none"));
-                return CommandResult.fail("Keine Anfrage");
+                return CommandResult.fail(messages.getMessage("messages.essentials.tpa-none"));
             }
             TPAManager.Result result = tpa.decline(target);
             target.sendMessage(prefix + messages.getMessage("messages.essentials.tpa-declined")
