@@ -113,6 +113,11 @@ messages:
     tpa-expired: "§cDie Teleportanfrage ist abgelaufen oder der Spieler ist nicht mehr online."
     tpa-error: "§cTeleport fehlgeschlagen: §f{error}"
 
+    # Death System
+    death-none: "§7Du hast keinen gespeicherten Todespunkt."
+    death-teleported: "§aDu wurdest zu deinem letzten Todespunkt teleportiert: §f{world} §7({x}, {y}, {z})"
+    death-error: "§cDer Todespunkt konnte nicht verarbeitet werden: §f{error}"
+
     # Befehle
     management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche\\n§7/verwaltung help §8- §fZeigt diese Hilfe an"
     management-command-usage: "§cVerwendung: /verwaltung [menu|help]"
