@@ -35,6 +35,7 @@ public final class SiedlerPlugin extends PluginBase {
     private MessageManager messageManager;
     private EcoCommand ecoCommand;
     private TaxManager taxManager;
+    private TPAManager tpaManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -66,6 +67,7 @@ public final class SiedlerPlugin extends PluginBase {
 
         taxManager = new TaxManager(this);
         taxManager.start();
+        tpaManager = new TPAManager(this);
 
         // Registration
         registerCommands();
@@ -101,6 +103,10 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new HomeCommand(this));
         commandManager.register(new HomesCommand(this));
         commandManager.register(new DelHomeCommand(this));
+        commandManager.register(new TPACommand(this, tpaManager));
+        commandManager.register(new TPAAcceptCommand(this, tpaManager));
+        commandManager.register(new TPADenyCommand(this, tpaManager));
+        commandManager.register(new TPACancelCommand(this, tpaManager));
     }
 
     private void registerEvents() {
