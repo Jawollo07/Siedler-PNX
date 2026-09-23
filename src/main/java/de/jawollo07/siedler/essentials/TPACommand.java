@@ -30,13 +30,13 @@ public final class TPACommand extends Command {
             CommandSender sender = context.getSender();
             if (!(sender instanceof Player requester)) {
                 sender.sendMessage(prefix + messages.getMessage("messages.essentials.player-required"));
-                return CommandResult.fail("Spieler erforderlich");
+                return CommandResult.fail(messages.getMessage("messages.essentials.player-required"));
             }
 
             Player target = findPlayer(context.getArg("player"));
             if (target == null) {
                 requester.sendMessage(prefix + messages.getMessage("messages.essentials.tpa-player-not-found"));
-                return CommandResult.fail("Spieler nicht gefunden");
+                return CommandResult.fail(messages.getMessage("messages.essentials.tpa-player-not-found"));
             }
 
             TPAManager.Result result = tpa.request(requester, target);
