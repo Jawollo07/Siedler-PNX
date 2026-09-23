@@ -97,6 +97,10 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new Elimination(this));
         commandManager.register(new EcoCommand(this));
         commandManager.register(new ManagementCommand(this));
+        commandManager.register(new SetHomeCommand(this));
+        commandManager.register(new HomeCommand(this));
+        commandManager.register(new HomesCommand(this));
+        commandManager.register(new DelHomeCommand(this));
     }
 
     private void registerEvents() {
