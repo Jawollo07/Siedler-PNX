@@ -108,7 +108,7 @@ public class ManagementCommand extends Command {
         String info = messageManager.getMessage("messages.essentials.management-player-info")
                 .replace("{name}", target.getName())
                 .replace("{uuid}", playerId)
-                .replace("{world}", target.getLevel() == null ? "-" : target.getLevel().getName())
+                .replace("{world}", target.getLevel() == null ? messageManager.getMessage("messages.essentials.error-unknown") : target.getLevel().getName())
                 .replace("{x}", String.valueOf((int) target.getFloorX()))
                 .replace("{y}", String.valueOf((int) target.getFloorY()))
                 .replace("{z}", String.valueOf((int) target.getFloorZ()))
@@ -193,7 +193,7 @@ public class ManagementCommand extends Command {
         if (inventory == null || inventory.isBlank()) {
             details.append(messageManager.getMessage("messages.essentials.management-death-inventory-empty"));
         } else if (inventory.startsWith("inventory_error=")) {
-            details.append(messageManager.getMessage("messages.essentials.management-death-inventory-error")).append("\n§7")
+            details.append(messageManager.getMessage("messages.essentials.management-death-inventory-error"))
                     .append(unescapeInventoryValue(inventory.substring("inventory_error=".length())));
         } else {
             String[] lines = inventory.split("\\\\n");
