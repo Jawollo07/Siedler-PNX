@@ -150,7 +150,18 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 
 ## Phase 5 – Essentials & Statistics
 
-- [ ] Homes
+- [x] Homes
+- [x] `/sethome <Name>`
+- [x] `/home <Name>`
+- [x] `/homes` mit SimpleForm-GUI
+- [x] `/delhome <Name>`
+- [x] persistente Home-Speicherung mit Welt, Position und Rotation
+- [x] Ownership-Prüfung für Home-Zugriff und Löschung
+- [x] zentrale Home-Nachrichten über `MessageManager`
+- [x] Management-/Moderations-GUI
+- [x] Warn, Kick, Ban und TempBan
+- [x] Unban und Moderationshistorie
+- [x] persistente Moderationsdaten
 - [ ] TPA
 - [ ] Start-System
 - [ ] Death Points
@@ -159,6 +170,35 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [ ] Player Stats
 - [ ] Server Dashboard/Statistiken
 - [ ] Anti-AFK
+
+### Home-System
+
+Das Home-System verwendet die persistente `homes`-Tabelle. Ein Home speichert:
+
+```text
+ID
+Player-ID
+Name
+Welt
+X / Y / Z
+Yaw / Pitch
+Erstellzeitpunkt
+```
+
+Spieler können nur ihre eigenen Homes lesen, teleportieren und löschen. Home-Namen sind auf 32 Zeichen begrenzt und pro Spieler eindeutig.
+
+### Management & Moderation
+
+Die Verwaltung ist über `/verwaltung` erreichbar und besitzt eine GUI für Online-Spieler, Spielerdetails und Moderationsaktionen. Moderationsmaßnahmen werden dauerhaft in `moderation_punishments` gespeichert und können über die Historie nachvollzogen werden.
+
+Unterstützte Maßnahmen:
+
+- Warn
+- Kick
+- permanenter Ban
+- temporärer Ban
+- Unban
+- Moderationshistorie
 
 ## Phase 6 – Monster, Tokens & Outposts
 
@@ -235,12 +275,15 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 
 ## Aktueller Stand
 
-**Aktuelle Planphase:** Phase 4 – Economy & Taxes
+**Aktuelle Planphase:** Phase 5 – Essentials & Statistics
 
 Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
 Phase 3 – Claims ist begonnen. Claim-Datenmodell, Claim-Verwaltung, Team-/Berechtigungsprüfungen sowie Block-Break- und Block-Place-Schutz sind umgesetzt. Claim-Visualisierung und claim-sicheres Monster-/Pillager-Spawning bleiben offen.
 
-Phase 4 – Economy & Taxes ist begonnen. Die Economy verwendet `team_money` als zentrale Balancequelle. Transaktionale Balanceänderungen, Balance-Historie und die villagerbasierte Tagessteuer sind umgesetzt. Die Steuer berechnet `Dorfbewohner × TaxBonus × Rate`, schreibt das Ergebnis als Team-Einkommen gut und setzt mindestens ein online befindliches Teammitglied voraus.
+Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `team_money` als zentrale Balancequelle. Transaktionale Balanceänderungen, Balance-Historie und die villagerbasierte Tagessteuer sind umgesetzt. Die Steuer berechnet `Dorfbewohner × TaxBonus × Rate`, schreibt das Ergebnis als Team-Einkommen gut und setzt mindestens ein online befindliches Teammitglied voraus.
 
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
+
+
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests, Player Stats, Dashboard/Statistiken und Anti-AFK bleiben offen.
