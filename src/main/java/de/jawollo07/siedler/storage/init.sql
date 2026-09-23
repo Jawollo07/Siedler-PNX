@@ -659,3 +659,36 @@ CREATE INDEX IF NOT EXISTS idx_tax_transactions_created
     ON tax_transactions(created_at);
 
 COMMIT;
+-- ============================================================
+-- Moderation
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS moderation_punishments (
+    id VARCHAR(36) PRIMARY KEY,
+    player_id VARCHAR(36) NOT NULL,
+    player_name TEXT NOT NULL,
+    type VARCHAR(32) NOT NULL,
+    reason TEXT NOT NULL,
+    moderator_id VARCHAR(36),
+    moderator_name TEXT,
+    created_at BIGINT NOT NULL,
+    expires_at BIGINT,
+    active INTEGER NOT NULL DEFAULT 1,
+    revoked_at BIGINT,
+    revoked_by VARCHAR(36),
+    revoke_reason TEXT,
+    FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE,
+    FOREIGN KEY (moderator_id) REFERENCES players(id) ON DELETE SET NULL,
+    FOREIGN KEY (revoked_by) REFERENCES players(id) ON DELETE SET NULL,
+    CHECK (type IN ('WARN', 'KICK', 'BAN', 'TEMPBAN')),
+    CHECK (active IN (0, 1))
+);
+
+CREATE INDEX IF NOT EXISTS idx_moderation_player
+    ON moderation_punishments(player_id);
+
+CREATE INDEX IF NOT EXISTS idx_moderation_active
+    ON moderation_punishments(active);
+
+CREATE INDEX IF NOT EXISTS idx_moderation_expires
+    ON moderation_punishments(expires_at);
