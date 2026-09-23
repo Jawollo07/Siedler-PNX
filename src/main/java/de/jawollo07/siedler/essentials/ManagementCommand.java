@@ -2,6 +2,8 @@ package de.jawollo07.siedler.essentials;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.core.MessageManager;
+import de.jawollo07.siedler.team.Team;
+import de.jawollo07.siedler.team.TeamManager;
 import org.powernukkitx.Player;
 import org.powernukkitx.command.Command;
 import org.powernukkitx.command.CommandResult;
@@ -9,6 +11,10 @@ import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.route.RouteTree;
 import org.powernukkitx.command.route.node.RouteNode;
 import org.powernukkitx.form.window.SimpleForm;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class ManagementCommand extends Command {
@@ -16,6 +22,7 @@ public class ManagementCommand extends Command {
     private final MessageManager messageManager;
     private final String prefix;
     private final ModerationManager moderationManager;
+    private final TeamManager teamManager;
 
     public ManagementCommand(SiedlerPlugin plugin) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
@@ -23,6 +30,7 @@ public class ManagementCommand extends Command {
         this.messageManager = new MessageManager();
         this.prefix = messageManager.getPrefix("essentials");
         this.moderationManager = new ModerationManager(plugin);
+        this.teamManager = new TeamManager(plugin);
         setPermission("siedler.admin");
         setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         enableCommandTree();
@@ -35,39 +43,6 @@ public class ManagementCommand extends Command {
             return CommandResult.success();
         }));
         tree.getRoot().then(RouteNode.literal("menu").exec(context -> open(context.getSender())));
-
-        tree.getRoot().then(RouteNode.literal("warn")
-                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
-                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
-                            punish(context.getSender(), context.getArg("player"), "warn", context.getArg("reason"), 0);
-                            return CommandResult.success();
-                        }))));
-        tree.getRoot().then(RouteNode.literal("kick")
-                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
-                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
-                            punish(context.getSender(), context.getArg("player"), "kick", context.getArg("reason"), 0);
-                            return CommandResult.success();
-                        }))));
-        tree.getRoot().then(RouteNode.literal("ban")
-                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
-                        .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
-                            punish(context.getSender(), context.getArg("player"), "ban", context.getArg("reason"), 0);
-                            return CommandResult.success();
-                        }))));
-        tree.getRoot().then(RouteNode.literal("tempban")
-                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode())
-                        .then(RouteNode.argument("minutes", new org.powernukkitx.command.tree.node.IntNode())
-                                .then(RouteNode.argument("reason", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
-                                    punish(context.getSender(), context.getArg("player"), "tempban", context.getArg("reason"),
-                                            Integer.parseInt(context.getArg("minutes")));
-                                    return CommandResult.success();
-                                })))));
-        tree.getRoot().then(RouteNode.literal("unban")
-                .then(RouteNode.argument("player", new org.powernukkitx.command.tree.node.StringNode()).exec(context -> {
-                    unban(context.getSender(), context.getArg("player"));
-                    return CommandResult.success();
-                })));
-
         tree.getRoot().exec(context -> open(context.getSender()));
     }
 
@@ -80,72 +55,24 @@ public class ManagementCommand extends Command {
         return CommandResult.success();
     }
 
-    private void punish(CommandSender sender, String playerName, String type, String reason, int minutes) {
-        try {
-            String playerId = findPlayerId(playerName);
-            if (playerId == null) {
-                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-player-not-found"));
-                return;
-            }
-            String moderatorId = sender instanceof Player p ? p.getUniqueId().toString() : null;
-            String moderatorName = sender instanceof Player p ? p.getName() : "Console";
-            ModerationManager.Punishment result;
-            if ("warn".equals(type)) result = moderationManager.warn(playerId, playerName, reason, moderatorId, moderatorName);
-            else if ("kick".equals(type)) result = moderationManager.kick(playerId, playerName, reason, moderatorId, moderatorName);
-            else if ("ban".equals(type)) result = moderationManager.ban(playerId, playerName, reason, moderatorId, moderatorName);
-            else result = moderationManager.tempBan(playerId, playerName, reason, moderatorId, moderatorName, minutes * 60_000L);
-            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
-                    .replace("{type}", type).replace("{player}", playerName));
-        } catch (Exception exception) {
-            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
-                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
-        }
-    }
-
-    private void unban(CommandSender sender, String playerName) {
-        try {
-            String playerId = findPlayerId(playerName);
-            if (playerId == null) {
-                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-player-not-found"));
-                return;
-            }
-            String moderatorId = sender instanceof Player p ? p.getUniqueId().toString() : null;
-            if (moderationManager.unban(playerId, moderatorId, "Unban durch Verwaltung")) {
-                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
-                        .replace("{type}", "unban").replace("{player}", playerName));
-            } else {
-                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-no-active-ban"));
-            }
-        } catch (Exception exception) {
-            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
-                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
-        }
-    }
-
-    private String findPlayerId(String playerName) throws java.sql.SQLException {
-        String id = new ModerationManager(plugin).findPlayerIdByName(playerName);
-        if (id != null) return id;
-        for (Player player : plugin.getServer().getOnlinePlayers().values()) {
-            if (player.getName().equalsIgnoreCase(playerName)) return player.getUniqueId().toString();
-        }
-        return null;
-    }
-
-    private void openMainMenu(Player player) {
+    private void openMainMenu(Player admin) {
         int online = plugin.getServer().getOnlinePlayers().size();
         new SimpleForm(
                 messageManager.getMessage("messages.essentials.management-title"),
-                messageManager.getMessage("messages.essentials.management-header").replace("{online}", String.valueOf(online)))
-                .addButton(messageManager.getMessage("messages.essentials.management-players"), ignored -> openPlayerList(player))
+                messageManager.getMessage("messages.essentials.management-header")
+                        .replace("{online}", String.valueOf(online)))
+                .addButton(messageManager.getMessage("messages.essentials.management-players"), ignored -> openPlayerList(admin))
+                .addButton(messageManager.getMessage("messages.essentials.management-online-actions"), ignored -> openOnlineActions(admin))
                 .addButton(messageManager.getMessage("messages.essentials.management-close"))
-                .send(player);
+                .send(admin);
     }
 
-    private void openPlayerList(Player admin) {
+    private void openOnlineActions(Player admin) {
         Map<?, Player> players = plugin.getServer().getOnlinePlayers();
         SimpleForm form = new SimpleForm(
-                messageManager.getMessage("messages.essentials.management-players-title"),
-                messageManager.getMessage("messages.essentials.management-players-header").replace("{online}", String.valueOf(players.size())));
+                messageManager.getMessage("messages.essentials.management-actions-title"),
+                messageManager.getMessage("messages.essentials.management-actions-header")
+                        .replace("{online}", String.valueOf(players.size())));
         for (Player target : players.values()) {
             form.addButton(target.getName(), ignored -> openPlayerInfo(admin, target));
         }
@@ -153,17 +80,208 @@ public class ManagementCommand extends Command {
         form.send(admin);
     }
 
+    private void openPlayerList(Player admin) {
+        openOnlineActions(admin);
+    }
+
     private void openPlayerInfo(Player admin, Player target) {
+        String playerId = target.getUniqueId().toString();
+        String team = "Kein Team";
+        String ban = "Kein aktiver Bann";
+        int history = 0;
+        try {
+            Team targetTeam = teamManager.getTeamForPlayer(playerId);
+            if (targetTeam != null) team = targetTeam.name();
+            ModerationManager.Punishment activeBan = moderationManager.getActiveBan(playerId);
+            if (activeBan != null) {
+                ban = activeBan.type() + ": " + activeBan.reason();
+            }
+            history = moderationManager.getHistory(playerId).size();
+        } catch (Exception exception) {
+            plugin.getLogger().warning("Verwaltungsdaten konnten nicht geladen werden: " + exception.getMessage());
+        }
+
         String info = messageManager.getMessage("messages.essentials.management-player-info")
                 .replace("{name}", target.getName())
-                .replace("{uuid}", target.getUniqueId().toString())
+                .replace("{uuid}", playerId)
                 .replace("{world}", target.getLevel() == null ? "-" : target.getLevel().getName())
                 .replace("{x}", String.valueOf((int) target.getFloorX()))
                 .replace("{y}", String.valueOf((int) target.getFloorY()))
-                .replace("{z}", String.valueOf((int) target.getFloorZ()));
-        new SimpleForm(messageManager.getMessage("messages.essentials.management-player-title"), info)
-                .addButton(messageManager.getMessage("messages.essentials.management-back"), ignored -> openPlayerList(admin))
+                .replace("{z}", String.valueOf((int) target.getFloorZ()))
+                .replace("{team}", team)
+                .replace("{ban}", ban)
+                .replace("{history}", String.valueOf(history));
+
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-player-title"),
+                info)
+                .addButton(messageManager.getMessage("messages.essentials.management-moderate"),
+                        ignored -> openModerationMenu(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-history"),
+                        ignored -> openHistory(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openOnlineActions(admin))
                 .send(admin);
+    }
+
+    private void openModerationMenu(Player admin, Player target) {
+        try {
+            ModerationManager.Punishment activeBan = moderationManager.getActiveBan(target.getUniqueId().toString());
+            SimpleForm form = new SimpleForm(
+                    messageManager.getMessage("messages.essentials.management-moderation-title"),
+                    messageManager.getMessage("messages.essentials.management-moderation-header")
+                            .replace("{player}", target.getName())
+                            .replace("{status}", activeBan == null ? "§aKein aktiver Bann" : "§c" + activeBan.type()));
+            form.addButton("§e⚠ Verwarnen", ignored -> openReasonMenu(admin, target, "warn"));
+            form.addButton("§6⛔ Kicken", ignored -> openReasonMenu(admin, target, "kick"));
+            form.addButton("§c🔨 Permanent bannen", ignored -> openReasonMenu(admin, target, "ban"));
+            form.addButton("§c⏱ 30 Minuten bannen", ignored -> openReasonMenu(admin, target, "tempban30"));
+            form.addButton("§c⏱ 2 Stunden bannen", ignored -> openReasonMenu(admin, target, "tempban120"));
+            form.addButton("§c⏱ 24 Stunden bannen", ignored -> openReasonMenu(admin, target, "tempban1440"));
+            if (activeBan != null) {
+                form.addButton("§a✓ Bann aufheben", ignored -> confirmUnban(admin, target));
+            }
+            form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                    ignored -> openPlayerInfo(admin, target));
+            form.send(admin);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void openReasonMenu(Player admin, Player target, String action) {
+        String title = messageManager.getMessage("messages.essentials.management-reason-title");
+        SimpleForm form = new SimpleForm(title, "§7Spieler: §f" + target.getName() + "\n§7Wähle einen Grund:");
+        form.addButton("Verstoß gegen Regeln", ignored -> confirmPunishment(admin, target, action, "Verstoß gegen die Serverregeln"));
+        form.addButton("Belästigung / Beleidigung", ignored -> confirmPunishment(admin, target, action, "Belästigung / Beleidigung"));
+        form.addButton("Cheating / Exploiting", ignored -> confirmPunishment(admin, target, action, "Cheating / Exploiting"));
+        form.addButton("Unangemessenes Verhalten", ignored -> confirmPunishment(admin, target, action, "Unangemessenes Verhalten"));
+        form.addButton("Sonstiger Regelverstoß", ignored -> confirmPunishment(admin, target, action, "Sonstiger Regelverstoß"));
+        form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                ignored -> openModerationMenu(admin, target));
+        form.send(admin);
+    }
+
+    private void confirmPunishment(Player admin, Player target, String action, String reason) {
+        String label = actionLabel(action);
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-confirm-title"),
+                "§7Spieler: §f" + target.getName()
+                        + "\n§7Maßnahme: §f" + label
+                        + "\n§7Grund: §f" + reason
+                        + "\n\n§cDiese Aktion kann den Spieler sofort vom Server trennen.")
+                .addButton("§c✓ Bestätigen", ignored -> executePunishment(admin, target, action, reason))
+                .addButton("§7Abbrechen", ignored -> openModerationMenu(admin, target))
+                .send(admin);
+    }
+
+    private void executePunishment(Player admin, Player target, String action, String reason) {
+        try {
+            String moderatorId = admin.getUniqueId().toString();
+            String moderatorName = admin.getName();
+            String playerId = target.getUniqueId().toString();
+            if ("warn".equals(action)) {
+                moderationManager.warn(playerId, target.getName(), reason, moderatorId, moderatorName);
+            } else if ("kick".equals(action)) {
+                moderationManager.kick(playerId, target.getName(), reason, moderatorId, moderatorName);
+            } else if ("ban".equals(action)) {
+                moderationManager.ban(playerId, target.getName(), reason, moderatorId, moderatorName);
+            } else {
+                long minutes = Long.parseLong(action.substring("tempban".length()));
+                moderationManager.tempBan(playerId, target.getName(), reason, moderatorId, moderatorName, minutes * 60_000L);
+            }
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
+                    .replace("{type}", actionLabel(action)).replace("{player}", target.getName()));
+            openPlayerInfo(admin, target);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void confirmUnban(Player admin, Player target) {
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-confirm-title"),
+                "§7Spieler: §f" + target.getName() + "\n§7Aktion: §aBann aufheben\n\n§7Möchtest du den aktiven Bann wirklich aufheben?")
+                .addButton("§a✓ Bann aufheben", ignored -> executeUnban(admin, target))
+                .addButton("§7Abbrechen", ignored -> openModerationMenu(admin, target))
+                .send(admin);
+    }
+
+    private void executeUnban(Player admin, Player target) {
+        try {
+            boolean changed = moderationManager.unban(target.getUniqueId().toString(),
+                    admin.getUniqueId().toString(), "Unban durch Verwaltung");
+            if (!changed) {
+                admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-no-active-ban"));
+            } else {
+                admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
+                        .replace("{type}", "Bann aufgehoben").replace("{player}", target.getName()));
+            }
+            openPlayerInfo(admin, target);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void openHistory(Player admin, Player target) {
+        try {
+            List<ModerationManager.Punishment> history = moderationManager.getHistory(target.getUniqueId().toString());
+            SimpleForm form = new SimpleForm(
+                    messageManager.getMessage("messages.essentials.management-history-title"),
+                    "§7Spieler: §f" + target.getName() + "\n§7Einträge: §f" + history.size());
+            if (history.isEmpty()) {
+                form.addButton("§7Keine Maßnahmen vorhanden");
+            } else {
+                for (ModerationManager.Punishment punishment : history) {
+                    form.addButton(formatHistory(punishment), ignored -> openHistoryEntry(admin, target, punishment));
+                }
+            }
+            form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                    ignored -> openPlayerInfo(admin, target));
+            form.send(admin);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void openHistoryEntry(Player admin, Player target, ModerationManager.Punishment punishment) {
+        String created = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.createdAt()));
+        String expires = punishment.expiresAt() == null ? "dauerhaft" :
+                new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(punishment.expiresAt()));
+        String details = "§7Typ: §f" + punishment.type()
+                + "\n§7Grund: §f" + punishment.reason()
+                + "\n§7Moderator: §f" + (punishment.moderatorName() == null ? "Console" : punishment.moderatorName())
+                + "\n§7Erstellt: §f" + created
+                + "\n§7Ablauf: §f" + expires
+                + "\n§7Status: §f" + (punishment.active() ? "Aktiv" : "Beendet");
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-history-entry-title"),
+                details)
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openHistory(admin, target))
+                .send(admin);
+    }
+
+    private String formatHistory(ModerationManager.Punishment p) {
+        String status = p.active() ? "§cAKTIV" : "§7beendet";
+        String date = new SimpleDateFormat("dd.MM HH:mm").format(new Date(p.createdAt()));
+        return status + " §f" + p.type() + " §8• §7" + date + "\n§8" + p.reason();
+    }
+
+    private String actionLabel(String action) {
+        return switch (action) {
+            case "warn" -> "Verwarnung";
+            case "kick" -> "Kick";
+            case "ban" -> "Permanenter Bann";
+            case "tempban30" -> "Bann (30 Minuten)";
+            case "tempban120" -> "Bann (2 Stunden)";
+            case "tempban1440" -> "Bann (24 Stunden)";
+            default -> action;
+        };
     }
 
     private void sendHelp(CommandSender sender) {
