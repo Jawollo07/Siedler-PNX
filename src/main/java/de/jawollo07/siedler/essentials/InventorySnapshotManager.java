@@ -55,6 +55,31 @@ public final class InventorySnapshotManager {
         }
     }
 
+    /** Captures all currently online players. Reflection keeps this compatible with Map/Collection/array server APIs. */
+    public void snapshotOnlinePlayers(String reason) {
+        try {
+            Object online = plugin.getServer().getClass().getMethod("getOnlinePlayers").invoke(plugin.getServer());
+            if (online instanceof java.util.Map<?, ?> map) {
+                for (Object value : map.values()) {
+                    if (value instanceof Player player) snapshot(player, reason);
+                }
+            } else if (online instanceof Iterable<?> iterable) {
+                for (Object value : iterable) {
+                    if (value instanceof Player player) snapshot(player, reason);
+                }
+            } else if (online != null && online.getClass().isArray()) {
+                int length = java.lang.reflect.Array.getLength(online);
+                for (int i = 0; i < length; i++) {
+                    Object value = java.lang.reflect.Array.get(online, i);
+                    if (value instanceof Player player) snapshot(player, reason);
+                }
+            }
+        } catch (Exception exception) {
+            plugin.getLogger().warning("Online-Inventare konnten nicht vollständig gesichert werden: "
+                    + exception.getMessage());
+        }
+    }
+
     public InventorySnapshot getLatest(String playerId) throws SQLException {
         if (playerId == null || playerId.isBlank()) return null;
 
