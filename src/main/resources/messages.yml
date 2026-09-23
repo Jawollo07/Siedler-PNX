@@ -7,7 +7,17 @@ messages:
     disable: "Disabled"
     info: "Plugin for the Minecraft Siedler Project"
   essentials:
-    welcome-message: "Willkommen "
+    welcome-message: "Willkommen "\n    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
+    management-title: "Siedler Verwaltung"
+    management-header: "§7Zentrale Verwaltung\n\nOnline: §f{online}\n\n§8Weitere Verwaltungsbereiche werden hier ergänzt."
+    management-players: "Spieler verwalten"
+    management-close: "Schließen"
+    management-players-title: "Spielerverwaltung"
+    management-players-header: "§7Online: §f{online}\n\n§8Wähle einen Spieler aus."
+    management-player-title: "Spielerinformationen"
+    management-player-info: "§eName: §f{name}\n§eUUID: §f{uuid}\n§eWelt: §f{world}\n§ePosition: §f{x} / {y} / {z}"
+    management-back: "Zurück"
+    management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche"
   chat:
     prefix: "[Chat]: "
     global-chat:
