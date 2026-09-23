@@ -19,6 +19,10 @@ messages:
     management-player-info: "§eName: §f{name}\n§eUUID: §f{uuid}\n§eWelt: §f{world}\n§ePosition: §f{x} / {y} / {z}"
     management-back: "Zurück"
     management-help: "§7/verwaltung §8- §fÖffnet die Verwaltungsoberfläche\n§7/verwaltung menu §8- §fÖffnet die Verwaltungsoberfläche"
+    management-player-not-found: "§cSpieler nicht gefunden."
+    management-action-success: "§aMaßnahme §f{type}§a für §f{player}§a wurde ausgeführt."
+    management-action-error: "§cModerationsfehler: §f{error}"
+    management-no-active-ban: "§eFür diesen Spieler ist kein aktiver Bann vorhanden."
   chat:
     prefix: "[Chat]: "
     global-chat:
