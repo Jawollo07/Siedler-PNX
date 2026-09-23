@@ -16,6 +16,7 @@ import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
 import de.jawollo07.siedler.essentials.ManagementCommand;
+import de.jawollo07.siedler.essentials.PermanentEffect;
 import org.powernukkitx.plugin.PluginBase;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.TextFormat;
@@ -58,18 +59,20 @@ public final class SiedlerPlugin extends PluginBase {
 
         storage = new StorageManager(this);
         storage.initialize();
-        getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         siedlerManager = new SiedlerManager(this, storage);
 
         commandManager = new CommandManager(this);
-        registerCommands();
-        registerEvents();
 
         taxManager = new TaxManager(this);
         taxManager.start();
 
+        // Registration
+        registerCommands();
+        registerEvents();
+        registerListener();
+        registerTasks();
+        
         getLogger().info(
                 TextFormat.GREEN + prefix + messageManager.getMessage("main", "enable")
         );
@@ -97,10 +100,30 @@ public final class SiedlerPlugin extends PluginBase {
     }
 
     private void registerEvents() {
-        this.getServer().getPluginManager().registerEvents(new Protection(this), this);
-        getLogger().info("Claim Protection registered");
+        try {
+            this.getServer().getPluginManager().registerEvents(new Protection(this), this);
+        } catch (Exception e) {
+            this.getLogger().error("Error with Event registration: " + e);
+        }
+        getLogger().info("All Events registered");
     }
-
+    private void registerTasks() {
+        try {
+            this.getServer().getScheduler().scheduleRepeatingTask(this, new PermanentEffect(), 20);
+        } catch (Exception e) {
+            this.getLogger().error("Error with Task registration: " + e);
+        }
+        getLogger().info("All Tasks registered");
+    }
+    private void registerListener() {
+        try {
+            getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
+            getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        } catch (Exception e) {
+            this.getLogger().error("Error with Listener registration: " + e);
+        }
+        getLogger().info("All Listener registered");
+    }
     @Override
     public void onDisable() {
         if (taxManager != null) {

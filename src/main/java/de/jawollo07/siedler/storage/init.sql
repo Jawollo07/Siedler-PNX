@@ -464,26 +464,24 @@ CREATE TABLE IF NOT EXISTS team_inventories (
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS homes (
+    id VARCHAR(36) PRIMARY KEY,
     player_id VARCHAR(36) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-
+    name VARCHAR(32) NOT NULL,
     world VARCHAR(255) NOT NULL,
-
-    x REAL NOT NULL,
-    y REAL NOT NULL,
-    z REAL NOT NULL,
-
-    yaw REAL NOT NULL DEFAULT 0,
-    pitch REAL NOT NULL DEFAULT 0,
-
-    created_at INTEGER NOT NULL,
-
-    PRIMARY KEY (player_id, name),
+    x DOUBLE NOT NULL,
+    y DOUBLE NOT NULL,
+    z DOUBLE NOT NULL,
+    yaw DOUBLE NOT NULL,
+    pitch DOUBLE NOT NULL,
+    created_at BIGINT NOT NULL,
 
     FOREIGN KEY (player_id)
         REFERENCES players(id)
         ON DELETE CASCADE
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_homes_player_name
+ON homes(player_id, name);
 
 -- ============================================================
 -- Death Points
