@@ -8,7 +8,7 @@ messages:
     info: "Plugin for the Minecraft Siedler Project"
   essentials:
     welcome-message: "Willkommen "
-    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet werden."
+    player-required: "§cDieser Bereich kann nur von einem Spieler verwendet."
 
     # Verwaltung – Hauptmenü
     management-title: "Siedler Verwaltung"
@@ -261,8 +261,8 @@ messages:
     not-found: "§cTeam §f{team}§c wurde nicht gefunden."
     color-updated: "§aDie Farbe von Team §f{team}§a wurde auf §f{color}§a gesetzt."
     color-error: "§cTeamfarbe konnte nicht geändert werden: {error}"
-    yes: "Ja"
-    no: "Nein"
+    "yes": "Ja"
+    "no": "Nein"
     team-name-empty: "Der Team Name darf nicht leer sein"
     team-not-found: "Das Team wurde nicht gefunden"
     help:
@@ -274,8 +274,8 @@ messages:
         "1": "§7/diplomatie admin set <team> <team> <friendly|allied|neutral|hostile|enemy> §8- §fÄndert die Diplomatie zwischen zwei Teams"
         "2": "§7/diplomatie admin list §8- §fZeigt alle Team-Beziehungen an"
     command-usage:
-      set: "§cVerwendung: /diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy>"
-      admin-set: "§cVerwendung: /diplomatie admin set <team1> <team2> <friendly|allied|neutral|hostile|enemy>"
+      set: "§cVerwendung: §f/diplomatie set <anderes Team> <friendly|allied|neutral|hostile|enemy>"
+      admin-set: "§cVerwendung: §f/diplomatie admin set <team1> <team2> <friendly|allied|neutral|hostile|enemy>"
     elemination:
       broadcast: ""
     only-player-command: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
@@ -347,7 +347,7 @@ messages:
     team-not-found: "§cTeam '"
   elimination:
     prefix: "[Elemination]: "
-    broadcast-message: "Team wurde eliminiert: " # Format: prefix + broadcast-message + Team Name
+    broadcast-message: "Team wurde eliminiert: "
     welcome-message: "Dein Team wurde leider eliminiert"
     command-usage: ""
   eco:
