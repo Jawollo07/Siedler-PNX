@@ -131,19 +131,14 @@ public final class ClaimCommand extends Command {
     }
 
     private void sendClaimInfo(Player player, Claim claim) {
-        player.sendMessage("§6Claim-Informationen:");
-        player.sendMessage("§7ID: §f" + claim.id());
-        player.sendMessage("§7Team: §f" + claim.teamID());
-        player.sendMessage("§7Welt: §f" + claim.world());
-        player.sendMessage(
-                "§7Chunks: §f"
-                        + claim.min_x()
-                        + ", "
-                        + claim.min_z()
-                        + " §7bis §f"
-                        + claim.max_x()
-                        + ", "
-                        + claim.max_z()
-        );
+        player.sendMessage(prefix + messageManager.getMessage("claim", "info-title"));
+        player.sendMessage(messageManager.getMessage("claim", "info-id").replace("{id}", claim.id()));
+        player.sendMessage(messageManager.getMessage("claim", "info-team").replace("{team}", claim.teamID()));
+        player.sendMessage(messageManager.getMessage("claim", "info-world").replace("{world}", claim.world()));
+        player.sendMessage(messageManager.getMessage("claim", "info-chunks")
+                .replace("{minX}", String.valueOf(claim.min_x()))
+                .replace("{minZ}", String.valueOf(claim.min_z()))
+                .replace("{maxX}", String.valueOf(claim.max_x()))
+                .replace("{maxZ}", String.valueOf(claim.max_z())));
     }
 }
