@@ -322,6 +322,7 @@ CREATE TABLE IF NOT EXISTS raids (
     outpost_name VARCHAR(255) NOT NULL,
     team_id VARCHAR(36) NOT NULL,
     wave INTEGER NOT NULL DEFAULT 0,
+    remaining_mobs INTEGER NOT NULL DEFAULT 0,
     status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
     started_at BIGINT NOT NULL,
     finished_at BIGINT,
