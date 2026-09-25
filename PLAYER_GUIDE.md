@@ -1,50 +1,38 @@
 # Siedler 2.0 – Spieler-Handbuch
 
-Willkommen bei **Siedler 2.0**! Dieses Handbuch erklärt die wichtigsten Funktionen für Spieler und dient als kompakter Einstieg in das Spiel.
+Willkommen bei **Siedler 2.0**! Dieses Handbuch beschreibt die aktuell für Spieler relevanten Funktionen des PowerNukkitX-Ports.
 
-> **Hinweis:** Das Handbuch beschreibt den aktuellen Stand des `beta`-Branches. Funktionen, die noch nicht vollständig migriert sind, werden hier nicht als verfügbar dargestellt.
-
----
+> **Stand:** aktueller `beta`-Branch von Siedler-PNX. Administrative und noch nicht migrierte Funktionen sind nicht als Spielerfunktionen dokumentiert.
 
 ## 1. Schnellstart
 
-Nach dem Beitritt zum Server sind vor allem diese Befehle wichtig:
-
 | Befehl | Funktion |
 |---|---|
-| `/team list` | Vorhandene Teams anzeigen |
-| `/team info <Team>` | Informationen zu einem Team anzeigen |
-| `/claim info` | Informationen zum Claim an deiner Position anzeigen |
-| `/eco stats` | Steuerstatistiken deines Teams anzeigen |
-| `/sethome <Name>` | Aktuelle Position als Home speichern |
-| `/home <Name>` | Zu einem Home teleportieren |
-| `/homes` | Homes als GUI anzeigen |
-| `/delhome <Name>` | Ein Home löschen |
+| `/team list` | Teams anzeigen |
+| `/team info <Team>` | Teaminformationen anzeigen |
+| `/claim info` | Claim an der aktuellen Position prüfen |
+| `/eco stats` | Steuerstatistik des eigenen Teams |
+| `/sethome <Name>` | Home speichern |
+| `/home <Name>` | Home benutzen |
+| `/homes` | Homes anzeigen |
+| `/delhome <Name>` | Home löschen |
 | `/tpa <Spieler>` | Teleportanfrage senden |
 | `/tpaccept` | Teleportanfrage annehmen |
 | `/tpdeny` | Teleportanfrage ablehnen |
 | `/tpacancel` | Eigene Teleportanfrage abbrechen |
-| `/death` | Zum letzten Todespunkt teleportieren |
-| `/stats` | Eigene Spielerstatistik anzeigen |
-| `/ec` | Eigene 27-Slot-Enderchest öffnen |
-| `/tec` | Gemeinsame 54-Slot-Team-Enderchest öffnen |
-
----
+| `/death` | Zum letzten Todespunkt |
+| `/stats` | Eigene Statistik |
+| `/ec` | Persönliche Enderchest |
+| `/tec` | Gemeinsame Team-Enderchest |
+| `/outpost list` | Outposts anzeigen |
+| `/outpost info <Name>` | Outpost-Informationen |
+| `/raid status` | Laufenden Raid anzeigen |
+| `/market info` | Marktplatz an der aktuellen Position |
+| `/market types` | Händlerarten anzeigen |
 
 ## 2. Teams
 
-Teams bilden die Grundlage des Siedler-Systems.
-
-Ein Team besitzt unter anderem:
-
-- einen Namen
-- eine Farbe
-- einen Kontostand
-- einen Steuerbonus
-- Mitglieder
-- diplomatische Beziehungen
-- gegebenenfalls einen Claim
-- einen Eliminierungsstatus
+Teams sind die Grundlage des Siedler-Systems. Ein Team besitzt unter anderem einen Namen, eine Farbe, Mitglieder, ein Konto, einen TaxBonus, diplomatische Beziehungen und gegebenenfalls Claims oder Outposts.
 
 ### Teams anzeigen
 
@@ -52,76 +40,41 @@ Ein Team besitzt unter anderem:
 /team list
 ```
 
-Zeigt alle vorhandenen Teams.
-
-### Team-Informationen
+### Teaminformationen
 
 ```
 /team info <Team>
 ```
 
-Zeigt Informationen über ein Team, unter anderem:
+Dort werden unter anderem Name, Farbe, TaxBonus, Eliminierungsstatus und Kontostand angezeigt.
 
-- Name
-- Farbe
-- Steuerbonus
-- Eliminierungsstatus
-- Kontostand
-
-### Eigenes Team
-
-Wenn du einem Team zugewiesen wurdest, kannst du dein Team über die entsprechenden Team- und Diplomatie-Befehle verwalten bzw. einsehen.
-
-Die Erstellung, Löschung und Mitgliederverwaltung von Teams erfolgt über die Spielleitung.
-
----
+Die Erstellung, Löschung und Mitgliederverwaltung erfolgt durch die Spielleitung.
 
 ## 3. Claims
 
 Claims schützen Gebiete eines Teams.
 
-### Claim anzeigen
+### Claim prüfen
 
 ```
 /claim info
 ```
 
-Der Befehl zeigt Informationen über den Claim an, in dem du dich gerade befindest.
+Angezeigt werden unter anderem Claim-ID, Team, Welt und Chunk-Grenzen.
 
-Angezeigt werden unter anderem:
+Innerhalb eines Siedler-Claims gelten die serverseitigen Schutzregeln. Normale feindliche Monster spawnen dort nicht.
 
-- Claim-ID
-- zugehöriges Team
-- Welt
-- Chunk-Grenzen
+## 4. Wirtschaft und Steuern
 
-### Schutz
+Die Siedler-Wirtschaft basiert auf Team-Geld. Das Guthaben gehört dem Team und nicht einzelnen Spielern.
 
-Innerhalb geschützter Claims gelten die vom Server festgelegten Schutzregeln. Versuche daher nicht, fremde Claims zu verändern oder zu umgehen.
-
-Die Verwaltung und Erstellung von Claims erfolgt durch die Spielleitung.
-
----
-
-## 4. Wirtschaft
-
-Die Siedler-Wirtschaft basiert auf Team-Geld.
-
-Das Geld gehört **dem Team**, nicht einzelnen Spielern.
-
-### Steuer
-
-Teams erhalten Einnahmen über die Dorfbewohner-Steuer.
-
-Die Berechnung lautet:
+Die Steuerberechnung lautet:
 
 ```
 Coins = Dorfbewohner × TaxBonus × Rate
 ```
 
-Der Standardwert für die Rate ist `1`.
-
-Beispiele:
+Bei der Standardrate von 1 gilt beispielsweise:
 
 ```
 1 Dorfbewohner × TaxBonus 1 = 1 Coin
@@ -130,45 +83,28 @@ Beispiele:
 ```
 
 Wichtig:
-
-- Mindestens ein Teammitglied muss online sein, damit die Steuer eingezogen wird.
+- Mindestens ein Teammitglied muss online sein.
 - Eliminierte Teams erhalten keine Steuer.
-- Die Steuer wird dem Teamkonto gutgeschrieben.
-- Der Steuerzyklus läuft standardmäßig alle 24 Stunden.
+- Die Einnahme wird dem Teamkonto gutgeschrieben.
+- Der Standard-Steuerzyklus läuft alle 24 Stunden.
 
-### Steuerstatistiken
+### Steuerstatistik
 
 ```
 /eco stats
 ```
 
-Öffnet eine GUI mit den Steuerstatistiken deines Teams.
-
-Dort findest du unter anderem:
-
-- bisherige Steuereinnahmen
-- erfolgreiche Steuerzyklen
-- fehlgeschlagene Zyklen
-- insgesamt gezählte Dorfbewohner
-- Informationen zur letzten Steuer
-
----
+Die GUI zeigt unter anderem Einnahmen, erfolgreiche und fehlgeschlagene Steuerzyklen, gezählte Dorfbewohner und Informationen zur letzten Steuer.
 
 ## 5. Diplomatie
 
-Teams können diplomatische Beziehungen zueinander festlegen.
+Teams können Beziehungen zueinander verwalten:
 
-Es gibt drei grundlegende Beziehungen:
-
-- **allied** – verbündet
-- **neutral** – neutral
-- **enemy** – feindlich
-
-Die älteren Bezeichnungen `friendly` und `hostile` werden vom System als entsprechende Aliase behandelt.
+- `allied` – verbündet
+- `neutral` – neutral
+- `enemy` – feindlich
 
 ### Beziehung setzen
-
-Als Teammitglied:
 
 ```
 /diplomatie set <Team> <Beziehung>
@@ -184,168 +120,52 @@ Beispiel:
 
 ```
 /diplomatie show
-```
-
-Zeigt die Beziehungen deines Teams.
-
-Mit einem Teamnamen kannst du gezielt dessen Beziehungen anzeigen:
-
-```
 /diplomatie show <Team>
 ```
 
----
-
 ## 6. Homes
-
-Mit Homes kannst du wichtige Orte dauerhaft speichern.
-
-### Home speichern
 
 ```
 /sethome <Name>
-```
-
-Beispiel:
-
-```
-/sethome basis
-```
-
-Deine aktuelle Position wird unter diesem Namen gespeichert.
-
-### Zu einem Home teleportieren
-
-```
 /home <Name>
-```
-
-Beispiel:
-
-```
-/home basis
-```
-
-### Alle Homes anzeigen
-
-```
 /homes
-```
-
-Öffnet eine GUI mit deinen gespeicherten Homes. Du kannst ein Home direkt aus der Liste auswählen.
-
-### Home löschen
-
-```
 /delhome <Name>
-```
-
-Beispiel:
-
-```
-/delhome basis
 ```
 
 Homes speichern Welt, Position und Blickrichtung und bleiben über Serverneustarts erhalten.
 
----
+## 7. TPA
 
-## 7. TPA – Teleportanfragen
-
-Mit TPA kannst du andere Spieler um eine Teleportation bitten.
-
-### Anfrage senden
+Mit TPA können Spieler Teleportanfragen senden:
 
 ```
 /tpa <Spieler>
-```
-
-Beispiel:
-
-```
-/tpa Alex
-```
-
-Der Spieler erhält eine Teleportanfrage.
-
-### Anfrage annehmen
-
-```
 /tpaccept
-```
-
-Der anfragende Spieler wird anschließend zu dir teleportiert.
-
-### Anfrage ablehnen
-
-```
 /tpdeny
-```
-
-Lehnt die aktuelle Anfrage ab.
-
-### Eigene Anfrage abbrechen
-
-```
 /tpacancel
 ```
 
-Bricht deine eigene ausstehende TPA-Anfrage ab.
-
-### Ablaufzeit
-
-Eine TPA-Anfrage ist **60 Sekunden** gültig. Danach läuft sie automatisch ab.
-
----
+Eine Anfrage ist standardmäßig 60 Sekunden gültig.
 
 ## 8. Tod und Todespunkte
 
-Nach deinem Tod wird ein Todespunkt gespeichert.
-
-Gespeichert werden unter anderem:
-
-- Welt
-- X-, Y- und Z-Koordinaten
-- Blickrichtung
-- Zeitpunkt des Todes
-- Inventar zum Zeitpunkt des Todes
-
-### Zum letzten Todespunkt
+Nach einem Tod wird ein Todespunkt gespeichert. Dazu gehören insbesondere Welt, Position, Rotation und Zeitpunkt.
 
 ```
 /death
 ```
 
-Teleportiert dich zu deinem zuletzt gespeicherten Todespunkt.
+teleportiert zum letzten gespeicherten Todespunkt.
 
-Der Todespunkt bleibt gespeichert und kann dadurch auch für die spätere Todeshistorie verwendet werden.
-
-### Inventar beim Tod
-
-Das Inventar wird beim Todesereignis **vor dem anschließenden Leeren des Inventars durch den Server** erfasst.
-
-Gespeichert werden dabei insbesondere:
-
-- normales Inventar
-- Rüstung
-- Nebenhand
-- Item-ID
-- Item-Name
-- Anzahl
-- Schaden/Durability, soweit verfügbar
-- Item-Daten/NBT, soweit von der Server-API verfügbar
-
----
+Beim Tod wird außerdem ein Inventar-Snapshot erfasst, soweit die verfügbaren PNX-Itemdaten dies erlauben. Dazu gehören Hauptinventar, Rüstung und Nebenhand.
 
 ## 9. Spielerstatistiken
-
-Mit `/stats` kannst du deine persönlichen Statistiken anzeigen.
 
 ```
 /stats
 ```
 
-Die Statistik enthält aktuell:
+Die Statistik enthält aktuell unter anderem:
 
 - Kills
 - Tode
@@ -355,89 +175,131 @@ Die Statistik enthält aktuell:
 - Spielzeit
 - Team
 
-Die Spielzeit wird während deiner aktiven Spielsession erfasst und dauerhaft gespeichert.
-
----
-
----
-
 ## 10. Enderchests
 
 ### Persönliche Enderchest
 
-Mit:
-
-``
+```
 /ec
-``
+```
 
-öffnest du deine persönliche **27-Slot-Enderchest**. Der Inhalt ist dauerhaft gespeichert und steht dir auch nach einem Serverneustart wieder zur Verfügung.
+Öffnet die persönliche **27-Slot-Enderchest**. Der Inhalt wird dauerhaft gespeichert.
 
 ### Team-Enderchest
 
-Mit:
-
-``
+```
 /tec
-``
+```
 
-öffnest du die gemeinsame **54-Slot-Team-Enderchest** deines Teams. Alle Mitglieder desselben Teams greifen auf denselben Inhalt zu.
+Öffnet die gemeinsame **54-Slot-Team-Enderchest**. Alle Mitglieder desselben Teams greifen auf denselben Inhalt zu.
 
-Die Team-Enderchest hat doppelt so viele Slots wie eine normale Enderchest.
+## 11. Outposts
 
-Beide Inventare können Items normal einlegen, entnehmen und verschieben. Die Inhalte werden persistent gespeichert.
+Outposts sind besondere Kontrollpunkte, die von Teams erobert werden können.
 
----
+### Anzeigen
 
-## 11. Spielzeit und Spielerdaten
+```
+/outpost list
+/outpost info <Name>
+```
 
-Der Server speichert regelmäßig wichtige Spielerdaten.
+Ein Outpost zeigt unter anderem Welt, Position, Radius, Besitzer und Capture-Fortschritt.
 
-Dazu gehören unter anderem:
+### Eroberung
+
+Befindet sich ein berechtigtes Team innerhalb des Capture-Bereichs, wird der Outpost erobert. Sind gegnerische Teams gleichzeitig anwesend, ist der Outpost umkämpft und der Fortschritt pausiert.
+
+Ein eroberter Outpost gewährt seinem Besitzer einen dauerhaften TaxBonus entsprechend der Serverkonfiguration.
+
+## 12. Pillager-Raids
+
+Besetzte Outposts können von Pillager-Squads angegriffen werden. Ein Raid besteht aus mehreren Wellen.
+
+```
+/raid status
+```
+
+zeigt den aktuell laufenden Raid und die aktuelle Welle.
+
+Je nach Konfiguration können Pillager, Vindicator und Ravager auftreten. Der Raid endet nach erfolgreicher Verteidigung aller Wellen.
+
+## 13. Monstersteuerung
+
+Normale feindliche Monster werden zentral vom Server gesteuert.
+
+Für Spieler bedeutet das insbesondere:
+
+- In Siedler-Claims spawnen keine normalen feindlichen Monster.
+- Der Server kann einzelne Monster vollständig blockieren.
+- Spawnwahrscheinlichkeiten und Monsterlimits können serverseitig angepasst werden.
+- Bestimmte Welten können von normalen Monster-Spawns ausgeschlossen werden.
+
+Token-Monster und Pillager-Raids sind davon getrennt. Diese werden vom Siedler-System gezielt erzeugt.
+
+## 14. Marktplatz
+
+Marktplätze sind geschützte Handelsbereiche.
+
+Innerhalb eines konfigurierten Marktes können Spieler normalerweise weder Blöcke abbauen noch platzieren. Bestimmte Interaktionen können ebenfalls deaktiviert sein. Normale feindliche Monster werden dort nicht zugelassen.
+
+### Marktplatz prüfen
+
+```
+/market info
+```
+
+### Händlerarten
+
+```
+/market types
+```
+
+zeigt die auf dem Server konfigurierten Händlerarten.
+
+### Händler
+
+Siedler verwendet native PowerNukkitX-Händler mit dem normalen Bedrock-Handelsfenster. Welche Angebote verfügbar sind, wird serverseitig konfiguriert.
+
+Die Standardkonfiguration enthält unter anderem Händler für:
+
+- Lebensmittel
+- Baustoffe
+- Rohstoffe
+- Werkzeuge
+- Waffen
+- Versorgung
+- Soldaten
+- Verzauberungen
+
+Die verwendete Währung ist standardmäßig Emerald, sofern die Serverkonfiguration nicht geändert wurde.
+
+## 15. Anti-AFK
+
+Das Anti-AFK-System erkennt längere Inaktivität anhand tatsächlicher Positionsbewegung.
+
+Standardmäßig:
+
+- Warnung 60 Sekunden vor Ablauf
+- Entfernung nach 15 Minuten ohne relevante Bewegung
+- reine Kopfbewegungen zählen nicht als Aktivität
+- Spieler mit der konfigurierten Ausnahmeberechtigung sind ausgenommen
+
+## 16. Gespeicherte Spielerdaten
+
+Wichtige Spielerdaten werden persistent gespeichert, darunter je nach System:
 
 - Inventar
 - Gesundheit
-- maximale Gesundheit
-- Erfahrung
-- Level
-- Hunger
-- Sättigung
-- Luft
-- Position
-- Welt
+- Erfahrung und Level
+- Hunger und Sättigung
+- Position und Welt
 - Blickrichtung
+- Homes
+- Statistiken
+- Todespunkte
 
-Spielerzustände werden regelmäßig gespeichert und zusätzlich bei wichtigen Ereignissen wie Join, Quit und einem normalen Server-Shutdown erfasst.
-
----
-
-## 12. Verhalten im Spiel
-
-Siedler ist ein Team- und Strategiespiel. Für ein faires Spiel gelten daher einige Grundregeln:
-
-### Respekt
-
-Behandle andere Spieler respektvoll. Beleidigungen, Belästigung und absichtliches Stören anderer Spieler können Konsequenzen haben.
-
-### Keine Cheats
-
-Verwende keine Cheats, unerlaubten Clients oder Exploits.
-
-### Keine Exploits
-
-Fehler im Spiel oder Plugin sollten nicht absichtlich ausgenutzt werden. Melde kritische Fehler der Spielleitung.
-
-### Claims respektieren
-
-Betritt fremde Gebiete nicht mit dem Ziel, Schutzmechanismen zu umgehen oder das Gebiet unrechtmäßig zu verändern.
-
-### Teamplay
-
-Informationen, Ressourcen und Entscheidungen können innerhalb deines Teams entscheidend sein. Kommuniziere mit deinen Teammitgliedern und plane gemeinsam.
-
----
-
-## 13. Wichtige Befehle – Übersicht
+## 17. Wichtige Befehle
 
 ### Teams
 
@@ -466,7 +328,7 @@ Informationen, Ressourcen und Entscheidungen können innerhalb deines Teams ents
 
 ```
 /diplomatie help
-/diplomatie set <Team> <allied|neutral|enemy>
+/diplomatie set <Team> <Beziehung>
 /diplomatie show
 /diplomatie show <Team>
 ```
@@ -489,93 +351,48 @@ Informationen, Ressourcen und Entscheidungen können innerhalb deines Teams ents
 /tpacancel
 ```
 
-### Tod
+### Monster-/Outpost-System
+
+```
+/outpost list
+/outpost info <Name>
+/raid status
+```
+
+### Markt
+
+```
+/market help
+/market info
+/market types
+```
+
+### Sonstiges
 
 ```
 /death
-```
-
-### Statistik
-
-```
 /stats
+/ec
+/tec
 ```
 
----
+## 18. Wenn etwas nicht funktioniert
 
-## 14. Wenn etwas nicht funktioniert
+1. Schreibweise des Befehls prüfen.
+2. Prüfen, ob der Befehl nur im Spiel und nicht über die Konsole funktioniert.
+3. Prüfen, ob das benötigte Team, Home oder Ziel existiert.
+4. Bei einem technischen Fehler den vollständigen Fehlertext an die Spielleitung weitergeben.
 
-Wenn ein Befehl nicht funktioniert:
+## 19. Verhalten im Spiel
 
-1. Prüfe die Schreibweise.
-2. Prüfe, ob du die erforderliche Berechtigung besitzt.
-3. Prüfe, ob du dich in einem Spieler-Kontext befindest – einige Funktionen können nicht über die Serverkonsole verwendet werden.
-4. Prüfe, ob ein benötigtes Team oder Home tatsächlich existiert.
-5. Bei einem technischen Fehler: Melde der Spielleitung möglichst den vollständigen Fehlertext und was du unmittelbar davor gemacht hast.
+Für ein faires Siedler-Spiel gelten insbesondere:
 
----
-
-## 15. Anti-AFK
-
-Das Anti-AFK-System erkennt längere Inaktivität anhand tatsächlicher Positionsbewegung.
-
-Standardmäßig gilt:
-
-- nach **14 Minuten** erscheint eine Warnung mit der verbleibenden Zeit
-- nach **15 Minuten** ohne Bewegung wird der Spieler vom Server entfernt
-- Kopfdrehen ohne Positionsänderung zählt nicht als Aktivität
-- Spieler mit der konfigurierten Ausnahme-Berechtigung sind ausgenommen
-
-Die Zeiten können serverseitig in `config.yml` angepasst werden.
+- andere Spieler respektieren,
+- keine Cheats oder unerlaubten Clients verwenden,
+- keine Exploits absichtlich ausnutzen,
+- fremde Claims respektieren,
+- Teamplay und Kommunikation nutzen.
 
 ---
 
-## 16. Kurzreferenz
-
-| Aufgabe | Befehl |
-|---|---|
-| Teams ansehen | `/team list` |
-| Team ansehen | `/team info <Team>` |
-| Claim prüfen | `/claim info` |
-| Steuerstatistik | `/eco stats` |
-| Diplomatie ansehen | `/diplomatie show` |
-| Diplomatie ändern | `/diplomatie set <Team> <Beziehung>` |
-| Home speichern | `/sethome <Name>` |
-| Home benutzen | `/home <Name>` |
-| Homes anzeigen | `/homes` |
-| Home löschen | `/delhome <Name>` |
-| TPA senden | `/tpa <Spieler>` |
-| TPA annehmen | `/tpaccept` |
-| TPA ablehnen | `/tpdeny` |
-| TPA abbrechen | `/tpacancel` |
-| Todespunkt | `/death` |
-| Eigene Statistik | `/stats` |
-| Persönliche Enderchest | `/ec` |
-| Team-Enderchest | `/tec` |
-
----
-
-**Viel Erfolg bei Siedler 2.0 – baut euer Gebiet auf, wirtschaftet gemeinsam und behaltet eure Gegner im Blick!**
-
-
-## Pillager-Raids
-
-Besetzte Outposts können von Pillager-Squads angegriffen werden. Ein Raid besteht aus mehreren Wellen und kann Pillager, Vindicator und optional Ravager enthalten.
-
-Mit `/raid status` kann der aktuell laufende Raid und seine Welle angezeigt werden. Die Verteidigung endet nach der letzten erfolgreich besiegten Welle.
-
-
-## 17. Monster und Claims
-
-Normale feindliche Monster werden zentral vom Server gesteuert.
-
-Innerhalb eines **Siedler-Claims** spawnen keine normalen Monster. Damit bleiben geschützte Teamgebiete frei von gewöhnlichen feindlichen Mob-Spawns.
-
-Die Serverleitung kann außerdem:
-
-- einzelne Monster vollständig blockieren,
-- Spawnwahrscheinlichkeiten anpassen,
-- Monsterlimits pro Chunk und Welt festlegen,
-- Monster-Spawns in bestimmten Welten deaktivieren.
-
-**Token-Monster und Pillager-Raids sind davon getrennt:** Diese werden vom Siedler-System gezielt erzeugt und unterliegen ihren eigenen Regeln.
+**Viel Erfolg bei Siedler 2.0 – baut euer Gebiet auf, entwickelt eure Wirtschaft und verteidigt eure Outposts!**
