@@ -60,16 +60,27 @@ public final class TeamEnderChestManager {
             }
 
             String data = serialize(item);
-            String sql = "INSERT INTO team_inventories (team_id, inventory_type, slot, item_data) "
-                    + "VALUES (?, ?, ?, ?) "
-                    + "ON CONFLICT(team_id, inventory_type, slot) DO UPDATE SET item_data = excluded.item_data";
+            String updateSql = "UPDATE team_inventories SET item_data = ? "
+                    + "WHERE team_id = ? AND inventory_type = ? AND slot = ?";
+            try (PreparedStatement update = storage.getConnection().prepareStatement(updateSql)) {
+                update.setString(1, data);
+                update.setString(2, inventory.getTeamId());
+                update.setString(3, INVENTORY_TYPE);
+                update.setInt(4, slot);
 
-            try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
-                statement.setString(1, inventory.getTeamId());
-                statement.setString(2, INVENTORY_TYPE);
-                statement.setInt(3, slot);
-                statement.setString(4, data);
-                statement.executeUpdate();
+                if (update.executeUpdate() > 0) {
+                    return;
+                }
+            }
+
+            String insertSql = "INSERT INTO team_inventories "
+                    + "(team_id, inventory_type, slot, item_data) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement insert = storage.getConnection().prepareStatement(insertSql)) {
+                insert.setString(1, inventory.getTeamId());
+                insert.setString(2, INVENTORY_TYPE);
+                insert.setInt(3, slot);
+                insert.setString(4, data);
+                insert.executeUpdate();
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning("Team-Enderchest konnte nicht gespeichert werden: " + exception.getMessage());
