@@ -563,3 +563,19 @@ Die Zeiten können serverseitig in `config.yml` angepasst werden.
 Besetzte Outposts können von Pillager-Squads angegriffen werden. Ein Raid besteht aus mehreren Wellen und kann Pillager, Vindicator und optional Ravager enthalten.
 
 Mit `/raid status` kann der aktuell laufende Raid und seine Welle angezeigt werden. Die Verteidigung endet nach der letzten erfolgreich besiegten Welle.
+
+
+## 17. Monster und Claims
+
+Normale feindliche Monster werden zentral vom Server gesteuert.
+
+Innerhalb eines **Siedler-Claims** spawnen keine normalen Monster. Damit bleiben geschützte Teamgebiete frei von gewöhnlichen feindlichen Mob-Spawns.
+
+Die Serverleitung kann außerdem:
+
+- einzelne Monster vollständig blockieren,
+- Spawnwahrscheinlichkeiten anpassen,
+- Monsterlimits pro Chunk und Welt festlegen,
+- Monster-Spawns in bestimmten Welten deaktivieren.
+
+**Token-Monster und Pillager-Raids sind davon getrennt:** Diese werden vom Siedler-System gezielt erzeugt und unterliegen ihren eigenen Regeln.
