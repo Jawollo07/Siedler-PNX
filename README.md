@@ -43,6 +43,11 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Administrative management GUI with player information and moderation actions
 - Persistent moderation history for warnings, kicks, bans and temporary bans
 - Configurable Anti-AFK system with warning and automatic kick
+- Central general monster controller for normal hostile mob spawns
+- Configurable per-mob spawn quotas, blacklist and controlled-mob list
+- Per-chunk and per-world monster population limits
+- Automatic monster blocking inside claims and configured worlds
+- Explicit bypass for controlled Token/Raid encounter spawns
 - Phase 6 TokenManager with persistent token rounds
 - Configurable token spawning with active-token limit and safe ground-position selection
 - Token defeat rewards a permanent team TaxBonus
@@ -233,3 +238,44 @@ The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonu
 - Pillager, Vindicator und optional Ravager
 - Raid-Controlling über Outpost und verteidigendes Team
 - Aktive Raids werden bei einem Serverneustart sicher abgebrochen
+
+
+## General Monster Control
+
+Normal hostile monster spawning is handled centrally by `MonsterManager`.
+
+The controller supports:
+
+- per-mob spawn quotas from 0–100 percent
+- a complete monster blacklist
+- an optional controlled-mob list to explicitly define which identifiers are managed
+- maximum instances of each controlled mob per chunk
+- maximum instances of each controlled mob per world
+- a world blacklist
+- no normal monster spawning inside any Siedler claim
+- explicit bypasses for controlled Token and Raid encounters, so special events are not accidentally blocked by normal-world rules
+
+Example configuration:
+
+```yaml
+monsters:
+  control:
+    enabled: true
+    monsters: []
+    blacklist:
+      - minecraft:creeper
+    quotas:
+      - minecraft:zombie:100
+      - minecraft:skeleton:100
+      - minecraft:creeper:0
+      - minecraft:enderman:75
+      - minecraft:witch:50
+    default-quota-percent: 100
+    max-per-chunk: 12
+    max-per-world: 200
+    world-blacklist: []
+```
+
+A quota is a probability for each attempted spawn. A value of `0` disables that mob; `100` leaves its spawn probability unchanged. A blacklist always wins over the quota.
+
+Token and Pillager-Raid entities use a dedicated spawn bypass because these are Siedler-controlled encounters rather than ordinary world spawning.
