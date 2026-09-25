@@ -334,7 +334,7 @@ public final class RaidManager implements Listener, Runnable {
 
     private Raid getRaid(String id) throws SQLException {
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
-                "SELECT id, outpost_id, outpost_name, team_id, wave, status, started_at, finished_at " +
+                "SELECT id, outpost_id, outpost_name, team_id, wave, remaining_mobs, status, started_at, finished_at " +
                         "FROM raids WHERE id = ? LIMIT 1")) {
             statement.setString(1, id);
             try (ResultSet result = statement.executeQuery()) {
