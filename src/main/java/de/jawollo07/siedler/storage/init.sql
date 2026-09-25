@@ -313,6 +313,31 @@ CREATE TABLE IF NOT EXISTS tokens (
 );
 
 -- ============================================================
+-- Pillager Raids
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS raids (
+    id VARCHAR(36) PRIMARY KEY,
+    outpost_id VARCHAR(36) NOT NULL,
+    outpost_name VARCHAR(255) NOT NULL,
+    team_id VARCHAR(36) NOT NULL,
+    wave INTEGER NOT NULL DEFAULT 0,
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+    started_at BIGINT NOT NULL,
+    finished_at BIGINT,
+
+    FOREIGN KEY (outpost_id)
+        REFERENCES outposts(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (team_id)
+        REFERENCES teams(id)
+        ON DELETE CASCADE,
+
+    CHECK (wave >= 0)
+);
+
+-- ============================================================
 -- Soldier Groups
 -- ============================================================
 
