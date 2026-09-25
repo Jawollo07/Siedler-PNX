@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 6 – Monster, Tokens & Outposts: migration in progress.**
+🚧 **Phase 7 – Market & Traders: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -47,6 +47,10 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Configurable per-mob spawn quotas, blacklist and controlled-mob list
 - Per-chunk and per-world monster population limits
 - Automatic monster blocking inside claims and configured worlds
+- Protected configurable market areas with block-break/place protection
+- Monster-free market areas with automatic cleanup
+- Native PNX trader system with real TradeInventory GUI
+- Freely configurable trader trades and Siedler-3-style trader presets
 - Explicit bypass for controlled Token/Raid encounter spawns
 - Phase 6 TokenManager with persistent token rounds
 - Configurable token spawning with active-token limit and safe ground-position selection
@@ -182,8 +186,9 @@ The systems from Siedler 1.x are migrated in dependency order:
 3. Claims + protection
 4. Economy + taxes + TaxBonus
 5. Token monsters + outposts + raids
-6. Market + traders
-7. Essentials + inventories + statistics
+6. Soldiers + AI + groups + levels
+7. Market + traders
+8. Essentials + inventories + statistics
 8. Mines + control system
 9. Soldiers + AI + groups + levels
 10. Migration, compatibility and release hardening
