@@ -367,6 +367,7 @@ messages:
     welcome-message: "Dein Team wurde leider eliminiert"
     command-usage: ""
   monsters:
+    prefix: "[Monster]: "
     token-name: "§6Token-Monster"
     token-reward: "§aToken besiegt! Dein Team erhält dauerhaft +{bonus} TaxBonus."
     token-round-started: "§aEine Token-Runde wurde gestartet."
@@ -375,6 +376,20 @@ messages:
     token-status: "§6Token: §f{active}/{max} aktiv"
     token-help: "§6/token§r – §7Admin: /token admin <start|spawn|status>"
     token-error: "§cToken-Fehler: {error}"
+    outpost-help: "§6/outpost§r – §7Spieler: /outpost <list|info>, Admin: /outpost admin <create|delete|help>"
+    outpost-created: "§aOutpost §f{outpost}§a wurde mit Radius §f{radius}§a registriert."
+    outpost-deleted: "§aOutpost §f{outpost}§a wurde gelöscht."
+    outpost-not-found: "§cOutpost wurde nicht gefunden."
+    outpost-none: "§7Es sind keine Outposts registriert."
+    outpost-list-title: "§6Outposts:"
+    outpost-list-entry: "§7- §f{outpost} §8• Besitzer: §f{owner} §8• §f{world} {x} {z}"
+    outpost-unclaimed: "§7Unbesetzt"
+    outpost-info: "§6Outpost §f{outpost}\n§7Welt: §f{world}\n§7Position: §f{x} / {y} / {z}\n§7Radius: §f{radius}\n§7Besitzer: §f{owner}\n§7Capture: §f{progress}"
+    outpost-captured: "§6Outpost §f{outpost}§6 wurde von Team §f{team}§6 erobert. Dauerhafter TaxBonus: §f+{bonus}§6."
+    outpost-contested: "§cOutpost §f{outpost}§c wird gerade umkämpft. Der Capture-Fortschritt pausiert."
+    outpost-player-required: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
+    outpost-invalid-radius: "§cDer Radius muss eine positive Zahl sein."
+    outpost-error: "§cOutpost-Fehler: {error}"
   eco:
     prefix: "[ECO]: "
     help:
