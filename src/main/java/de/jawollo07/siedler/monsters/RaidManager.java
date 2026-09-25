@@ -149,7 +149,7 @@ public final class RaidManager implements Listener, Runnable {
     public List<Raid> getRaids() throws SQLException {
         List<Raid> raids = new ArrayList<>();
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
-                "SELECT id, outpost_id, outpost_name, team_id, wave, status, started_at, finished_at " +
+                "SELECT id, outpost_id, outpost_name, team_id, wave, remaining_mobs, status, started_at, finished_at " +
                         "FROM raids ORDER BY started_at DESC LIMIT 20");
              ResultSet result = statement.executeQuery()) {
             while (result.next()) raids.add(map(result));
@@ -159,25 +159,6 @@ public final class RaidManager implements Listener, Runnable {
 
     public void stopRaid(String raidId) throws SQLException {
         finishRaid(raidId, "STOPPED");
-    }
-
-    public int countRaidEntities(String raidId) {
-        int count = 0;
-        String tag = RAID_TAG + raidId;
-        for (Player ignored : plugin.getServer().getOnlinePlayers().values()) {
-            // Entity iteration is not exposed consistently by all PNX builds;
-            // deaths advance the raid, while the database remains authoritative.
-        }
-        try {
-            for (Level level : plugin.getServer().getLevels().values()) {
-                for (Entity entity : level.getEntities()) {
-                    if (entity.containTag(tag)) count++;
-                }
-            }
-        } catch (Exception ignored) {
-            // Fall back to the persistent spawn counter.
-        }
-        return count;
     }
 
     public int getConfiguredWaveSize(int wave) {
