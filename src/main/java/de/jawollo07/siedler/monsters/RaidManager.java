@@ -107,7 +107,9 @@ public final class RaidManager implements Listener, Runnable {
         if (raidId == null) return;
 
         try {
-            if (countRaidEntities(raidId) > 1) return;
+            int remaining = decrementRemaining(raidId);
+            if (remaining > 0) return;
+            if (remaining < 0) return;
 
             Raid raid = getRaid(raidId);
             if (raid == null || !"ACTIVE".equals(raid.status())) return;
@@ -137,7 +139,7 @@ public final class RaidManager implements Listener, Runnable {
 
     public Raid getActiveRaid() throws SQLException {
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
-                "SELECT id, outpost_id, outpost_name, team_id, wave, status, started_at, finished_at " +
+                "SELECT id, outpost_id, outpost_name, team_id, wave, remaining_mobs, status, started_at, finished_at " +
                         "FROM raids WHERE status = 'ACTIVE' ORDER BY started_at LIMIT 1");
              ResultSet result = statement.executeQuery()) {
             return result.next() ? map(result) : null;
@@ -200,9 +202,10 @@ public final class RaidManager implements Listener, Runnable {
         if (spawned == 0) return false;
 
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
-                "UPDATE raids SET wave = ? WHERE id = ?")) {
+                "UPDATE raids SET wave = ?, remaining_mobs = ? WHERE id = ?")) {
             statement.setInt(1, wave);
-            statement.setString(2, raidId);
+            statement.setInt(2, spawned);
+            statement.setString(3, raidId);
             statement.executeUpdate();
         }
 
@@ -287,8 +290,8 @@ public final class RaidManager implements Listener, Runnable {
     private void insertRaid(String id, OutpostManager.Outpost outpost) throws SQLException {
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
                 "INSERT INTO raids " +
-                        "(id, outpost_id, outpost_name, team_id, wave, status, started_at) " +
-                        "VALUES (?, ?, ?, ?, 0, 'ACTIVE', ?)")) {
+                        "(id, outpost_id, outpost_name, team_id, wave, remaining_mobs, status, started_at) " +
+                        "VALUES (?, ?, ?, ?, 0, 0, 'ACTIVE', ?)")) {
             statement.setString(1, id);
             statement.setString(2, outpost.id());
             statement.setString(3, outpost.name());
@@ -328,6 +331,23 @@ public final class RaidManager implements Listener, Runnable {
         return null;
     }
 
+    private int decrementRemaining(String raidId) throws SQLException {
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
+                "UPDATE raids SET remaining_mobs = remaining_mobs - 1 " +
+                        "WHERE id = ? AND status = 'ACTIVE' AND remaining_mobs > 0")) {
+            statement.setString(1, raidId);
+            if (statement.executeUpdate() == 0) return -1;
+        }
+
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
+                "SELECT remaining_mobs FROM raids WHERE id = ?")) {
+            statement.setString(1, raidId);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? result.getInt(1) : -1;
+            }
+        }
+    }
+
     private Raid getRaid(String id) throws SQLException {
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
                 "SELECT id, outpost_id, outpost_name, team_id, wave, status, started_at, finished_at " +
@@ -348,6 +368,7 @@ public final class RaidManager implements Listener, Runnable {
                 result.getString("outpost_name"),
                 result.getString("team_id"),
                 result.getInt("wave"),
+                result.getInt("remaining_mobs"),
                 result.getString("status"),
                 result.getLong("started_at"),
                 finished,
