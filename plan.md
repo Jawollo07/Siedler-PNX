@@ -212,12 +212,12 @@ Unterstützte Maßnahmen:
 
 ## Phase 6 – Monster, Tokens & Outposts
 
-- [ ] TokenManager
-- [ ] automatische Token-Spawns per Konfiguration/Befehl
-- [ ] maximal aktive Token-Monster
-- [ ] sichere Spawnpositionen
-- [ ] Token-Runden und persistenter Abschlussstatus
-- [ ] Token-Besiegung → TaxBonus
+- [x] TokenManager
+- [x] automatische Token-Spawns per Konfiguration/Befehl
+- [x] maximal aktive Token-Monster
+- [x] sichere Spawnpositionen
+- [x] Token-Runden und persistenter Abschlussstatus
+- [x] Token-Besiegung → TaxBonus
 - [ ] Outpost-Registrierung
 - [ ] Outpost-Capture mit Radius und Capture-Zeit
 - [ ] Contesting zwischen Teams
@@ -285,7 +285,7 @@ Unterstützte Maßnahmen:
 
 ## Aktueller Stand
 
-**Aktuelle Planphase:** Phase 5 – Essentials & Statistics
+**Aktuelle Planphase:** Phase 6 – Monster, Tokens & Outposts
 
 Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
@@ -296,7 +296,7 @@ Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `tea
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
 
 
-Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats, Dashboard/Statistiken bleiben offen.
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats und Anti-AFK sind umgesetzt. Phase 6 wurde mit dem Token-System begonnen; Outposts, Capture/Contesting, Raids und die allgemeine Monstersteuerung bleiben offen.
 
 
 ### TPA-System
