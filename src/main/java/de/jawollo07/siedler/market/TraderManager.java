@@ -389,7 +389,6 @@ public final class TraderManager implements Listener, Runnable {
         trader.setProfession(0, false);
         trader.setDisplayName(type.name());
         trader.setCanTrade(false);
-        trader.removeAllTags();
         trader.addTag("siedler:trader:" + type.id());
     }
 
