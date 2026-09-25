@@ -419,7 +419,20 @@ Vor Änderungen beide Teamnamen und die gewünschte Beziehung kontrollieren.
 ### Daten
 Moderations- und Todeshistorien nicht ohne konkreten Grund entfernen.
 
-## 20. Schnellreferenz
+## 20. Anti-AFK
+
+Das Anti-AFK-System überwacht die Positionsbewegung von Online-Spielern. Standardmäßig werden Spieler nach 15 Minuten Inaktivität entfernt und 60 Sekunden vorher gewarnt.
+
+Konfiguration:
+
+    antiafk.enabled: true
+    antiafk.timeout-minutes: 15
+    antiafk.warning-seconds: 60
+    antiafk.exempt-permission: siedler.admin
+
+Spieler mit `siedler.admin` sind standardmäßig ausgenommen. Die Prüfung läuft einmal pro Sekunde; reine Kopfbewegungen ohne Positionsänderung setzen den Aktivitätszeitpunkt nicht zurück.
+
+## 21. Schnellreferenz
 
 | Bereich | Befehl |
 |---|---|
