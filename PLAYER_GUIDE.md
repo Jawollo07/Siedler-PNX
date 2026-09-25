@@ -556,3 +556,10 @@ Die Zeiten können serverseitig in `config.yml` angepasst werden.
 ---
 
 **Viel Erfolg bei Siedler 2.0 – baut euer Gebiet auf, wirtschaftet gemeinsam und behaltet eure Gegner im Blick!**
+
+
+## Pillager-Raids
+
+Besetzte Outposts können von Pillager-Squads angegriffen werden. Ein Raid besteht aus mehreren Wellen und kann Pillager, Vindicator und optional Ravager enthalten.
+
+Mit `/raid status` kann der aktuell laufende Raid und seine Welle angezeigt werden. Die Verteidigung endet nach der letzten erfolgreich besiegten Welle.
