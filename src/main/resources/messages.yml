@@ -390,6 +390,17 @@ messages:
     outpost-player-required: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
     outpost-invalid-radius: "§cDer Radius muss eine positive Zahl sein."
     outpost-error: "§cOutpost-Fehler: {error}"
+    raid-help: "§6/raid§r – §7Status: /raid status, Admin: /raid admin <start|stop|help>"
+    raid-status: "§6Raid §f{outpost}§6 – Welle §f{wave}/{total}"
+    raid-none: "§7Aktuell läuft kein Pillager-Raid."
+    raid-started: "§cPillager-Raid! §f{outpost}§c wird von einer feindlichen Squad angegriffen. Verteidigt Team §f{team}§c den Outpost!"
+    raid-wave: "§cRaid §f{outpost}§c – Welle §f{wave}/{total}§c gestartet: §f{count}§c Gegner."
+    raid-completed: "§aDer Pillager-Raid auf §f{outpost}§a wurde erfolgreich abgewehrt!"
+    raid-admin-started: "§aRaid auf §f{outpost}§a gestartet."
+    raid-start-failed: "§cDer Raid konnte nicht gestartet werden."
+    raid-stopped: "§eRaid auf §f{outpost}§e wurde beendet."
+    raid-mob-name: "§cPillager-Squad"
+    raid-error: "§cRaid-Fehler: {error}"
   eco:
     prefix: "[ECO]: "
     help:
