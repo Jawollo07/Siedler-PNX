@@ -42,6 +42,7 @@ import de.jawollo07.siedler.monsters.OutpostManager;
 import de.jawollo07.siedler.monsters.OutpostCommand;
 import de.jawollo07.siedler.monsters.RaidManager;
 import de.jawollo07.siedler.monsters.RaidCommand;
+import de.jawollo07.siedler.monsters.MonsterManager;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -71,6 +72,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TokenManager tokenManager;
     private OutpostManager outpostManager;
     private RaidManager raidManager;
+    private MonsterManager monsterManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -113,6 +115,7 @@ public final class SiedlerPlugin extends PluginBase {
         outpostManager.start();
         raidManager = new RaidManager(this);
         raidManager.start();
+        monsterManager = new MonsterManager(this);
 
         // Registration
         registerCommands();
@@ -199,6 +202,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(antiAfkManager, this);
             getServer().getPluginManager().registerEvents(tokenManager, this);
             getServer().getPluginManager().registerEvents(raidManager, this);
+            getServer().getPluginManager().registerEvents(monsterManager, this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
