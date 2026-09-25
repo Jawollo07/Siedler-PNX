@@ -186,8 +186,9 @@ public final class MonsterManager implements Listener {
             if (entity == target || !isVillager(entity)) continue;
 
             boolean trader = false;
-            for (String tag : entity.getTags()) {
-                if (tag != null && tag.startsWith("siedler:trader:")) {
+            for (var tag : entity.getAllTags()) {
+                if (tag != null && tag.data != null
+                        && tag.data.startsWith("siedler:trader:")) {
                     trader = true;
                     break;
                 }
