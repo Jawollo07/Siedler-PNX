@@ -42,6 +42,7 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Home teleportation with saved world, position and rotation
 - Administrative management GUI with player information and moderation actions
 - Persistent moderation history for warnings, kicks, bans and temporary bans
+- Configurable Anti-AFK system with warning and automatic kick
 - Persistent personal Enderchest (`/ec`) with 27 slots
 - Shared persistent Team-Enderchest (`/tec`) with 54 slots
 - Admin read/write access to personal and Team-Enderchests through `/verwaltung`
