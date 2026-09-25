@@ -42,6 +42,28 @@ weakness:
   amplifier: 3
   isVisible: false
 monsters:
+  control:
+    enabled: true
+    # Only these entity identifiers are controlled. Leave empty to use the built-in hostile mob list.
+    monsters: []
+    # Completely prevents these mobs from spawning.
+    blacklist:
+      - minecraft:creeper
+    # Spawn chance per attempted spawn in percent (0-100).
+    # Format: entity-id:percent
+    quotas:
+      - minecraft:zombie:100
+      - minecraft:skeleton:100
+      - minecraft:creeper:0
+      - minecraft:spider:100
+      - minecraft:enderman:75
+      - minecraft:witch:50
+    default-quota-percent: 100
+    # 0 disables the corresponding cap.
+    max-per-chunk: 12
+    max-per-world: 200
+    # Worlds in this list never receive controlled monster spawns.
+    world-blacklist: []
   token:
     enabled: true
     automatic: false
