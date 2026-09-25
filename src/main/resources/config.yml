@@ -50,7 +50,12 @@ monsters:
     spawn-radius: 16
     spawn-interval-minutes: 30
     tax-bonus: 1
-  outposts:  raids:
+  outposts:
+    enabled: true
+    capture-seconds: 10
+    radius: 12
+    tax-bonus: 1
+  raids:
     enabled: true
     automatic: true
     spawn-interval-minutes: 60
@@ -61,11 +66,6 @@ monsters:
     spawn-radius: 20
     allow-vindicator: true
     allow-ravager: true
-
-    enabled: true
-    capture-seconds: 10
-    radius: 12
-    tax-bonus: 1
 
 soldiers:
   enabled: true
