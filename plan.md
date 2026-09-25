@@ -224,7 +224,14 @@ Unterstützte Maßnahmen:
 - [x] persistenter Outpost-Besitzer
 - [x] Outpost-Capture → TaxBonus
 - [x] Pillager Squads / Raids
-- [ ] normale Monster und Siedler-Monstersteuerung
+- [x] zentrale allgemeine Monstersteuerung
+- [x] benutzerdefinierte Spawn-Quoten pro Monster
+- [x] Monster-Blacklist
+- [x] Monster-Whitelist/Controlled-Mob-Liste
+- [x] Monster-Limits pro Chunk und Welt
+- [x] Monster-Spawns innerhalb von Claims blockieren
+- [x] Welt-Blacklist für Monster-Spawns
+- [x] Bypass für kontrollierte Token-/Raid-Spawns
 
 ## Phase 7 – Market & Traders
 
@@ -296,7 +303,7 @@ Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `tea
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
 
 
-Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats und Anti-AFK sind umgesetzt. Phase 6 wurde mit dem Token- und Outpost-System begonnen. Outposts, Capture/Contesting, Pillager Squads/Raids und die permanente Outpost-TaxBonus-Quelle sind umgesetzt; die allgemeine Monstersteuerung bleibt offen.
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats und Anti-AFK sind umgesetzt. Phase 6 wurde mit dem Token- und Outpost-System begonnen. Outposts, Capture/Contesting, Pillager Squads/Raids und die permanente Outpost-TaxBonus-Quelle sind umgesetzt; die allgemeine Monstersteuerung mit Quoten, Blacklist, Claim-Schutz, Welt-Blacklist und Spawn-Limits ist umgesetzt.
 
 
 ### TPA-System
