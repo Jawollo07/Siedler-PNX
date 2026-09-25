@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 7 – Market & Traders: migration in progress.**
+✅ **Phase 7 – Market & Traders: implemented.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -178,6 +178,8 @@ src/main/java/de/jawollo07/siedler/
 
 The Token system persists token rounds and defeated-token state in `token_rounds` and `tokens`. Admins can use `/token admin start`, `/token admin spawn` and `/token admin status`. Automatic spawning is configurable under `monsters.token`.
 
+The Outpost system provides persistent capture points with configurable radius, capture time and permanent TaxBonus rewards. The Raid system builds on owned Outposts and provides persistent multi-wave Pillager encounters.
+
 The TPA system uses short-lived in-memory requests with a 60-second timeout and explicit accept/deny/cancel commands.
 
 The systems from Siedler 1.x are migrated in dependency order:
@@ -186,11 +188,10 @@ The systems from Siedler 1.x are migrated in dependency order:
 2. Teams + player identity + diplomacy
 3. Claims + protection
 4. Economy + taxes + TaxBonus
-5. Token monsters + outposts + raids
-6. Soldiers + AI + groups + levels
-7. Market + traders
-8. Essentials + inventories + statistics
-8. Mines + control system
+5. Monster events: tokens + outposts + raids
+6. Market + traders
+7. Essentials + inventories + statistics
+8. Minefield + control system
 9. Soldiers + AI + groups + levels
 10. Migration, compatibility and release hardening
 
@@ -289,21 +290,72 @@ Token and Pillager-Raid entities use a dedicated spawn bypass because these are 
 
 ## Phase 7 – Market & Traders
 
-The market system provides protected rectangular market areas. Blocks cannot be broken or placed there, configured interaction blocks can be blocked, and hostile monster spawns are cancelled automatically.
+Phase 7 is implemented. The market system provides protected rectangular market areas with configurable boundaries and trader spawn locations.
 
-Traders are native PowerNukkitX VillagerV2 entities using the native TradeInventory. Trade recipes are registered through PNX's trade recipe system, so players receive the normal Bedrock trading interface.
+### Market protection
 
-Trader types and trades are defined in config.yml. The default configuration contains Siedler-3-style roles for food, building, resources, tools, weapons, supplies, soldiers and enchantments.
+- Block breaking is disabled inside configured markets.
+- Block placement is disabled inside configured markets.
+- Specific interactions can be disabled through `market.interaction-blacklist`.
+- Normal hostile monster spawning is blocked inside markets.
+- Existing hostile mobs can be removed with `/market admin cleanup`.
 
-Useful commands:
+### Traders
+
+Traders are native PowerNukkitX `VillagerV2` entities using the native `TradeInventory` and PNX trade-recipe system. Players therefore receive the normal Bedrock trading interface instead of a custom Siedler GUI.
+
+Trader types and their trades are configured in `config.yml`. The default configuration includes:
+
+- food
+- building
+- resources
+- tools
+- weapons
+- supplies
+- soldiers
+- enchantments
+
+Each trade can define the input items, optional second input, output item, maximum uses, tier, trader experience and price multiplier.
+
+Automatic trader maintenance can keep a configurable number of each trader type present at every enabled market.
+
+### Market commands
 
 ```text
 /market
+/market help
 /market info
 /market types
+/market admin help
 /market admin reload
 /market admin cleanup
 /market admin spawn <type>
 ```
 
-Administrative routes require siedler.admin. Automatic trader maintenance keeps the configured number of each trader type present at the market.
+The `admin` routes require `siedler.admin`.
+
+### Example configuration
+
+```yaml
+market:
+  enabled: true
+  interaction-blacklist:
+    - minecraft:stone_button
+    - minecraft:oak_button
+    - minecraft:lever
+  markets:
+    - id: markt
+      enabled: true
+      world: overworld
+      min-x: -28
+      min-z: 21
+      max-x: -10
+      max-z: 59
+      trader-spawn:
+        x: -19
+        y: 106
+        z: 40
+  traders:
+    automatic: true
+    count-per-type: 1
+```
