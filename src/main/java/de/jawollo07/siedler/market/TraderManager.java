@@ -9,7 +9,6 @@ import org.powernukkitx.event.EventHandler;
 import org.powernukkitx.event.Listener;
 import org.powernukkitx.event.player.PlayerInteractEntityEvent;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.inventory.TradeInventory;
 import org.powernukkitx.utils.ConfigSection;
 import org.powernukkitx.utils.TradeRecipeBuildUtils;
@@ -17,7 +16,7 @@ import org.powernukkitx.utils.TradeRecipeBuildUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class TraderManager implements Listener {
+public final class TraderManager implements Listener, Runnable {
     public record Trade(String buyId, int buyCount, String buy2Id, int buy2Count,
                         String sellId, int sellCount, int maxUses, int tier, int traderExp,
                         float multiplier) {}
@@ -65,6 +64,11 @@ public final class TraderManager implements Listener {
             types.add(new TraderType(id, name, List.copyOf(trades)));
         }
     }
+
+    @Override
+    public void run() { maintain(); }
+
+    public void stop() { }
 
     public List<TraderType> getTypes() {
         return List.copyOf(types);
@@ -163,16 +167,13 @@ public final class TraderManager implements Listener {
             } else {
                 builder = TradeRecipeBuildUtils.of(buy, sell);
             }
-            builder.setMaxUses(trade.maxUses())
+            CompoundTag recipe = builder.setMaxUses(trade.maxUses())
                     .setTier(trade.tier())
                     .setTraderExp(trade.traderExp())
                     .setPriceMultiplierA(trade.multiplier())
                     .setRewardExp((byte)1)
                     .build();
-            // The recipe builder stores the recipe under its netId; retrieve it by the latest id.
-            CompoundTag recipe = TradeRecipeBuildUtils.RECIPE_MAP.values().stream()
-                    .reduce((first, second) -> second).orElse(null);
-            if (recipe != null) trader.getTradeNetIds().add(recipe.getInt("netId"));
+            trader.getTradeNetIds().add(recipe.getInt("netId"));
         }
     }
 
