@@ -6,7 +6,7 @@ Repository: https://github.com/Jawollo07/Siedler-PNX
 
 ## Status
 
-🚧 **Phase 4/5 – Economy, Taxes & Essentials: migration in progress.**
+🚧 **Phase 6 – Monster, Tokens & Outposts: migration in progress.**
 
 The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. Siedler 2.0 is being rebuilt as a native Java/PowerNukkitX plugin rather than as a direct JavaScript-to-Java translation.
 
@@ -43,6 +43,9 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Administrative management GUI with player information and moderation actions
 - Persistent moderation history for warnings, kicks, bans and temporary bans
 - Configurable Anti-AFK system with warning and automatic kick
+- Phase 6 TokenManager with persistent token rounds
+- Configurable token spawning with active-token limit and safe ground-position selection
+- Token defeat rewards a permanent team TaxBonus
 - Persistent personal Enderchest (`/ec`) with 27 slots
 - Shared persistent Team-Enderchest (`/tec`) with 54 slots
 - Admin read/write access to personal and Team-Enderchests through `/verwaltung`
@@ -162,6 +165,8 @@ src/main/java/de/jawollo07/siedler/
 ├── essentials/
 └── mines/
 ```
+
+The Token system persists token rounds and defeated-token state in `token_rounds` and `tokens`. Admins can use `/token admin start`, `/token admin spawn` and `/token admin status`. Automatic spawning is configurable under `monsters.token`.
 
 The TPA system uses short-lived in-memory requests with a 60-second timeout and explicit accept/deny/cancel commands.
 
