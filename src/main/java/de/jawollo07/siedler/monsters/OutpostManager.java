@@ -164,9 +164,12 @@ public final class OutpostManager implements Runnable {
         List<TeamPresence> present = findPresentTeams(outpost);
 
         if (present.size() > 1) {
-            if (captures.containsKey(outpost.id())) {
+            CaptureState state = captures.computeIfAbsent(
+                    outpost.id(), ignored -> new CaptureState(present.get(0).team().id()));
+            if (!state.contested) {
                 notifyTeams(present, messageManager.getMessage("messages.monsters.outpost-contested")
                         .replace("{outpost}", outpost.name()));
+                state.contested = true;
             }
             return;
         }
@@ -177,6 +180,8 @@ public final class OutpostManager implements Runnable {
         }
 
         Team team = present.get(0).team();
+        CaptureState existingState = captures.get(outpost.id());
+        if (existingState != null) existingState.contested = false;
         if (outpost.ownerTeamId() != null && outpost.ownerTeamId().equals(team.id())) {
             decay(outpost.id());
             return;
@@ -341,6 +346,7 @@ public final class OutpostManager implements Runnable {
     private static final class CaptureState {
         private String teamId;
         private int progressSeconds;
+        private boolean contested;
 
         private CaptureState(String teamId) {
             this.teamId = teamId;
