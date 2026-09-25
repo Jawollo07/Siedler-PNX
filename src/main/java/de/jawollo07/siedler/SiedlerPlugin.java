@@ -161,11 +161,12 @@ public final class SiedlerPlugin extends PluginBase {
                     if (inventorySnapshotManager != null) {
                         inventorySnapshotManager.snapshotOnlinePlayers("PERIODIC");
                     }
-                    if (antiAfkManager != null) {
-                        antiAfkManager.run();
-                    }
                 }
             }, 20 * 60 * 3);
+
+            if (antiAfkManager != null) {
+                this.getServer().getScheduler().scheduleRepeatingTask(this, antiAfkManager, 20);
+            }
         } catch (Exception e) {
             this.getLogger().error("Error with Task registration: " + e);
         }
