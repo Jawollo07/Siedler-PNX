@@ -41,6 +41,13 @@ weakness:
   duration: 0 # 0 is Infinite
   amplifier: 3
   isVisible: false
+villagers:
+  control:
+    enabled: true
+    # Maximum number of ordinary Villagers within the horizontal X/Z radius.
+    max-per-radius: 5
+    radius: 9
+
 monsters:
   control:
     enabled: true
