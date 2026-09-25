@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.Locale;
 
 public class InitDB {
-    private static final int CURRENT_SCHEMA_VERSION = 8;
+    private static final int CURRENT_SCHEMA_VERSION = 9;
 
     public void initDatabase() throws Exception {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
@@ -52,6 +52,10 @@ public class InitDB {
             if (version < 8) {
                 migrateV7ToV8(connection);
                 setSchemaVersion(connection, 8);
+            }
+            if (version < 9) {
+                migrateV8ToV9(connection);
+                setSchemaVersion(connection, 9);
             }
         }
     }
@@ -110,6 +114,10 @@ public class InitDB {
     }
     private void migrateV6ToV7(Connection connection) throws Exception {
         ensureColumnExists(connection, "death_points", "inventory_data", "TEXT");
+    }
+
+    private void migrateV8ToV9(Connection connection) throws Exception {
+        ensureColumnExists(connection, "raids", "remaining_mobs", "INTEGER NOT NULL DEFAULT 0");
     }
 
     private void migrateV7ToV8(Connection connection) throws Exception {
