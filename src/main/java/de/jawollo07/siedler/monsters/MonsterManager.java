@@ -90,15 +90,26 @@ public final class MonsterManager implements Listener {
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
-        if (!enabled() || isBypassed() || event == null) return;
+        if (event == null || isBypassed()) return;
 
         Entity entity = event.getEntity();
-        if (entity == null || !isControlledMonster(entity)) return;
-
-        String identifier = entity.getIdentifier();
-        if (identifier == null || identifier.isBlank()) return;
+        if (entity == null) return;
 
         try {
+            // Villager population control is independent from hostile-monster
+            // control. Trader entities use the explicit bypass while spawning.
+            if (isVillager(entity)) {
+                if (villagerLimitReached(entity)) {
+                    event.setCancelled(true);
+                }
+                return;
+            }
+
+            if (!enabled() || !isControlledMonster(entity)) return;
+
+            String identifier = entity.getIdentifier();
+            if (identifier == null || identifier.isBlank()) return;
+
             if (isBlacklisted(identifier)) {
                 event.setCancelled(true);
                 return;
@@ -141,6 +152,57 @@ public final class MonsterManager implements Listener {
                     "Monster spawn was blocked because MonsterManager failed: "
                             + safe(exception));
         }
+    }
+
+    private boolean isVillager(Entity entity) {
+        String identifier = entity.getIdentifier();
+        return "minecraft:villager_v2".equalsIgnoreCase(identifier)
+                || "minecraft:villager".equalsIgnoreCase(identifier);
+    }
+
+    /**
+     * Limits ordinary villager spawning by horizontal X/Z distance.
+     * Existing Siedler traders are ignored because they are intentionally
+     * created through the MonsterManager bypass.
+     */
+    private boolean villagerLimitReached(Entity target) {
+        if (!plugin.getConfig().getBoolean("villagers.control.enabled", true)) {
+            return false;
+        }
+
+        int max = Math.max(0, plugin.getConfig()
+                .getInt("villagers.control.max-per-radius", 5));
+        if (max == 0) return true;
+
+        double radius = Math.max(0.0D, plugin.getConfig()
+                .getDouble("villagers.control.radius", 9.0D));
+        double radiusSquared = radius * radius;
+
+        Level level = target.getLevel();
+        if (level == null) return false;
+
+        int count = 0;
+        for (Entity entity : level.getEntities()) {
+            if (entity == target || !isVillager(entity)) continue;
+
+            boolean trader = false;
+            for (String tag : entity.getTags()) {
+                if (tag != null && tag.startsWith("siedler:trader:")) {
+                    trader = true;
+                    break;
+                }
+            }
+            if (trader) continue;
+
+            double dx = entity.getX() - target.getX();
+            double dz = entity.getZ() - target.getZ();
+            if ((dx * dx) + (dz * dz) <= radiusSquared) {
+                count++;
+                if (count >= max) return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isControlledMonster(Entity entity) {
