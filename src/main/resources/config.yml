@@ -54,6 +54,7 @@ monsters:
     enabled: true
     capture-seconds: 10
     radius: 12
+    tax-bonus: 1
 
 soldiers:
   enabled: true
