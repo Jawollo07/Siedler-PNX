@@ -64,7 +64,7 @@ public final class OutpostCommand extends Command {
                         .then(RouteNode.argument("name", new StringNode()).exec(context -> {
                             delete(context.getSender(), context.getArg("name"));
                             return CommandResult.success();
-                        })));
+                        }))));
     }
 
     private void create(CommandSender sender, String name, int radius) {
