@@ -1,476 +1,336 @@
 # Siedler 2.0 – Admin-Handbuch
 
-Dieses Handbuch beschreibt die administrativen Funktionen des aktuellen **Siedler 2.0**-Systems.
-
-> **Geltungsbereich:** Dieses Dokument bezieht sich auf den aktuellen **beta-Branch** von Siedler-PNX.
+Dieses Handbuch beschreibt die administrativen Funktionen des aktuellen **Siedler-PNX beta-Branches**.
 
 ## 1. Voraussetzungen
 
-Administrative Befehle benötigen grundsätzlich:
+Administrative Routen benötigen grundsätzlich:
 
-    siedler.admin
+```
+siedler.admin
+```
 
-Wichtige Spieler-Berechtigungen sind unter anderem:
+Spielerfunktionen besitzen eigene Berechtigungen wie beispielsweise `siedler.command.team`, `siedler.command.claim`, `siedler.command.eco`, `siedler.command.diplomatie`, `siedler.command.market` und `siedler.command.raid`.
 
-    siedler.command.team
-    siedler.command.claim
-    siedler.command.eco
-    siedler.command.diplomatie
-    siedler.command.stats
+## 2. Zentrale Verwaltung
 
-Die Admin-Berechtigung sollte nur vertrauenswürdigen Personen gegeben werden.
+```
+/verwaltung
+/verwaltung menu
+/verwaltung help
+```
 
-## 2. Verwaltungsmenü
+Das Verwaltungsmenü bietet aktuell unter anderem:
 
-Die zentrale Verwaltung:
-
-    /verwaltung
-    /verwaltung menu
-
-Hilfe:
-
-    /verwaltung help
-
-Das Menü bietet aktuell:
 - Online-Spieler
-- Spielerverwaltung
+- Spielerinformationen
 - Moderation
 - Moderationshistorie
 - Todeshistorie
 - Todesinventare
-- Spielerinformationen
-- persönliche Enderchests lesen und bearbeiten
-- Team-Enderchests lesen und bearbeiten
+- persönliche Enderchests
+- Team-Enderchests
 
-## 3. Spielerverwaltung
+## 3. Spielerverwaltung und Moderation
 
-Über **/verwaltung → Spieler** kann ein Online-Spieler ausgewählt werden.
+Über `/verwaltung → Spieler` kann ein Online-Spieler ausgewählt werden.
 
-Die Detailansicht zeigt:
-- Spielername
-- UUID
-- Welt
-- X/Y/Z-Position
-- Team
-- aktiven Bann
-- Moderationseinträge
-- gespeicherte Todespunkte
+Die Detailansicht enthält unter anderem Name, UUID, Welt, Position, Team, Bannstatus, Moderationseinträge und Todesdaten.
 
-Von dort aus sind Moderation, Moderationshistorie und Todeshistorie erreichbar.
+Verfügbare Maßnahmen:
 
-## 4. Moderation
+- WARN
+- KICK
+- BAN
+- TEMPBAN
 
-Aktuelle Maßnahmen:
-- Verwarnung (WARN)
-- Kick (KICK)
-- permanenter Bann (BAN)
-- temporärer Bann (TEMPBAN)
+Temporäre Bannzeiten umfassen aktuell:
 
-Temporäre Banns:
 - 30 Minuten
 - 2 Stunden
 - 24 Stunden
 
-Ein aktiver Bann kann über **Bann aufheben** deaktiviert werden.
+Moderationsmaßnahmen werden mit Spieler, Moderator, Zeitpunkt, Grund und Status persistent gespeichert.
 
-### Moderationsgründe
+### Bann aufheben
 
-- Verstoß gegen die Serverregeln
-- Belästigung / Beleidigung
-- Cheating / Exploiting
-- Unangemessenes Verhalten
-- Sonstiger Regelverstoß
+Aktive Banns können über die Verwaltungsoberfläche deaktiviert werden.
 
-Jede Maßnahme wird mit Spieler, Moderator, Zeitpunkt, Grund und Status gespeichert.
+## 4. Moderations- und Todeshistorie
 
-## 5. Moderationshistorie
+Die Moderationshistorie enthält Typ, Grund, Moderator, Erstellungszeit, Ablaufzeit und Status.
 
-Ein Eintrag enthält:
-- Typ
-- Grund
-- Moderator
-- Erstellungszeit
-- Ablaufzeit
-- Status
+Die Todeshistorie enthält insbesondere:
 
-Status:
-- Aktiv
-- Beendet
-
-## 6. Bannsystem
-
-Banns werden persistent in der Datenbank gespeichert. Beim Beitritt wird geprüft, ob ein aktiver Bann vorhanden ist.
-
-Gespeichert werden unter anderem Spieler-ID, Spielername, Bannart, Grund, Moderator, Erstellungszeit, Ablaufzeit, Aktivstatus und Informationen zur Aufhebung.
-
-## 7. Teams administrieren
-
-Hilfe:
-
-    /team admin help
-
-Team erstellen:
-
-    /team admin create <Name> <Farbe>
-
-Team löschen:
-
-    /team admin delete <Name>
-
-Spieler hinzufügen:
-
-    /team admin add <Spieler> <Team>
-
-Spieler entfernen:
-
-    /team admin remove <Spieler>
-
-Teamfarbe ändern:
-
-    /team admin setcolor <Name> <Farbe>
-
-Informationen:
-
-    /team list
-    /team info <Team>
-
-## 8. Claims administrieren
-
-Hilfe:
-
-    /claim admin help
-
-Claim setzen:
-
-    /claim admin set <Team>
-
-Claim löschen:
-
-    /claim admin delete
-
-Claim prüfen:
-
-    /claim info
-
-Claims sollten sorgfältig verwaltet werden, da sie den geschützten Spielbereich eines Teams bestimmen.
-
-## 9. Diplomatie administrieren
-
-Hilfe:
-
-    /diplomatie admin help
-
-Beziehung setzen:
-
-    /diplomatie admin set <TeamA> <TeamB> <Beziehung>
-
-Mögliche Beziehungen:
-
-    allied
-    neutral
-    enemy
-
-Beispiel:
-
-    /diplomatie admin set Rot Blau allied
-
-Anzeigen:
-
-    /diplomatie admin show
-    /diplomatie admin show <Team>
-    /diplomatie admin list
-
-Die Beziehung wird für beide Richtungen gespeichert.
-
-## 10. Wirtschaft administrieren
-
-Teamkonto:
-
-    /eco show <Team>
-
-Steuerstatistik:
-
-    /eco stats
-    /eco stats <Team>
-
-Adminänderungen:
-
-    /eco admin set <Team> <Betrag>
-    /eco admin add <Team> <Betrag>
-    /eco admin remove <Team> <Betrag>
-
-Beispiele:
-
-    /eco admin set Rot 1000
-    /eco admin add Rot 500
-    /eco admin remove Rot 250
-
-Manuelle Änderungen am Teamkonto sollten dokumentiert werden.
-
-## 11. Steuersystem
-
-Die automatische Teamsteuer basiert auf Dorfbewohnern.
-
-    Steuer = Dorfbewohner × TaxBonus × Rate
-
-Standard:
-- Rate: 1 Coin
-- Intervall: 24 Stunden
-
-Besonderheiten:
-- Eliminierte Teams werden übersprungen.
-- Mindestens ein Teammitglied muss online sein.
-- Dorfbewohner werden innerhalb der Team-Claims gezählt.
-- Fehlgeschlagene Steuerzyklen werden protokolliert.
-- Steuertransaktionen werden gespeichert.
-
-## 12. Todeshistorie
-
-Über:
-
-    /verwaltung
-    → Spieler
-    → Todeshistorie
-
-können alle gespeicherten Todespunkte eines Spielers eingesehen werden.
-
-Ein Todespunkt enthält:
-- Spieler
-- Datum und Uhrzeit
+- Datum/Uhrzeit
 - Welt
 - X/Y/Z
 - Rotation
 - gespeichertes Inventar
 
-Todespunkte bleiben dauerhaft erhalten.
+Ein Todesinventar kann über die Verwaltungsoberfläche eingesehen werden.
 
-## 13. Todesinventar
+## 5. Teams
 
-Bei einem Todespunkt kann **Inventar anzeigen** ausgewählt werden.
+```
+/team admin help
+/team admin create <Name> <Farbe>
+/team admin delete <Name>
+/team admin add <Spieler> <Team>
+/team admin remove <Spieler>
+/team admin setcolor <Name> <Farbe>
+```
 
-Angezeigt werden unter anderem:
-- Inventarbereich
-- Slot
-- Itemname bzw. ID
-- Anzahl
-- Damage/Durability, sofern vorhanden
+Informationen:
 
-Gespeichert werden insbesondere Hauptinventar, Rüstung, Nebenhand sowie verfügbare Item-Metadaten.
+```
+/team list
+/team info <Team>
+```
 
-Der Snapshot wird beim PlayerDeathEvent erfasst, bevor der weitere Death-Lifecycle das normale Inventar leert.
+## 6. Claims
 
-## 14. Enderchest-Verwaltung
+Spieler dürfen nur `/claim help` und `/claim info` als normale Claim-Routen verwenden. Verwaltungsaktionen liegen unter `admin`.
 
-Die Verwaltung beider Enderchest-Typen ist über:
+```
+/claim admin help
+/claim admin set <Team>
+/claim admin delete
+/claim info
+```
 
-    /verwaltung
-    → Enderchests verwalten
+Claims schützen Teamgebiete. Normale feindliche Monster spawnen innerhalb eines Claims nicht.
 
-erreichbar.
+## 7. Diplomatie
 
-### Persönliche Enderchests
+```
+/diplomatie admin help
+/diplomatie admin set <TeamA> <TeamB> <Beziehung>
+/diplomatie admin show
+/diplomatie admin show <Team>
+/diplomatie admin list
+```
 
-Unter **Persönliche Enderchests** werden die aktuell online befindlichen Spieler angezeigt. Nach Auswahl eines Spielers öffnet sich dessen normale **27-Slot-Enderchest** im Inventarfenster des Administrators.
+Beziehungen:
 
-Der Administrator hat vollständigen Lese- und Schreibzugriff. Items können daher:
+```
+allied
+neutral
+enemy
+```
 
-- eingesehen
-- entnommen
-- hinzugefügt
-- verschoben
+Die Beziehung wird für beide Richtungen gespeichert.
 
-werden.
+## 8. Wirtschaft und Steuern
 
-### Team-Enderchests
+Teamkonto:
 
-Unter **Team-Enderchests** werden die vorhandenen Teams angezeigt. Nach Auswahl eines Teams öffnet sich dessen gemeinsame **54-Slot-Team-Enderchest**.
+```
+/eco show <Team>
+```
 
-Auch hier besteht vollständiger Lese- und Schreibzugriff. Änderungen werden persistent gespeichert und gelten unmittelbar für alle Mitglieder des Teams.
+Steuerstatistik:
 
-Die Team-Enderchest besitzt 54 Slots und ist damit doppelt so groß wie eine normale Enderchest.
+```
+/eco stats
+/eco stats <Team>
+```
 
+Administrative Kontenänderungen:
 
-## 15. Spielerstatistiken
+```
+/eco admin set <Team> <Betrag>
+/eco admin add <Team> <Betrag>
+/eco admin remove <Team> <Betrag>
+```
 
-Eigene Statistik:
+### Steuerformel
 
-    /stats
+```
+Coins = Dorfbewohner × TaxBonus × Rate
+```
 
-Admin-Statistik:
+Standard:
 
-    /stats admin
+- Rate: 1 Coin
+- Intervall: 24 Stunden
+- mindestens ein Teammitglied online
 
-Die Admin-GUI zeigt:
-- globale Spieleranzahl
-- globale Kills
-- globale Tode
-- Soldaten-Kills
-- Monster-Kills
-- gesamte Spielzeit
-- Statistiken einzelner Spieler
+Eliminierte Teams werden bei der Steuerberechnung übersprungen.
 
-Spielerdetails:
-- Name
-- Team
-- Kills
-- Tode
-- K/D
-- Soldaten-Kills
-- Monster-Kills
-- Spielzeit
-
-## 16. Gespeicherte Spielerdaten
-
-Spielerdaten-Snapshots werden aktuell alle:
-
-    3 Minuten
-
-erstellt.
-
-Zusätzlich werden Snapshots bei Join, Quit und normalem Server-Shutdown erstellt.
-
-Gespeichert werden unter anderem:
-- Inventar
-- Gesundheit
-- maximale Gesundheit
-- Erfahrung
-- Level
-- Hunger
-- Sättigung
-- Luft
-- Welt
-- Position
-- Blickrichtung
-
-Bei einem abrupten Prozessabsturz oder Stromausfall kann der letzte Snapshot bis zu etwa drei Minuten alt sein.
-
-## 17. Empfohlener Ablauf bei Spielerproblemen
-
-1. /verwaltung öffnen.
-2. Spieler auswählen.
-3. Team, Position, Welt und aktiven Bann prüfen.
-4. Moderationshistorie kontrollieren.
-5. Bei Todes-/Inventarproblemen die Todeshistorie prüfen.
-6. Bei Teamproblemen /team info <Team> verwenden.
-7. Bei Wirtschaftsproblemen /eco show <Team> und /eco stats <Team> prüfen.
-8. Moderationsmaßnahmen erst nach Prüfung des Sachverhalts ausführen.
-
-## 18. Zentrale Admin-Befehle
-
-### Verwaltung
-
-    /verwaltung
-    /verwaltung menu
-    /verwaltung help
-
-### Teams
-
-    /team admin help
-    /team admin create <Name> <Farbe>
-    /team admin delete <Name>
-    /team admin add <Spieler> <Team>
-    /team admin remove <Spieler>
-    /team admin setcolor <Name> <Farbe>
-
-### Claims
-
-    /claim admin help
-    /claim admin set <Team>
-    /claim admin delete
-
-### Diplomatie
-
-    /diplomatie admin help
-    /diplomatie admin set <TeamA> <TeamB> <Beziehung>
-    /diplomatie admin show
-    /diplomatie admin show <Team>
-    /diplomatie admin list
-
-### Wirtschaft
-
-    /eco show <Team>
-    /eco stats
-    /eco stats <Team>
-    /eco admin set <Team> <Betrag>
-    /eco admin add <Team> <Betrag>
-    /eco admin remove <Team> <Betrag>
-
-### Statistik
-
-    /stats admin
-
-## 19. Grundsätze
-
-### Nachvollziehbarkeit
-Administrative Änderungen sollten nachvollziehbar bleiben.
-
-### Moderation
-Bei Maßnahmen immer einen passenden Grund auswählen und die bestehende Historie berücksichtigen.
-
-### Wirtschaft
-Manuelle Änderungen am Teamkonto nur vornehmen, wenn sie tatsächlich erforderlich sind.
-
-### Claims
-Vor dem Setzen oder Löschen eines Claims immer Position und Zielteam prüfen.
-
-### Diplomatie
-Vor Änderungen beide Teamnamen und die gewünschte Beziehung kontrollieren.
-
-### Daten
-Moderations- und Todeshistorien nicht ohne konkreten Grund entfernen.
-
-## 20. Anti-AFK
-
-Das Anti-AFK-System überwacht die Positionsbewegung von Online-Spielern. Standardmäßig werden Spieler nach 15 Minuten Inaktivität entfernt und 60 Sekunden vorher gewarnt.
+## 9. Anti-AFK
 
 Konfiguration:
 
-    antiafk.enabled: true
-    antiafk.timeout-minutes: 15
-    antiafk.warning-seconds: 60
-    antiafk.exempt-permission: siedler.admin
+```yaml
+antiafk:
+  enabled: true
+  timeout-minutes: 15
+  warning-seconds: 60
+  exempt-permission: siedler.admin
+```
 
-Spieler mit `siedler.admin` sind standardmäßig ausgenommen. Die Prüfung läuft einmal pro Sekunde; reine Kopfbewegungen ohne Positionsänderung setzen den Aktivitätszeitpunkt nicht zurück.
+Das System prüft einmal pro Sekunde. Nur tatsächliche Positionsänderungen gelten als Aktivität; reine Kopfbewegungen setzen den Aktivitätszeitpunkt nicht zurück.
 
-## 21. Schnellreferenz
+## 10. Spielerstatistiken und Daten
 
-| Bereich | Befehl |
-|---|---|
-| Verwaltung | /verwaltung |
-| Verwaltungshilfe | /verwaltung help |
-| Teams | /team admin help |
-| Claims | /claim admin help |
-| Diplomatie | /diplomatie admin help |
-| Wirtschaft | /eco admin ... |
-| Admin-Statistik | /stats admin |
-| Spieler verwalten | /verwaltung → Spieler |
-| Persönliche Enderchest | /verwaltung → Enderchests verwalten → Persönliche Enderchests |
-| Team-Enderchest | /verwaltung → Enderchests verwalten → Team-Enderchests |
-| Moderation | /verwaltung → Spieler → Moderation |
-| Moderationshistorie | /verwaltung → Spieler → Historie |
-| Todeshistorie | /verwaltung → Spieler → Todeshistorie |
+```
+/stats
+/stats admin
+```
 
----
+Die Admin-GUI kann globale und spielerbezogene Statistiken anzeigen, darunter Kills, Tode, K/D, Soldaten-Kills, Monster-Kills und Spielzeit.
 
-Dieses Handbuch beschreibt den aktuellen technischen Stand und sollte bei größeren Änderungen an den Siedler-Systemen aktualisiert werden.
+Spielerdaten werden regelmäßig und bei wichtigen Lifecycle-Ereignissen gespeichert. Ein normaler Snapshot kann unter anderem Inventar, Gesundheit, Erfahrung, Hunger, Position und Blickrichtung enthalten.
 
+## 11. Enderchest-Verwaltung
 
-## Pillager-Raids
+Über:
 
-Administratoren können Raids über das Tree-Command-System verwalten:
+```
+/verwaltung
+→ Enderchests verwalten
+```
 
-- `/raid admin help`
-- `/raid admin start <Outpost>`
-- `/raid admin stop`
+können beide Enderchest-Typen verwaltet werden.
 
-Ein Raid kann nur einen besetzten Outpost angreifen. Automatische Raids wählen zufällig einen besetzten Outpost aus, dessen verteidigendes Team mindestens ein online befindliches Mitglied hat.
+### Persönliche Enderchests
 
+`Persönliche Enderchests` zeigt aktuell online befindliche Spieler. Nach Auswahl wird die native **27-Slot-Enderchest** des Spielers geöffnet.
 
-## 22. Allgemeine Monstersteuerung
+Der Administrator kann Items lesen, hinzufügen, entfernen und verschieben.
 
-Die normale Monster-Spawnsteuerung erfolgt zentral über `MonsterManager`. Sie betrifft normale hostile Mobs und nicht die kontrollierten Siedler-Begegnungen von Token und Raids.
+### Team-Enderchests
 
-Konfiguration in `config.yml`:
+`Team-Enderchests` zeigt die vorhandenen Teams. Nach Auswahl wird die gemeinsame **54-Slot-Team-Enderchest** geöffnet.
+
+Änderungen werden persistent gespeichert und sind für alle Teammitglieder unmittelbar sichtbar.
+
+> Die aktuelle Verwaltung persönlicher Enderchests setzt voraus, dass der Zielspieler online ist.
+
+## 12. Token-System
+
+Token-Monster sind besondere Siedler-Begegnungen.
+
+Adminbefehle:
+
+```
+/token admin help
+/token admin start
+/token admin spawn
+/token admin status
+```
+
+Das System unterstützt:
+
+- persistente Token-Runden
+- konfigurierbare maximale aktive Token
+- automatische Spawns
+- sicheren Boden-Spawn
+- Token-Belohnungen
+- dauerhaften TaxBonus für das Team des Spielers, der ein Token besiegt
+
+Konfiguration:
+
+```yaml
+monsters:
+  token:
+    enabled: true
+    automatic: false
+    max-active: 4
+    entity: minecraft:zombie
+    spawn-radius: 16
+    spawn-interval-minutes: 30
+    tax-bonus: 1
+```
+
+Token-Spawns umgehen bewusst die allgemeine Monstersteuerung.
+
+## 13. Outpost-System
+
+Adminbefehle:
+
+```
+/outpost admin help
+/outpost admin create <Name>
+/outpost admin delete <Name>
+```
+
+Spieler:
+
+```
+/outpost list
+/outpost info <Name>
+```
+
+Konfiguration:
+
+```yaml
+monsters:
+  outposts:
+    enabled: true
+    capture-seconds: 10
+    radius: 12
+    tax-bonus: 1
+```
+
+Regeln:
+
+- Outposts besitzen einen festen Radius.
+- Capture-Fortschritt läuft bei einem berechtigten Team.
+- Bei gleichzeitiger Anwesenheit gegnerischer Teams pausiert der Fortschritt.
+- Ohne Spieler im Bereich kann Fortschritt zurückgehen.
+- Besitzer und Fortschritt werden persistent gespeichert.
+- Ein besetzter Outpost gewährt seinem Team einen dauerhaften TaxBonus.
+- Überlappende Outposts werden verhindert.
+- Eliminierte Teams können keine Outposts erobern.
+
+## 14. Pillager-Raids
+
+Spieler:
+
+```
+/raid status
+```
+
+Admin:
+
+```
+/raid admin help
+/raid admin start <Outpost>
+/raid admin stop
+```
+
+Automatische Raids wählen einen besetzten Outpost mit mindestens einem online befindlichen Mitglied des verteidigenden Teams.
+
+Konfiguration:
+
+```yaml
+monsters:
+  raids:
+    enabled: true
+    automatic: true
+    spawn-interval-minutes: 60
+    waves: 3
+    base-size: 3
+    wave-growth: 2
+    max-mobs-per-wave: 16
+    spawn-radius: 20
+    allow-vindicator: true
+    allow-ravager: true
+```
+
+Raids bestehen aus mehreren persistent verwalteten Wellen. Je nach Welle können Pillager, Vindicator und Ravager erzeugt werden.
+
+Aktive Raids werden beim Serverneustart sicher beendet, statt in einem unklaren Zustand fortgesetzt zu werden.
+
+Raid-Spawns umgehen die allgemeine Monstersteuerung bewusst.
+
+## 15. Allgemeine Monstersteuerung
+
+Die normale Monstersteuerung erfolgt zentral über `MonsterManager`.
+
+Beispiel:
 
 ```yaml
 monsters:
@@ -491,23 +351,256 @@ monsters:
     world-blacklist: []
 ```
 
-### Steuerungsregeln
+### Regeln
 
-- `enabled`: zentrale Monstersteuerung aktivieren/deaktivieren.
-- `monsters`: optionale explizite Liste der kontrollierten Entity-IDs. Ist sie leer, wird die eingebaute Liste normaler feindlicher Mobs verwendet.
-- `blacklist`: Monster in dieser Liste werden immer blockiert.
-- `quotas`: individuelle Spawnwahrscheinlichkeit von 0–100 Prozent.
-- `default-quota-percent`: Quote für Monster ohne eigenen Eintrag.
-- `max-per-chunk`: maximale Anzahl desselben kontrollierten Monsters in einem Chunk; `0` deaktiviert das Limit.
-- `max-per-world`: maximale Anzahl desselben kontrollierten Monsters in einer Welt; `0` deaktiviert das Limit.
-- `world-blacklist`: Welten, in denen kontrollierte Monster grundsätzlich nicht spawnen.
+- `enabled`: Steuerung aktivieren/deaktivieren.
+- `monsters`: kontrollierte Entity-IDs; leer verwendet die eingebaute Liste normaler feindlicher Mobs.
+- `blacklist`: vollständige Blockierung, unabhängig von der Quote.
+- `quotas`: Spawnwahrscheinlichkeit von 0–100 %.
+- `default-quota-percent`: Standardquote.
+- `max-per-chunk`: Limit je kontrolliertem Mob und Chunk.
+- `max-per-world`: Limit je kontrolliertem Mob und Welt.
+- `world-blacklist`: Welten ohne kontrollierte Monster.
 
-### Claim-Schutz
+### Claims und Märkte
 
-In **jedem Siedler-Claim** werden normale Monster-Spawns automatisch blockiert. Die Prüfung erfolgt anhand von Welt und Chunk-Grenzen des Claims.
+Normale feindliche Monster werden innerhalb von Siedler-Claims blockiert.
 
-### Sonderfälle
+In konfigurierten Marktplätzen werden normale feindliche Monster ebenfalls blockiert. Bereits vorhandene Monster können über `/market admin cleanup` entfernt werden.
 
-Token-Monster und Pillager-Raids sind kontrollierte Siedler-Begegnungen. Ihre Spawns umgehen deshalb bewusst die normale Monstersteuerung, damit z. B. eine Zombie-Blacklist nicht versehentlich Token-Spawns verhindert.
+Token und Raid-Mobs besitzen einen ausdrücklichen Bypass, weil sie kontrollierte Siedler-Ereignisse sind.
 
-Die allgemeine Steuerung ist damit unabhängig von Token, Outposts und Raids und kann später um weitere globale Regeln erweitert werden.
+## 16. Markt und Händler
+
+Phase 7 ist implementiert.
+
+### Marktverwaltung
+
+```
+/market help
+/market info
+/market types
+```
+
+Admin:
+
+```
+/market admin help
+/market admin reload
+/market admin cleanup
+/market admin spawn <type>
+```
+
+Alle `admin`-Routen benötigen `siedler.admin`.
+
+### Marktschutz
+
+Konfigurierte Marktbereiche sind rechteckige Bereiche mit Welt, Grenzen und Händler-Spawnposition.
+
+Dort sind standardmäßig:
+
+- Blockabbau gesperrt
+- Blockplatzierung gesperrt
+- konfigurierte Interaktionen gesperrt
+- normale feindliche Monster gesperrt
+
+### Händler
+
+Die Händler verwenden native PowerNukkitX-`VillagerV2`-Entities und die native `TradeInventory`.
+
+Trades können konfigurieren:
+
+- erstes Kaufitem
+- optionales zweites Kaufitem
+- Verkaufsitem
+- maximale Nutzungen
+- Händlerstufe
+- Händler-XP
+- Preis-Multiplikator
+
+Die Standardrollen umfassen:
+
+- Lebensmittel
+- Baustoffe
+- Rohstoffe
+- Werkzeuge
+- Waffen
+- Versorgung
+- Soldaten
+- Verzauberungen
+
+Automatische Händlerpflege kann pro Markt eine konfigurierbare Anzahl jeder Händlerart aufrechterhalten.
+
+Beispiel:
+
+```yaml
+market:
+  enabled: true
+  interaction-blacklist:
+    - minecraft:stone_button
+    - minecraft:oak_button
+    - minecraft:lever
+  markets:
+    - id: markt
+      enabled: true
+      world: overworld
+      min-x: -28
+      min-z: 21
+      max-x: -10
+      max-z: 59
+      trader-spawn:
+        x: -19
+        y: 106
+        z: 40
+  traders:
+    automatic: true
+    count-per-type: 1
+```
+
+## 17. Zentrale Admin-Befehle
+
+### Verwaltung
+
+```
+/verwaltung
+/verwaltung menu
+/verwaltung help
+```
+
+### Teams
+
+```
+/team admin help
+/team admin create <Name> <Farbe>
+/team admin delete <Name>
+/team admin add <Spieler> <Team>
+/team admin remove <Spieler>
+/team admin setcolor <Name> <Farbe>
+```
+
+### Claims
+
+```
+/claim admin help
+/claim admin set <Team>
+/claim admin delete
+```
+
+### Diplomatie
+
+```
+/diplomatie admin help
+/diplomatie admin set <TeamA> <TeamB> <Beziehung>
+/diplomatie admin show
+/diplomatie admin show <Team>
+/diplomatie admin list
+```
+
+### Wirtschaft
+
+```
+/eco show <Team>
+/eco stats
+/eco stats <Team>
+/eco admin set <Team> <Betrag>
+/eco admin add <Team> <Betrag>
+/eco admin remove <Team> <Betrag>
+```
+
+### Monster und Events
+
+```
+/token admin help
+/token admin start
+/token admin spawn
+/token admin status
+
+/outpost admin help
+/outpost admin create <Name>
+/outpost admin delete <Name>
+
+/raid status
+/raid admin help
+/raid admin start <Outpost>
+/raid admin stop
+```
+
+### Markt
+
+```
+/market help
+/market info
+/market types
+/market admin help
+/market admin reload
+/market admin cleanup
+/market admin spawn <type>
+```
+
+## 18. Administrationsgrundsätze
+
+### Nachvollziehbarkeit
+Administrative Änderungen sollten nachvollziehbar bleiben.
+
+### Moderation
+Bei Maßnahmen immer einen passenden Grund auswählen und die bestehende Historie berücksichtigen.
+
+### Wirtschaft
+Manuelle Kontenänderungen nur durchführen, wenn sie erforderlich sind.
+
+### Claims
+Vor dem Setzen oder Löschen immer Position und Zielteam prüfen.
+
+### Events
+Token, Outposts und Raids besitzen eigene persistente Zustände. Bei manuellen Eingriffen sollte der aktuelle Status zuerst geprüft werden.
+
+### Markt
+Bei Marktänderungen auf Grenzen, Welt und Händler-Spawnposition achten. `cleanup` entfernt normale hostile Mobs aus den konfigurierten Märkten.
+
+## 19. Datenbank und Migration
+
+Die Datenbank wird beim Start automatisch auf den aktuellen Schema-Stand gebracht.
+
+Neue persistente Systeme müssen bei späteren Änderungen über Schema-Migrationen erweitert werden; eine Änderung von `CREATE TABLE IF NOT EXISTS` allein verändert bestehende Tabellen nicht.
+
+Vor größeren Server-Upgrades sollte die Datei bzw. Datenbank des Siedler-Systems gesichert werden.
+
+## 20. Serverstart und Java 21
+
+Siedler-PNX läuft mit Java 21. PowerNukkitX benötigt auf entsprechenden Java-21-Umgebungen die vom Server bereitgestellten `--add-opens`-Optionen.
+
+Beispiel:
+
+```bash
+java \
+  --add-opens java.base/java.lang=ALL-UNNAMED \
+  --add-opens java.base/java.io=ALL-UNNAMED \
+  --add-opens java.base/java.net=ALL-UNNAMED \
+  -jar powernukkitx.jar
+```
+
+Diese JVM-Optionen gehören zum Serverstart und sind keine Siedler-Konfiguration.
+
+## 21. Release-/Wartungshinweise
+
+Nach Änderungen am Plugin:
+
+```
+mvn clean package
+```
+
+Anschließend die erzeugte JAR aus `target/` auf dem Zielserver installieren und die Serverlogs auf:
+
+- Datenbankmigration
+- Command-Registrierung
+- Event-/Listener-Registrierung
+- Monster-/Event-Systeme
+- Markt-/Trader-System
+
+prüfen.
+
+README und `plan.md` sollten bei neuen Phasen gemeinsam mit den Guides aktualisiert werden.
+
+---
+
+**Dieses Handbuch beschreibt den aktuellen beta-Stand. Bei Änderungen an Commands, Berechtigungen, Konfiguration oder Gameplay-Regeln muss es entsprechend aktualisiert werden.**
