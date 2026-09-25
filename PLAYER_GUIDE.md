@@ -515,7 +515,22 @@ Wenn ein Befehl nicht funktioniert:
 
 ---
 
-## 15. Kurzreferenz
+## 15. Anti-AFK
+
+Das Anti-AFK-System erkennt längere Inaktivität anhand tatsächlicher Positionsbewegung.
+
+Standardmäßig gilt:
+
+- nach **14 Minuten** erscheint eine Warnung mit der verbleibenden Zeit
+- nach **15 Minuten** ohne Bewegung wird der Spieler vom Server entfernt
+- Kopfdrehen ohne Positionsänderung zählt nicht als Aktivität
+- Spieler mit der konfigurierten Ausnahme-Berechtigung sind ausgenommen
+
+Die Zeiten können serverseitig in `config.yml` angepasst werden.
+
+---
+
+## 16. Kurzreferenz
 
 | Aufgabe | Befehl |
 |---|---|
