@@ -43,6 +43,9 @@ import de.jawollo07.siedler.monsters.OutpostCommand;
 import de.jawollo07.siedler.monsters.RaidManager;
 import de.jawollo07.siedler.monsters.RaidCommand;
 import de.jawollo07.siedler.monsters.MonsterManager;
+import de.jawollo07.siedler.market.MarketManager;
+import de.jawollo07.siedler.market.TraderManager;
+import de.jawollo07.siedler.market.MarketCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -73,6 +76,8 @@ public final class SiedlerPlugin extends PluginBase {
     private OutpostManager outpostManager;
     private RaidManager raidManager;
     private MonsterManager monsterManager;
+    private MarketManager marketManager;
+    private TraderManager traderManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -116,6 +121,8 @@ public final class SiedlerPlugin extends PluginBase {
         raidManager = new RaidManager(this);
         raidManager.start();
         monsterManager = new MonsterManager(this);
+        marketManager = new MarketManager(this);
+        traderManager = new TraderManager(this, marketManager);
 
         // Registration
         registerCommands();
@@ -162,6 +169,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TokenCommand(this, tokenManager));
         commandManager.register(new OutpostCommand(this, outpostManager));
         commandManager.register(new RaidCommand(this, raidManager));
+        commandManager.register(new MarketCommand(this, marketManager, traderManager));
     }
 
     private void registerEvents() {
@@ -187,6 +195,9 @@ public final class SiedlerPlugin extends PluginBase {
             if (antiAfkManager != null) {
                 this.getServer().getScheduler().scheduleRepeatingTask(this, antiAfkManager, 20);
             }
+            if (traderManager != null) {
+                this.getServer().getScheduler().scheduleRepeatingTask(this, traderManager, 20 * 10);
+            }
         } catch (Exception e) {
             this.getLogger().error("Error with Task registration: " + e);
         }
@@ -203,6 +214,8 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(tokenManager, this);
             getServer().getPluginManager().registerEvents(raidManager, this);
             getServer().getPluginManager().registerEvents(monsterManager, this);
+            getServer().getPluginManager().registerEvents(marketManager, this);
+            getServer().getPluginManager().registerEvents(traderManager, this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
@@ -234,6 +247,11 @@ public final class SiedlerPlugin extends PluginBase {
         if (outpostManager != null) {
             outpostManager.stop();
             outpostManager = null;
+        }
+
+        if (traderManager != null) {
+            traderManager.stop();
+            traderManager = null;
         }
 
         if (taxManager != null) {
