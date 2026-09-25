@@ -114,7 +114,7 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 - [x] Block-Place-Schutz
 - [x] Claim-Adminbefehle über `/claim admin`
 - [ ] Claim-Grenzen/Visualisierung
-- [ ] Claim-sicheres Monster-/Pillager-Spawning
+- [x] Claim-sicheres Monster-/Pillager-Spawning
 
 ## Phase 4 – Economy & Taxes
 
@@ -122,8 +122,8 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 - [x] Villager-basierte Tagessteuer
 - [x] Online-Team-Bedingung
 - [x] `taxBonus=1` als Standard für bestehende/neue Teams
-- [ ] Token-Bonus als permanente TaxBonus-Quelle
-- [ ] Outpost-Bonus als permanente TaxBonus-Quelle
+- [x] Token-Bonus als permanente TaxBonus-Quelle
+- [x] Outpost-Bonus als permanente TaxBonus-Quelle
 - [x] atomare Buchung + Retry
 - [x] Steuertransaktionen / Steuerhistorie
 - [x] Steuerstatistik
