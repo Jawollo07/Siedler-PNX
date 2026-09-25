@@ -259,7 +259,7 @@ zeigt die auf dem Server konfigurierten Händlerarten.
 
 ### Händler
 
-Siedler verwendet native PowerNukkitX-Händler mit dem normalen Bedrock-Handelsfenster. Welche Angebote verfügbar sind, wird serverseitig konfiguriert.
+Siedler verwendet native PowerNukkitX-`VillagerV2`-Händler. Beim Anklicken öffnet sich die Siedler-Handelsoberfläche, die direkt mit dem Teamkonto abrechnet. Der aktuelle Kontostand wird angezeigt und jeder Kauf wird als Economy-Transaktion gespeichert.
 
 Die Standardkonfiguration enthält unter anderem Händler für:
 
@@ -272,7 +272,7 @@ Die Standardkonfiguration enthält unter anderem Händler für:
 - Soldaten
 - Verzauberungen
 
-Die verwendete Währung ist standardmäßig Emerald, sofern die Serverkonfiguration nicht geändert wurde.
+Die Händler verwenden **das gemeinsame Teamkonto** als Währung. Beim Kauf werden keine Emeralds aus dem Spielerinventar verbraucht. Der in der Trade-Konfiguration angegebene `buy.count` ist der Preis in der Teamwährung. Eine optionale `buy2`-Angabe kann weiterhin ein zusätzlich benötigtes Item aus dem Spielerinventar verlangen.
 
 ## 15. Anti-AFK
 
