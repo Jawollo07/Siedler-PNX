@@ -46,6 +46,10 @@ monsters:
     enabled: true
     automatic: false
     max-active: 4
+    entity: minecraft:zombie
+    spawn-radius: 16
+    spawn-interval-minutes: 30
+    tax-bonus: 1
   outposts:
     enabled: true
     capture-seconds: 10
