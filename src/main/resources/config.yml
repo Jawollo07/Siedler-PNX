@@ -95,7 +95,7 @@ soldiers:
 
 market:
   enabled: true
-  currency: emerald
+  currency: team-money
   interaction-blacklist:
     - minecraft:stone_button
     - minecraft:oak_button
