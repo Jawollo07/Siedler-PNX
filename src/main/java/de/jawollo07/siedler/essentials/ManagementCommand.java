@@ -92,7 +92,7 @@ public class ManagementCommand extends Command {
                 messageManager.getMessage("messages.essentials.management-enderchest-player-header"));
         for (Player target : players.values()) {
             form.addButton(target.getName(), ignored -> {
-                int windowId = target.getEnderChestInventory() == null ? -1 : admin.addWindow(target.getEnderChestInventory());
+                int windowId = admin.addWindow(target.getEnderChestInventory());
                 if (windowId == -1) {
                     admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error"));
                 }
