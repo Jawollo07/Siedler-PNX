@@ -241,8 +241,6 @@ Unterstützte Maßnahmen:
 - [ ] TraderManager
 - [ ] frei definierbare Trades
 - [ ] vordefinierte Siedler-3-artige Trader
-- [ ] Emerald als Standardwährung
-- [ ] Soldier Trader
 - [ ] weitere Spezial-Trader
 
 ## Phase 8 – Minefield
