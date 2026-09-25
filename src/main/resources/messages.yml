@@ -143,6 +143,9 @@ messages:
     home-button: "§e{name}\\n§7{world} §8• §f{x} / {y} / {z}"
     home-close: "Schließen"
     enderchest-already-open: "§cDeine Enderchest ist bereits geöffnet."
+    team-enderchest-no-team: "§cDu bist in keinem Team."
+    team-enderchest-already-open: "§cDeine Team-Enderchest ist bereits geöffnet."
+    team-enderchest-error: "§cDie Team-Enderchest konnte nicht geöffnet werden."
 
     # TPA
     tpa-sent: "§aTeleportanfrage an §f{player}§a gesendet."
