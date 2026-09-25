@@ -111,15 +111,19 @@ public final class TraderManager implements Listener, Runnable {
             return null;
         }
 
-        Entity entity = Entity.createEntity(
-                Entity.VILLAGER_V2,
-                new org.powernukkitx.level.Position(
-                        player.getX() + 1,
-                        player.getY(),
-                        player.getZ() + 1,
-                        player.getLevel()
+        Entity[] created = new Entity[1];
+        de.jawollo07.siedler.monsters.MonsterManager.runWithBypass(() ->
+                created[0] = Entity.createEntity(
+                        Entity.VILLAGER_V2,
+                        new org.powernukkitx.level.Position(
+                                player.getX() + 1,
+                                player.getY(),
+                                player.getZ() + 1,
+                                player.getLevel()
+                        )
                 )
         );
+        Entity entity = created[0];
 
         if (!(entity instanceof EntityVillagerV2 trader)) return null;
 
@@ -163,15 +167,19 @@ public final class TraderManager implements Listener, Runnable {
                 }
 
                 while (count < target) {
-                    Entity entity = Entity.createEntity(
-                            Entity.VILLAGER_V2,
-                            new org.powernukkitx.level.Position(
-                                    market.spawnX(),
-                                    market.spawnY(),
-                                    market.spawnZ(),
-                                    level
+                    Entity[] created = new Entity[1];
+                    de.jawollo07.siedler.monsters.MonsterManager.runWithBypass(() ->
+                            created[0] = Entity.createEntity(
+                                    Entity.VILLAGER_V2,
+                                    new org.powernukkitx.level.Position(
+                                            market.spawnX(),
+                                            market.spawnY(),
+                                            market.spawnZ(),
+                                            level
+                                    )
                             )
                     );
+                    Entity entity = created[0];
 
                     if (!(entity instanceof EntityVillagerV2 trader)) break;
 
