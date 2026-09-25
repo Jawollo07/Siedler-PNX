@@ -24,6 +24,7 @@ public class ManagementCommand extends Command {
     private final ModerationManager moderationManager;
     private final TeamManager teamManager;
     private final DeathManager deathManager;
+    private final TeamEnderChestManager teamEnderChestManager;
 
     public ManagementCommand(SiedlerPlugin plugin) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
@@ -33,6 +34,7 @@ public class ManagementCommand extends Command {
         this.moderationManager = new ModerationManager(plugin);
         this.teamManager = new TeamManager(plugin);
         this.deathManager = new DeathManager(plugin);
+        this.teamEnderChestManager = new TeamEnderChestManager(plugin);
         setPermission("siedler.admin");
         setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         enableCommandTree();
@@ -65,8 +67,71 @@ public class ManagementCommand extends Command {
                         .replace("{online}", String.valueOf(online)))
                 .addButton(messageManager.getMessage("messages.essentials.management-players"), ignored -> openPlayerList(admin))
                 .addButton(messageManager.getMessage("messages.essentials.management-online-actions"), ignored -> openOnlineActions(admin))
+                .addButton(messageManager.getMessage("messages.essentials.management-enderchests"), ignored -> openEnderChestManagement(admin))
                 .addButton(messageManager.getMessage("messages.essentials.management-close"))
                 .send(admin);
+    }
+
+    private void openEnderChestManagement(Player admin) {
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-enderchests-title"),
+                messageManager.getMessage("messages.essentials.management-enderchests-header"))
+                .addButton(messageManager.getMessage("messages.essentials.management-enderchest-player"),
+                        ignored -> openPlayerEnderChestList(admin))
+                .addButton(messageManager.getMessage("messages.essentials.management-enderchest-team"),
+                        ignored -> openTeamEnderChestList(admin))
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openMainMenu(admin))
+                .send(admin);
+    }
+
+    private void openPlayerEnderChestList(Player admin) {
+        Map<?, Player> players = plugin.getServer().getOnlinePlayers();
+        SimpleForm form = new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-enderchest-player-title"),
+                messageManager.getMessage("messages.essentials.management-enderchest-player-header"));
+        for (Player target : players.values()) {
+            form.addButton(target.getName(), ignored -> {
+                int windowId = target.getEnderChestInventory() == null ? -1 : admin.addWindow(target.getEnderChestInventory());
+                if (windowId == -1) {
+                    admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error"));
+                }
+            });
+        }
+        form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                ignored -> openEnderChestManagement(admin));
+        form.send(admin);
+    }
+
+    private void openTeamEnderChestList(Player admin) {
+        try {
+            List<Team> teams = teamManager.getTeams();
+            SimpleForm form = new SimpleForm(
+                    messageManager.getMessage("messages.essentials.management-enderchest-team-title"),
+                    messageManager.getMessage("messages.essentials.management-enderchest-team-header"));
+            for (Team team : teams) {
+                form.addButton(team.name(), ignored -> openTeamEnderChest(admin, team));
+            }
+            form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                    ignored -> openEnderChestManagement(admin));
+            form.send(admin);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
+    }
+
+    private void openTeamEnderChest(Player admin, Team team) {
+        try {
+            TeamEnderChestInventory inventory = teamEnderChestManager.getOrCreate(admin, team.id());
+            int windowId = admin.addWindow(inventory);
+            if (windowId == -1) {
+                admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error"));
+            }
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error")
+                    .replace("{error}", exception.getMessage() == null ? "Unbekannter Fehler" : exception.getMessage()));
+        }
     }
 
     private void openOnlineActions(Player admin) {
