@@ -32,6 +32,7 @@ import de.jawollo07.siedler.essentials.InventorySnapshotListener;
 import de.jawollo07.siedler.essentials.StatsManager;
 import de.jawollo07.siedler.essentials.StatsListener;
 import de.jawollo07.siedler.essentials.StatsCommand;
+import de.jawollo07.siedler.essentials.EnderChestCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -132,6 +133,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TPACancelCommand(this, tpaManager));
         commandManager.register(new DeathCommand(this, deathManager));
         commandManager.register(new StatsCommand(this, statsManager));
+        commandManager.register(new EnderChestCommand(this));
     }
 
     private void registerEvents() {
