@@ -1,6 +1,6 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 23.09.2026
+Stand: 25.09.2026
 
 ## Versionsschema
 
@@ -242,8 +242,10 @@ Unterstützte Maßnahmen:
 - [x] frei definierbare Trades
 - [x] vordefinierte Siedler-3-artige Trader
 - [x] weitere Spezial-Trader
-- [x] Emerald als Standardwährung
-- [x] native PNX TradeInventory / echte Handels-GUI
+- [x] Team-Geld als Händlerwährung
+- [x] atomare Abbuchung vom gemeinsamen Teamkonto
+- [x] optionale zusätzliche Materialkosten über `buy2`
+- [x] native PNX VillagerV2-Händler mit Siedler-Handels-GUI
 
 ## Phase 8 – Minefield
 
