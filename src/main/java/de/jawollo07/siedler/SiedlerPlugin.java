@@ -35,6 +35,7 @@ import de.jawollo07.siedler.essentials.StatsCommand;
 import de.jawollo07.siedler.essentials.EnderChestCommand;
 import de.jawollo07.siedler.essentials.TeamEnderChestCommand;
 import de.jawollo07.siedler.essentials.TeamEnderChestManager;
+import de.jawollo07.siedler.essentials.AntiAfkManager;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -60,6 +61,7 @@ public final class SiedlerPlugin extends PluginBase {
     private InventorySnapshotManager inventorySnapshotManager;
     private StatsManager statsManager;
     private TeamEnderChestManager teamEnderChestManager;
+    private AntiAfkManager antiAfkManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -96,6 +98,7 @@ public final class SiedlerPlugin extends PluginBase {
         inventorySnapshotManager = new InventorySnapshotManager(this);
         statsManager = new StatsManager(this);
         teamEnderChestManager = new TeamEnderChestManager(this);
+        antiAfkManager = new AntiAfkManager(this);
 
         // Registration
         registerCommands();
@@ -158,6 +161,9 @@ public final class SiedlerPlugin extends PluginBase {
                     if (inventorySnapshotManager != null) {
                         inventorySnapshotManager.snapshotOnlinePlayers("PERIODIC");
                     }
+                    if (antiAfkManager != null) {
+                        antiAfkManager.run();
+                    }
                 }
             }, 20 * 60 * 3);
         } catch (Exception e) {
@@ -172,6 +178,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(new DeathListener(deathManager), this);
             getServer().getPluginManager().registerEvents(new InventorySnapshotListener(inventorySnapshotManager), this);
             getServer().getPluginManager().registerEvents(new StatsListener(statsManager), this);
+            getServer().getPluginManager().registerEvents(antiAfkManager, this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
