@@ -63,3 +63,10 @@ mines:
   enabled: true
   fuse-seconds: 1
   rearm-seconds: 15
+
+antiafk:
+  enabled: true
+  timeout-minutes: 15
+  warning-seconds: 60
+  # Players with this permission are excluded from Anti-AFK.
+  exempt-permission: siedler.admin
