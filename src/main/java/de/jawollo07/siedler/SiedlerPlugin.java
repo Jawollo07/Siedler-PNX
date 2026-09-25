@@ -33,6 +33,8 @@ import de.jawollo07.siedler.essentials.StatsManager;
 import de.jawollo07.siedler.essentials.StatsListener;
 import de.jawollo07.siedler.essentials.StatsCommand;
 import de.jawollo07.siedler.essentials.EnderChestCommand;
+import de.jawollo07.siedler.essentials.TeamEnderChestCommand;
+import de.jawollo07.siedler.essentials.TeamEnderChestManager;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -57,6 +59,7 @@ public final class SiedlerPlugin extends PluginBase {
     private DeathManager deathManager;
     private InventorySnapshotManager inventorySnapshotManager;
     private StatsManager statsManager;
+    private TeamEnderChestManager teamEnderChestManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -92,6 +95,7 @@ public final class SiedlerPlugin extends PluginBase {
         deathManager = new DeathManager(this);
         inventorySnapshotManager = new InventorySnapshotManager(this);
         statsManager = new StatsManager(this);
+        teamEnderChestManager = new TeamEnderChestManager(this);
 
         // Registration
         registerCommands();
@@ -134,6 +138,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new DeathCommand(this, deathManager));
         commandManager.register(new StatsCommand(this, statsManager));
         commandManager.register(new EnderChestCommand(this));
+        commandManager.register(new TeamEnderChestCommand(this, teamEnderChestManager));
     }
 
     private void registerEvents() {
@@ -176,6 +181,9 @@ public final class SiedlerPlugin extends PluginBase {
     public void onDisable() {
         if (inventorySnapshotManager != null) {
             inventorySnapshotManager.snapshotOnlinePlayers("SHUTDOWN");
+        }
+        if (teamEnderChestManager != null) {
+            teamEnderChestManager.saveAll();
         }
 
         if (statsManager != null) {
