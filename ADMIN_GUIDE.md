@@ -464,3 +464,50 @@ Administratoren können Raids über das Tree-Command-System verwalten:
 - `/raid admin stop`
 
 Ein Raid kann nur einen besetzten Outpost angreifen. Automatische Raids wählen zufällig einen besetzten Outpost aus, dessen verteidigendes Team mindestens ein online befindliches Mitglied hat.
+
+
+## 22. Allgemeine Monstersteuerung
+
+Die normale Monster-Spawnsteuerung erfolgt zentral über `MonsterManager`. Sie betrifft normale hostile Mobs und nicht die kontrollierten Siedler-Begegnungen von Token und Raids.
+
+Konfiguration in `config.yml`:
+
+```yaml
+monsters:
+  control:
+    enabled: true
+    monsters: []
+    blacklist:
+      - minecraft:creeper
+    quotas:
+      - minecraft:zombie:100
+      - minecraft:skeleton:100
+      - minecraft:creeper:0
+      - minecraft:enderman:75
+      - minecraft:witch:50
+    default-quota-percent: 100
+    max-per-chunk: 12
+    max-per-world: 200
+    world-blacklist: []
+```
+
+### Steuerungsregeln
+
+- `enabled`: zentrale Monstersteuerung aktivieren/deaktivieren.
+- `monsters`: optionale explizite Liste der kontrollierten Entity-IDs. Ist sie leer, wird die eingebaute Liste normaler feindlicher Mobs verwendet.
+- `blacklist`: Monster in dieser Liste werden immer blockiert.
+- `quotas`: individuelle Spawnwahrscheinlichkeit von 0–100 Prozent.
+- `default-quota-percent`: Quote für Monster ohne eigenen Eintrag.
+- `max-per-chunk`: maximale Anzahl desselben kontrollierten Monsters in einem Chunk; `0` deaktiviert das Limit.
+- `max-per-world`: maximale Anzahl desselben kontrollierten Monsters in einer Welt; `0` deaktiviert das Limit.
+- `world-blacklist`: Welten, in denen kontrollierte Monster grundsätzlich nicht spawnen.
+
+### Claim-Schutz
+
+In **jedem Siedler-Claim** werden normale Monster-Spawns automatisch blockiert. Die Prüfung erfolgt anhand von Welt und Chunk-Grenzen des Claims.
+
+### Sonderfälle
+
+Token-Monster und Pillager-Raids sind kontrollierte Siedler-Begegnungen. Ihre Spawns umgehen deshalb bewusst die normale Monstersteuerung, damit z. B. eine Zombie-Blacklist nicht versehentlich Token-Spawns verhindert.
+
+Die allgemeine Steuerung ist damit unabhängig von Token, Outposts und Raids und kann später um weitere globale Regeln erweitert werden.
