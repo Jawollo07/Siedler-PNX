@@ -8,6 +8,7 @@ import org.powernukkitx.command.CommandResult;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.route.RouteTree;
 import org.powernukkitx.command.route.node.RouteNode;
+import org.powernukkitx.command.tree.node.StringNode;
 
 public final class MarketCommand extends Command {
     private final SiedlerPlugin plugin;
@@ -37,9 +38,9 @@ public final class MarketCommand extends Command {
                 .permission("siedler.admin", messages.getCommandMessage("no-permission"))
                 .then(RouteNode.literal("reload").exec(ctx -> { marketManager.load(); traderManager.load(); ctx.getSender().sendMessage(messages.getMessage("messages.market.reloaded")); return CommandResult.success(); }))
                 .then(RouteNode.literal("cleanup").exec(ctx -> { marketManager.cleanupMonsters(); ctx.getSender().sendMessage(messages.getMessage("messages.market.cleanup")); return CommandResult.success(); }))
-                .then(RouteNode.literal("spawn").then(RouteNode.argument("type").exec(ctx -> {
+                .then(RouteNode.literal("spawn").then(RouteNode.argument("type", new StringNode()).exec(ctx -> {
                     if (!(ctx.getSender() instanceof Player player)) return CommandResult.fail();
-                    traderManager.spawnTrader(player, String.valueOf(ctx.getArgument("type")));
+                    traderManager.spawnTrader(player, ctx.getArg("type"));
                     return CommandResult.success();
                 })))
                 .then(RouteNode.literal("help").exec(ctx -> { ctx.getSender().sendMessage(messages.getMessage("messages.market.admin-help")); return CommandResult.success(); })));
