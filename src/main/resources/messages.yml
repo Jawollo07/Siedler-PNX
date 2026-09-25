@@ -142,6 +142,7 @@ messages:
     homes-header: "§7Gespeicherte Homes: §f{count}\\n\\n§8Wähle ein Home zum Teleportieren."
     home-button: "§e{name}\\n§7{world} §8• §f{x} / {y} / {z}"
     home-close: "Schließen"
+    enderchest-already-open: "§cDeine Enderchest ist bereits geöffnet."
 
     # TPA
     tpa-sent: "§aTeleportanfrage an §f{player}§a gesendet."
