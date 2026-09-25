@@ -97,7 +97,7 @@ public class TeamManager {
             return null;
         }
     }
-    private Team getTeamById(String id) throws SQLException {
+    public Team getTeamById(String id) throws SQLException {
         String sql = "SELECT t.id, t.name, t.color, (t.tax_bonus + COALESCE((SELECT SUM(bs.amount) FROM team_bonus_sources bs WHERE bs.team_id = t.id AND bs.permanent = 1), 0)) AS tax_bonus, t.eliminated, t.elimination_block, t.created_at, COALESCE((SELECT tm.balance FROM team_money tm WHERE tm.team_id = t.id LIMIT 1), 0) AS balance "
                 + "FROM teams t WHERE t.id = ?";
 
