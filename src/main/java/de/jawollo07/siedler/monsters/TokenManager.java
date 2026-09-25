@@ -87,9 +87,11 @@ public final class TokenManager implements Listener, Runnable {
 
             org.powernukkitx.level.Position position =
                     new org.powernukkitx.level.Position(x + 0.5, y, z + 0.5, level);
-            Entity entity = Entity.createEntity(
+            final Entity[] created = new Entity[1];
+            MonsterManager.runWithBypass(() -> created[0] = Entity.createEntity(
                     plugin.getConfig().getString("monsters.token.entity", "minecraft:zombie"),
-                    position);
+                    position));
+            Entity entity = created[0];
             if (entity == null) continue;
 
             entity.addTag(TOKEN_TAG);
