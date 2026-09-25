@@ -50,7 +50,18 @@ monsters:
     spawn-radius: 16
     spawn-interval-minutes: 30
     tax-bonus: 1
-  outposts:
+  outposts:  raids:
+    enabled: true
+    automatic: true
+    spawn-interval-minutes: 60
+    waves: 3
+    base-size: 3
+    wave-growth: 2
+    max-mobs-per-wave: 16
+    spawn-radius: 20
+    allow-vindicator: true
+    allow-ravager: true
+
     enabled: true
     capture-seconds: 10
     radius: 12
