@@ -42,6 +42,9 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Home teleportation with saved world, position and rotation
 - Administrative management GUI with player information and moderation actions
 - Persistent moderation history for warnings, kicks, bans and temporary bans
+- Persistent personal Enderchest (`/ec`) with 27 slots
+- Shared persistent Team-Enderchest (`/tec`) with 54 slots
+- Admin read/write access to personal and Team-Enderchests through `/verwaltung`
 
 ## Economy & Taxes
 
@@ -102,6 +105,9 @@ Current command structure:
 | `/tpaccept` | – | – |
 | `/tpdeny` | – | – |
 | `/tpacancel` | – | – |
+| `/ec` | own 27-slot Enderchest | – |
+| `/tec` | own team's shared 54-slot Enderchest | – |
+| `/verwaltung` | – | Enderchest admin management, moderation and player management |
 
 Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
 
