@@ -220,7 +220,7 @@ public final class RaidManager implements Listener, Runnable {
 
             entity.addTag(tag);
             entity.addTag("siedler:pillager_squad");
-            entity.setNameTag(messages.getMessage("messages.monsters.raid-mob-name"));
+            entity.setNameTag(tag);
             entity.setNameTagVisible(false);
             entity.spawnToAll();
             return entity;
@@ -306,8 +306,9 @@ public final class RaidManager implements Listener, Runnable {
     }
 
     private String findRaidId(Entity entity) {
-        for (String tag : entity.getTags()) {
-            if (tag.startsWith(RAID_TAG)) return tag.substring(RAID_TAG.length());
+        String nameTag = entity.getNameTag();
+        if (nameTag != null && nameTag.startsWith(RAID_TAG)) {
+            return nameTag.substring(RAID_TAG.length());
         }
         return null;
     }
