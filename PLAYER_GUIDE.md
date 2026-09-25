@@ -26,6 +26,8 @@ Nach dem Beitritt zum Server sind vor allem diese Befehle wichtig:
 | `/tpacancel` | Eigene Teleportanfrage abbrechen |
 | `/death` | Zum letzten Todespunkt teleportieren |
 | `/stats` | Eigene Spielerstatistik anzeigen |
+| `/ec` | Eigene 27-Slot-Enderchest öffnen |
+| `/tec` | Gemeinsame 54-Slot-Team-Enderchest öffnen |
 
 ---
 
@@ -357,7 +359,37 @@ Die Spielzeit wird während deiner aktiven Spielsession erfasst und dauerhaft ge
 
 ---
 
-## 10. Spielzeit und Spielerdaten
+---
+
+## 10. Enderchests
+
+### Persönliche Enderchest
+
+Mit:
+
+``
+/ec
+``
+
+öffnest du deine persönliche **27-Slot-Enderchest**. Der Inhalt ist dauerhaft gespeichert und steht dir auch nach einem Serverneustart wieder zur Verfügung.
+
+### Team-Enderchest
+
+Mit:
+
+``
+/tec
+``
+
+öffnest du die gemeinsame **54-Slot-Team-Enderchest** deines Teams. Alle Mitglieder desselben Teams greifen auf denselben Inhalt zu.
+
+Die Team-Enderchest hat doppelt so viele Slots wie eine normale Enderchest.
+
+Beide Inventare können Items normal einlegen, entnehmen und verschieben. Die Inhalte werden persistent gespeichert.
+
+---
+
+## 11. Spielzeit und Spielerdaten
 
 Der Server speichert regelmäßig wichtige Spielerdaten.
 
@@ -379,7 +411,7 @@ Spielerzustände werden regelmäßig gespeichert und zusätzlich bei wichtigen E
 
 ---
 
-## 11. Verhalten im Spiel
+## 12. Verhalten im Spiel
 
 Siedler ist ein Team- und Strategiespiel. Für ein faires Spiel gelten daher einige Grundregeln:
 
@@ -405,7 +437,7 @@ Informationen, Ressourcen und Entscheidungen können innerhalb deines Teams ents
 
 ---
 
-## 12. Wichtige Befehle – Übersicht
+## 13. Wichtige Befehle – Übersicht
 
 ### Teams
 
@@ -471,7 +503,7 @@ Informationen, Ressourcen und Entscheidungen können innerhalb deines Teams ents
 
 ---
 
-## 13. Wenn etwas nicht funktioniert
+## 14. Wenn etwas nicht funktioniert
 
 Wenn ein Befehl nicht funktioniert:
 
@@ -483,7 +515,7 @@ Wenn ein Befehl nicht funktioniert:
 
 ---
 
-## 14. Kurzreferenz
+## 15. Kurzreferenz
 
 | Aufgabe | Befehl |
 |---|---|
@@ -503,6 +535,8 @@ Wenn ein Befehl nicht funktioniert:
 | TPA abbrechen | `/tpacancel` |
 | Todespunkt | `/death` |
 | Eigene Statistik | `/stats` |
+| Persönliche Enderchest | `/ec` |
+| Team-Enderchest | `/tec` |
 
 ---
 
