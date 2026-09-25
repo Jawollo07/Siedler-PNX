@@ -59,13 +59,7 @@ public final class OutpostCommand extends Command {
                             create(context.getSender(), context.getArg("name"),
                                     plugin.getConfig().getInt("monsters.outposts.radius", 12));
                             return CommandResult.success();
-                        }))
-                        .then(RouteNode.argument("name", new StringNode())
-                                .then(RouteNode.argument("radius", new StringNode()).exec(context -> {
-                                    create(context.getSender(), context.getArg("name"),
-                                            parseRadius(context.getSender(), context.getArg("radius")));
-                                    return CommandResult.success();
-                                }))))
+                        })))
                 .then(RouteNode.literal("delete")
                         .then(RouteNode.argument("name", new StringNode()).exec(context -> {
                             delete(context.getSender(), context.getArg("name"));
@@ -88,17 +82,6 @@ public final class OutpostCommand extends Command {
         } catch (Exception exception) {
             sender.sendMessage(messages.getMessage("messages.monsters.outpost-error")
                     .replace("{error}", safe(exception)));
-        }
-    }
-
-    private int parseRadius(CommandSender sender, String value) {
-        try {
-            int radius = Integer.parseInt(value);
-            if (radius <= 0) throw new NumberFormatException();
-            return radius;
-        } catch (NumberFormatException exception) {
-            sender.sendMessage(messages.getMessage("messages.monsters.outpost-invalid-radius"));
-            return -1;
         }
     }
 
