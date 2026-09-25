@@ -249,6 +249,29 @@ The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonu
 - Aktive Raids werden bei einem Serverneustart sicher abgebrochen
 
 
+## Villager Spawn Control
+
+Normal Villager spawning is independently limited by a configurable local population cap:
+
+- default: maximum **5 Villagers**
+- radius: **9 blocks horizontally (X/Z)**
+- the limit is checked when a Villager spawn event is created
+- the current spawning Villager is not counted twice
+- Siedler market traders bypass this limit because they are controlled NPCs
+- the limit can be disabled or changed in `config.yml`
+
+Example:
+
+```yaml
+villagers:
+  control:
+    enabled: true
+    max-per-radius: 5
+    radius: 9
+```
+
+The radius uses horizontal X/Z distance, so vertical separation does not affect the Villager population cap.
+
 ## General Monster Control
 
 Normal hostile monster spawning is handled centrally by `MonsterManager`.
