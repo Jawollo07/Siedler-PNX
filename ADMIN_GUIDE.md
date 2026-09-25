@@ -453,3 +453,14 @@ Spieler mit `siedler.admin` sind standardmäßig ausgenommen. Die Prüfung läuf
 ---
 
 Dieses Handbuch beschreibt den aktuellen technischen Stand und sollte bei größeren Änderungen an den Siedler-Systemen aktualisiert werden.
+
+
+## Pillager-Raids
+
+Administratoren können Raids über das Tree-Command-System verwalten:
+
+- `/raid admin help`
+- `/raid admin start <Outpost>`
+- `/raid admin stop`
+
+Ein Raid kann nur einen besetzten Outpost angreifen. Automatische Raids wählen zufällig einen besetzten Outpost aus, dessen verteidigendes Team mindestens ein online befindliches Mitglied hat.
