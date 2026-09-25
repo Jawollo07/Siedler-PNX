@@ -235,13 +235,15 @@ Unterstützte Maßnahmen:
 
 ## Phase 7 – Market & Traders
 
-- [ ] MarketManager
-- [ ] Market-Schutz gegen Break + Place
-- [ ] Monster-Deaktivierung im Markt
-- [ ] TraderManager
-- [ ] frei definierbare Trades
-- [ ] vordefinierte Siedler-3-artige Trader
-- [ ] weitere Spezial-Trader
+- [x] MarketManager
+- [x] Market-Schutz gegen Break + Place
+- [x] Monster-Deaktivierung im Markt
+- [x] TraderManager
+- [x] frei definierbare Trades
+- [x] vordefinierte Siedler-3-artige Trader
+- [x] weitere Spezial-Trader
+- [x] Emerald als Standardwährung
+- [x] native PNX TradeInventory / echte Handels-GUI
 
 ## Phase 8 – Minefield
 
@@ -290,7 +292,7 @@ Unterstützte Maßnahmen:
 
 ## Aktueller Stand
 
-**Aktuelle Planphase:** Phase 6 – Monster, Tokens & Outposts
+**Aktuelle Planphase:** Phase 7 – Market & Traders
 
 Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
