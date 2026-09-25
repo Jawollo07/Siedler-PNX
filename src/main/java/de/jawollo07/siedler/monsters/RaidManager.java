@@ -214,8 +214,10 @@ public final class RaidManager implements Listener, Runnable {
             if (y <= level.getMinHeight() || y >= level.getMaxHeight()) continue;
 
             String type = mobType(index);
-            Entity entity = Entity.createEntity(type,
-                    new Position(x + 0.5, y, z + 0.5, level));
+            final Entity[] created = new Entity[1];
+            MonsterManager.runWithBypass(() -> created[0] = Entity.createEntity(
+                    type, new Position(x + 0.5, y, z + 0.5, level)));
+            Entity entity = created[0];
             if (entity == null) continue;
 
             entity.addTag(tag);
