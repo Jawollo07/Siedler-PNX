@@ -79,7 +79,7 @@ public final class RaidManager implements Listener, Runnable {
             throw new IllegalArgumentException("Ein unbesetzter Outpost kann nicht Ziel eines Raids werden.");
         }
 
-        Team owner = teamManager.getTeamByIdPublic(outpost.ownerTeamId());
+        Team owner = teamManager.getTeamById(outpost.ownerTeamId());
         if (owner == null || owner.eliminated() != 0) return false;
         if (!isTeamOnline(owner.id())) {
             throw new IllegalArgumentException("Kein Mitglied des verteidigenden Teams ist online.");
