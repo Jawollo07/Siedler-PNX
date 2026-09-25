@@ -49,7 +49,9 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Automatic monster blocking inside claims and configured worlds
 - Protected configurable market areas with block-break/place protection
 - Monster-free market areas with automatic cleanup
-- Native PNX trader system with real TradeInventory GUI
+- Native PNX VillagerV2 trader entities with Siedler team-money trading UI
+- Trader purchases charged atomically to the shared team balance
+- Optional additional material requirements per trade
 - Freely configurable trader trades and Siedler-3-style trader presets
 - Explicit bypass for controlled Token/Raid encounter spawns
 - Phase 6 TokenManager with persistent token rounds
@@ -302,7 +304,7 @@ Phase 7 is implemented. The market system provides protected rectangular market 
 
 ### Traders
 
-Traders are native PowerNukkitX `VillagerV2` entities using the native `TradeInventory` and PNX trade-recipe system. Players therefore receive the normal Bedrock trading interface instead of a custom Siedler GUI.
+Traders are native PowerNukkitX `VillagerV2` entities. Their Siedler trading UI uses the shared **team economy** instead of player-held Emeralds. The configured `buy.count` is the team-money price; no Emeralds are removed from the player's inventory. An optional `buy2` item remains a material requirement.
 
 Trader types and their trades are configured in `config.yml`. The default configuration includes:
 
@@ -315,7 +317,7 @@ Trader types and their trades are configured in `config.yml`. The default config
 - soldiers
 - enchantments
 
-Each trade can define the input items, optional second input, output item, maximum uses, tier, trader experience and price multiplier.
+Each trade can define the team-money price (`buy.count`), an optional second material requirement, output item, maximum uses, tier, trader experience and price multiplier. Every successful purchase is recorded as an economy transaction against the team account.
 
 Automatic trader maintenance can keep a configurable number of each trader type present at every enabled market.
 
