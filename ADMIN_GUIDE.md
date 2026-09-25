@@ -39,6 +39,8 @@ Das Menü bietet aktuell:
 - Todeshistorie
 - Todesinventare
 - Spielerinformationen
+- persönliche Enderchests lesen und bearbeiten
+- Team-Enderchests lesen und bearbeiten
 
 ## 3. Spielerverwaltung
 
@@ -257,7 +259,38 @@ Gespeichert werden insbesondere Hauptinventar, Rüstung, Nebenhand sowie verfüg
 
 Der Snapshot wird beim PlayerDeathEvent erfasst, bevor der weitere Death-Lifecycle das normale Inventar leert.
 
-## 14. Spielerstatistiken
+## 14. Enderchest-Verwaltung
+
+Die Verwaltung beider Enderchest-Typen ist über:
+
+    /verwaltung
+    → Enderchests verwalten
+
+erreichbar.
+
+### Persönliche Enderchests
+
+Unter **Persönliche Enderchests** werden die aktuell online befindlichen Spieler angezeigt. Nach Auswahl eines Spielers öffnet sich dessen normale **27-Slot-Enderchest** im Inventarfenster des Administrators.
+
+Der Administrator hat vollständigen Lese- und Schreibzugriff. Items können daher:
+
+- eingesehen
+- entnommen
+- hinzugefügt
+- verschoben
+
+werden.
+
+### Team-Enderchests
+
+Unter **Team-Enderchests** werden die vorhandenen Teams angezeigt. Nach Auswahl eines Teams öffnet sich dessen gemeinsame **54-Slot-Team-Enderchest**.
+
+Auch hier besteht vollständiger Lese- und Schreibzugriff. Änderungen werden persistent gespeichert und gelten unmittelbar für alle Mitglieder des Teams.
+
+Die Team-Enderchest besitzt 54 Slots und ist damit doppelt so groß wie eine normale Enderchest.
+
+
+## 15. Spielerstatistiken
 
 Eigene Statistik:
 
@@ -286,7 +319,7 @@ Spielerdetails:
 - Monster-Kills
 - Spielzeit
 
-## 15. Gespeicherte Spielerdaten
+## 16. Gespeicherte Spielerdaten
 
 Spielerdaten-Snapshots werden aktuell alle:
 
@@ -311,7 +344,7 @@ Gespeichert werden unter anderem:
 
 Bei einem abrupten Prozessabsturz oder Stromausfall kann der letzte Snapshot bis zu etwa drei Minuten alt sein.
 
-## 16. Empfohlener Ablauf bei Spielerproblemen
+## 17. Empfohlener Ablauf bei Spielerproblemen
 
 1. /verwaltung öffnen.
 2. Spieler auswählen.
@@ -322,7 +355,7 @@ Bei einem abrupten Prozessabsturz oder Stromausfall kann der letzte Snapshot bis
 7. Bei Wirtschaftsproblemen /eco show <Team> und /eco stats <Team> prüfen.
 8. Moderationsmaßnahmen erst nach Prüfung des Sachverhalts ausführen.
 
-## 17. Zentrale Admin-Befehle
+## 18. Zentrale Admin-Befehle
 
 ### Verwaltung
 
@@ -366,7 +399,7 @@ Bei einem abrupten Prozessabsturz oder Stromausfall kann der letzte Snapshot bis
 
     /stats admin
 
-## 18. Grundsätze
+## 19. Grundsätze
 
 ### Nachvollziehbarkeit
 Administrative Änderungen sollten nachvollziehbar bleiben.
@@ -386,7 +419,7 @@ Vor Änderungen beide Teamnamen und die gewünschte Beziehung kontrollieren.
 ### Daten
 Moderations- und Todeshistorien nicht ohne konkreten Grund entfernen.
 
-## 19. Schnellreferenz
+## 20. Schnellreferenz
 
 | Bereich | Befehl |
 |---|---|
@@ -398,6 +431,8 @@ Moderations- und Todeshistorien nicht ohne konkreten Grund entfernen.
 | Wirtschaft | /eco admin ... |
 | Admin-Statistik | /stats admin |
 | Spieler verwalten | /verwaltung → Spieler |
+| Persönliche Enderchest | /verwaltung → Enderchests verwalten → Persönliche Enderchests |
+| Team-Enderchest | /verwaltung → Enderchests verwalten → Team-Enderchests |
 | Moderation | /verwaltung → Spieler → Moderation |
 | Moderationshistorie | /verwaltung → Spieler → Historie |
 | Todeshistorie | /verwaltung → Spieler → Todeshistorie |
