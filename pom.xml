@@ -9,11 +9,11 @@
     <!-- Project -->
     <groupId>de.jawollo07</groupId>
     <artifactId>siedler</artifactId>
-    <version>4.4.1</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Siedler</name>
-    <description>Siedler 4.4.1 - PowerNukkitX Plugin</description>
+    <description>Siedler 6.0.0-SNAPSHOT - PowerNukkitX Plugin</description>
 
     <!-- Java -->
     <properties>
