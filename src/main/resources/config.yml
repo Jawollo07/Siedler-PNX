@@ -96,6 +96,91 @@ soldiers:
 market:
   enabled: true
   currency: emerald
+  interaction-blacklist:
+    - minecraft:stone_button
+    - minecraft:oak_button
+    - minecraft:lever
+  markets:
+    - id: markt
+      enabled: true
+      world: overworld
+      min-x: -28
+      min-z: 21
+      max-x: -10
+      max-z: 59
+      trader-spawn:
+        x: -19
+        y: 106
+        z: 40
+  traders:
+    automatic: true
+    count-per-type: 1
+    types:
+      food:
+        name: "§aLebensmittelhändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 1}
+            sell: {item: minecraft:wheat, count: 16}
+            max-uses: 64
+            tier: 1
+            trader-exp: 1
+      building:
+        name: "§6Baustoffhändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 1}
+            sell: {item: minecraft:oak_log, count: 16}
+            max-uses: 64
+            tier: 1
+            trader-exp: 1
+      resources:
+        name: "§7Rohstoffhändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 1}
+            sell: {item: minecraft:coal, count: 16}
+            max-uses: 64
+            tier: 1
+            trader-exp: 1
+      tools:
+        name: "§bWerkzeughändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 2}
+            sell: {item: minecraft:stone_pickaxe, count: 1}
+            max-uses: 32
+            tier: 1
+            trader-exp: 1
+      weapons:
+        name: "§cWaffenhändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 6}
+            sell: {item: minecraft:iron_sword, count: 1}
+            max-uses: 16
+            tier: 1
+            trader-exp: 3
+      supplies:
+        name: "§dVersorgungshändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 1}
+            sell: {item: minecraft:wheat_seeds, count: 16}
+            max-uses: 64
+            tier: 1
+            trader-exp: 1
+      soldiers:
+        name: "§cSoldatenhändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 8}
+            sell: {item: minecraft:iron_sword, count: 1}
+            max-uses: 16
+            tier: 1
+            trader-exp: 3
+      enchantments:
+        name: "§5Verzauberungshändler"
+        trades:
+          - buy: {item: minecraft:emerald, count: 5}
+            buy2: {item: minecraft:book, count: 1}
+            sell: {item: minecraft:enchanted_book, count: 1}
+            max-uses: 16
+            tier: 1
+            trader-exp: 2
 
 mines:
   enabled: true
