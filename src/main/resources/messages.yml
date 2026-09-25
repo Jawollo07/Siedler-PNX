@@ -156,6 +156,8 @@ messages:
     team-enderchest-no-team: "§cDu bist in keinem Team."
     team-enderchest-already-open: "§cDeine Team-Enderchest ist bereits geöffnet."
     team-enderchest-error: "§cDie Team-Enderchest konnte nicht geöffnet werden."
+    antiafk-warning: "§eDu warst längere Zeit inaktiv. Bewege dich innerhalb von §f{seconds} Sekunden§e, sonst wirst du wegen AFK vom Server entfernt."
+    antiafk-kick: "§cDu wurdest wegen Inaktivität (AFK) vom Server entfernt."
 
     # TPA
     tpa-sent: "§aTeleportanfrage an §f{player}§a gesendet."
