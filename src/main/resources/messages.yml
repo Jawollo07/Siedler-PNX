@@ -373,8 +373,7 @@ messages:
     token-spawned: "§aEin Token-Monster wurde gespawnt."
     token-spawn-failed: "§cDas Token-Monster konnte nicht gespawnt werden (Limit oder keine sichere Position)."
     token-status: "§6Token: §f{active}/{max} aktiv"
-    token-help: "§6/token§r – §7Admin: /token admin <start|spawn|status>
-"
+    token-help: "§6/token§r – §7Admin: /token admin <start|spawn|status>"
     token-error: "§cToken-Fehler: {error}"
   eco:
     prefix: "[ECO]: "
