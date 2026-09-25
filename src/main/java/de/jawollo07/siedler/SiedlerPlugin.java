@@ -38,6 +38,8 @@ import de.jawollo07.siedler.essentials.TeamEnderChestManager;
 import de.jawollo07.siedler.essentials.AntiAfkManager;
 import de.jawollo07.siedler.monsters.TokenManager;
 import de.jawollo07.siedler.monsters.TokenCommand;
+import de.jawollo07.siedler.monsters.OutpostManager;
+import de.jawollo07.siedler.monsters.OutpostCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -65,6 +67,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TeamEnderChestManager teamEnderChestManager;
     private AntiAfkManager antiAfkManager;
     private TokenManager tokenManager;
+    private OutpostManager outpostManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -103,6 +106,8 @@ public final class SiedlerPlugin extends PluginBase {
         teamEnderChestManager = new TeamEnderChestManager(this);
         antiAfkManager = new AntiAfkManager(this);
         tokenManager = new TokenManager(this);
+        outpostManager = new OutpostManager(this);
+        outpostManager.start();
 
         // Registration
         registerCommands();
@@ -147,6 +152,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new EnderChestCommand(this));
         commandManager.register(new TeamEnderChestCommand(this, teamEnderChestManager));
         commandManager.register(new TokenCommand(this, tokenManager));
+        commandManager.register(new OutpostCommand(this, outpostManager));
     }
 
     private void registerEvents() {
@@ -207,6 +213,11 @@ public final class SiedlerPlugin extends PluginBase {
         if (tokenManager != null) {
             tokenManager.stop();
             tokenManager = null;
+        }
+
+        if (outpostManager != null) {
+            outpostManager.stop();
+            outpostManager = null;
         }
 
         if (taxManager != null) {
