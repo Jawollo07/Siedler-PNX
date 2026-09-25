@@ -179,7 +179,7 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [x] Admin-Verwaltung für persönliche Enderchests (Lesen/Schreiben)
 - [x] Admin-Verwaltung für Team-Enderchests (Lesen/Schreiben)
 - [x] Player Stats (`/stats` und `/stats admin`)
-- [ ] Anti-AFK
+- [x] Anti-AFK mit konfigurierbarer Inaktivitätszeit, Warnung und Admin-Ausnahme
 
 ### Home-System
 
@@ -296,7 +296,7 @@ Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `tea
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
 
 
-Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats, Dashboard/Statistiken und Anti-AFK bleiben offen.
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats, Dashboard/Statistiken bleiben offen.
 
 
 ### TPA-System
