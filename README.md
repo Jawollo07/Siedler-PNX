@@ -221,3 +221,15 @@ The plugin JAR is produced under `target/`. The current Maven project version is
 ## Migration reference
 
 The feature set being migrated includes teams, diplomacy, claims, taxes, TaxBonus, token monsters, outpost capture, monster raids, soldiers (infantry/archer/cavalry), soldier AI, market/traders, homes/TPA, persistent ender/team chests, player statistics, anti-AFK, and the minefield/control system.
+
+
+### Phase 6 – Pillager Squads / Raids
+
+- Persistente Raid-Zustände und Wellen
+- Automatische Raids gegen besetzte Outposts
+- Admin: `/raid admin start <Outpost>`, `/raid admin stop`
+- Spieler: `/raid status`
+- Konfigurierbare Wellen, Squad-Größe und Spawnradius
+- Pillager, Vindicator und optional Ravager
+- Raid-Controlling über Outpost und verteidigendes Team
+- Aktive Raids werden bei einem Serverneustart sicher abgebrochen
