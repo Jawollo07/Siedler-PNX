@@ -398,6 +398,7 @@ public final class RaidManager implements Listener, Runnable {
             String outpostName,
             String teamId,
             int wave,
+            int remainingMobs,
             String status,
             long startedAt,
             long finishedAt,
