@@ -40,6 +40,8 @@ import de.jawollo07.siedler.monsters.TokenManager;
 import de.jawollo07.siedler.monsters.TokenCommand;
 import de.jawollo07.siedler.monsters.OutpostManager;
 import de.jawollo07.siedler.monsters.OutpostCommand;
+import de.jawollo07.siedler.monsters.RaidManager;
+import de.jawollo07.siedler.monsters.RaidCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -68,6 +70,7 @@ public final class SiedlerPlugin extends PluginBase {
     private AntiAfkManager antiAfkManager;
     private TokenManager tokenManager;
     private OutpostManager outpostManager;
+    private RaidManager raidManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -108,6 +111,8 @@ public final class SiedlerPlugin extends PluginBase {
         tokenManager = new TokenManager(this);
         outpostManager = new OutpostManager(this);
         outpostManager.start();
+        raidManager = new RaidManager(this);
+        raidManager.start();
 
         // Registration
         registerCommands();
@@ -153,6 +158,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new TeamEnderChestCommand(this, teamEnderChestManager));
         commandManager.register(new TokenCommand(this, tokenManager));
         commandManager.register(new OutpostCommand(this, outpostManager));
+        commandManager.register(new RaidCommand(this, raidManager));
     }
 
     private void registerEvents() {
@@ -192,6 +198,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(new StatsListener(statsManager), this);
             getServer().getPluginManager().registerEvents(antiAfkManager, this);
             getServer().getPluginManager().registerEvents(tokenManager, this);
+            getServer().getPluginManager().registerEvents(raidManager, this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
@@ -213,6 +220,11 @@ public final class SiedlerPlugin extends PluginBase {
         if (tokenManager != null) {
             tokenManager.stop();
             tokenManager = null;
+        }
+
+        if (raidManager != null) {
+            raidManager.stop();
+            raidManager = null;
         }
 
         if (outpostManager != null) {
@@ -239,6 +251,10 @@ public final class SiedlerPlugin extends PluginBase {
 
     public Config getConfig() {
         return config;
+    }
+
+    public OutpostManager getOutpostManager() {
+        return outpostManager;
     }
 
     public StorageManager getStorage() {
