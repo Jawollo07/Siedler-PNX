@@ -141,7 +141,7 @@ public final class TeamEnderChestManager {
             int count = Integer.parseInt(parts[2]);
             byte[] nbt = parts[3].isEmpty() ? null : Base64.getDecoder().decode(parts[3]);
 
-            return Item.get(id, damage, count, nbt);
+            return Item.get(String.valueOf(id), damage, count, nbt);
         } catch (Exception exception) {
             plugin.getLogger().warning("Ungültiger Team-Enderchest-Itemdatensatz: " + exception.getMessage());
             return null;
