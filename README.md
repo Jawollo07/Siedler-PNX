@@ -121,6 +121,7 @@ Current command structure:
 | `/ec` | own 27-slot Enderchest | – |
 | `/tec` | own team's shared 54-slot Enderchest | – |
 | `/verwaltung` | – | Enderchest admin management, moderation and player management |
+| `/market` | `help`, `info`, `types` | `admin help`, `admin reload`, `admin cleanup`, `admin spawn <type>` |
 
 Communication commands such as `/dm` and `/teamchat` remain normal player commands because they are not administrative management commands.
 
@@ -197,7 +198,7 @@ The detailed checklist and current progress are maintained in [`plan.md`](plan.m
 
 ## PowerNukkitX target
 
-The project targets **PowerNukkitX 3.0.4-SNAPSHOT** / API **3.0.x**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Maven as a `provided` dependency because the server provides it at runtime.
+The project targets **PowerNukkitX 3.0.5-SNAPSHOT** / API **3.0.x**, Java **21**, and Minecraft Bedrock **1.26.45**. PowerNukkitX is supplied by Maven as a `provided` dependency because the server provides it at runtime.
 
 If exact server-version compatibility changes, the dependency and compatibility notes will be updated together with the code.
 
@@ -226,7 +227,7 @@ Requires **JDK 21** and **Maven**.
 mvn clean package
 ```
 
-The plugin JAR is produced under `target/`. The current Maven project version is **`3.3.1`**.
+The plugin JAR is produced under `target/`. The current Maven project version is **`7.0.0-SNAPSHOT`**.
 
 ## Migration reference
 
@@ -284,3 +285,25 @@ monsters:
 A quota is a probability for each attempted spawn. A value of `0` disables that mob; `100` leaves its spawn probability unchanged. A blacklist always wins over the quota.
 
 Token and Pillager-Raid entities use a dedicated spawn bypass because these are Siedler-controlled encounters rather than ordinary world spawning.
+
+
+## Phase 7 – Market & Traders
+
+The market system provides protected rectangular market areas. Blocks cannot be broken or placed there, configured interaction blocks can be blocked, and hostile monster spawns are cancelled automatically.
+
+Traders are native PowerNukkitX VillagerV2 entities using the native TradeInventory. Trade recipes are registered through PNX's trade recipe system, so players receive the normal Bedrock trading interface.
+
+Trader types and trades are defined in config.yml. The default configuration contains Siedler-3-style roles for food, building, resources, tools, weapons, supplies, soldiers and enchantments.
+
+Useful commands:
+
+```text
+/market
+/market info
+/market types
+/market admin reload
+/market admin cleanup
+/market admin spawn <type>
+```
+
+Administrative routes require siedler.admin. Automatic trader maintenance keeps the configured number of each trader type present at the market.
