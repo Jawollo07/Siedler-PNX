@@ -117,6 +117,7 @@ public final class TokenManager implements Listener, Runnable {
             if (token == null || token.defeated()) return;
 
             markDefeated(token.id());
+            completeRoundIfFinished(token.roundId());
             awardBonus(event, entity);
         } catch (Exception exception) {
             plugin.getLogger().warning("Could not process token defeat: "
@@ -199,6 +200,24 @@ public final class TokenManager implements Listener, Runnable {
                         result.getString("round_id"),
                         result.getInt("defeated") != 0);
             }
+        }
+    }
+
+    private void completeRoundIfFinished(String roundId) throws SQLException {
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
+                "SELECT COUNT(*) FROM tokens WHERE round_id = ? AND defeated = 0")) {
+            statement.setString(1, roundId);
+            try (ResultSet result = statement.executeQuery()) {
+                result.next();
+                if (result.getInt(1) != 0) return;
+            }
+        }
+
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(
+                "UPDATE token_rounds SET completed = 1, completed_at = ? WHERE id = ? AND completed = 0")) {
+            statement.setLong(1, System.currentTimeMillis());
+            statement.setString(2, roundId);
+            statement.executeUpdate();
         }
     }
 
