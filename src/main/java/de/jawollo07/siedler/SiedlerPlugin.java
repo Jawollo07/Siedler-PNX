@@ -36,6 +36,8 @@ import de.jawollo07.siedler.essentials.EnderChestCommand;
 import de.jawollo07.siedler.essentials.TeamEnderChestCommand;
 import de.jawollo07.siedler.essentials.TeamEnderChestManager;
 import de.jawollo07.siedler.essentials.AntiAfkManager;
+import de.jawollo07.siedler.monsters.TokenManager;
+import de.jawollo07.siedler.monsters.TokenCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -62,6 +64,7 @@ public final class SiedlerPlugin extends PluginBase {
     private StatsManager statsManager;
     private TeamEnderChestManager teamEnderChestManager;
     private AntiAfkManager antiAfkManager;
+    private TokenManager tokenManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -99,6 +102,7 @@ public final class SiedlerPlugin extends PluginBase {
         statsManager = new StatsManager(this);
         teamEnderChestManager = new TeamEnderChestManager(this);
         antiAfkManager = new AntiAfkManager(this);
+        tokenManager = new TokenManager(this);
 
         // Registration
         registerCommands();
@@ -142,6 +146,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new StatsCommand(this, statsManager));
         commandManager.register(new EnderChestCommand(this));
         commandManager.register(new TeamEnderChestCommand(this, teamEnderChestManager));
+        commandManager.register(new TokenCommand(this, tokenManager));
     }
 
     private void registerEvents() {
@@ -180,6 +185,7 @@ public final class SiedlerPlugin extends PluginBase {
             getServer().getPluginManager().registerEvents(new InventorySnapshotListener(inventorySnapshotManager), this);
             getServer().getPluginManager().registerEvents(new StatsListener(statsManager), this);
             getServer().getPluginManager().registerEvents(antiAfkManager, this);
+            getServer().getPluginManager().registerEvents(tokenManager, this);
         } catch (Exception e) {
             this.getLogger().error("Error with Listener registration: " + e);
         }
@@ -196,6 +202,11 @@ public final class SiedlerPlugin extends PluginBase {
 
         if (statsManager != null) {
             statsManager.flushOnlineSessions();
+        }
+
+        if (tokenManager != null) {
+            tokenManager.stop();
+            tokenManager = null;
         }
 
         if (taxManager != null) {
