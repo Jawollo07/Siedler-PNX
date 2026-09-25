@@ -104,6 +104,11 @@ public final class MonsterManager implements Listener {
                 return;
             }
 
+            if (isWorldBlacklisted(entity)) {
+                event.setCancelled(true);
+                return;
+            }
+
             if (isInsideClaim(entity)) {
                 event.setCancelled(true);
                 return;
@@ -197,6 +202,16 @@ public final class MonsterManager implements Listener {
 
     private int clampPercent(int value) {
         return Math.max(0, Math.min(100, value));
+    }
+
+    private boolean isWorldBlacklisted(Entity entity) {
+        if (entity.getLevel() == null) return false;
+        List<String> worlds = plugin.getConfig()
+                .getStringList("monsters.control.world-blacklist");
+        if (worlds == null) return false;
+        String world = entity.getLevel().getName();
+        return worlds.stream().map(String::trim)
+                .anyMatch(world::equalsIgnoreCase);
     }
 
     private boolean isInsideClaim(Entity entity) throws SQLException {
