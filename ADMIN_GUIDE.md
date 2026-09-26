@@ -601,6 +601,75 @@ prüfen.
 
 README und `plan.md` sollten bei neuen Phasen gemeinsam mit den Guides aktualisiert werden.
 
+
+## PvP-Turniersystem
+
+Der `beta`-Stand besitzt ein administrierbares PvP-Turniersystem.
+
+### Spielersteuerung
+```
+/tournament join
+/tournament leave
+/tournament status
+/tournament bracket
+/tournament kits
+/tournament kit <Name>
+/tournament spectate
+```
+
+### Turnierverwaltung
+```
+/tournament admin open
+/tournament admin start
+/tournament admin stop
+/tournament admin status
+```
+Alle Admin-, Kit-, Arena- und Konfigurationsrouten benötigen `siedler.admin`.
+
+### Formate
+- `single_elimination`: eine Niederlage scheidet aus.
+- `double_elimination`: zwei Niederlagen sind erforderlich.
+- `round_robin`: jeder spielt gegen jeden.
+
+### Mehrere Matches
+Mehrere Matches können gleichzeitig laufen. Pro Paarung wird eine Match-ID verwaltet; konfigurierte Arenen können parallel belegt werden.
+
+### Arenen
+```
+/tournament admin arena list
+/tournament admin arena create <Name>
+/tournament admin arena delete <Name>
+/tournament admin arena set <Arena> <Pfad> <Wert>
+```
+
+### Best-of und Zeitlimit
+```yaml
+tournament:
+  format: single_elimination
+  match:
+    best-of: 3
+    timeout-seconds: 600
+```
+
+### Kits
+```
+/tournament admin kit list
+/tournament admin kit create <Name>
+/tournament admin kit delete <Name>
+/tournament admin kit clear <Name>
+/tournament admin kit add <Name> <Command>
+/tournament admin kit show <Name>
+```
+
+### Dynamische Konfiguration
+```
+/tournament admin config get <Pfad>
+/tournament admin config set <Pfad> <Wert>
+/tournament admin config reload
+```
+
+Nur Pfade unter `tournament.*` dürfen über diese Schnittstelle geändert werden.
+
 ---
 
 **Dieses Handbuch beschreibt den aktuellen beta-Stand. Bei Änderungen an Commands, Berechtigungen, Konfiguration oder Gameplay-Regeln muss es entsprechend aktualisiert werden.**
