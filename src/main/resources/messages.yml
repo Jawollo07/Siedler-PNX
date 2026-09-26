@@ -483,8 +483,8 @@ messages:
 
   tournament:
     prefix: "[Turnier] "
-    help: "§6/turnier§f bzw. §6/tournament§f: §ejoin§7, §eleave§7, §estatus§7, §ebracket§7, §espectate"
-    admin-help: "§cAdmin: §f/tournament admin open§7, §fstart§7, §fstop§7, §fstatus"
+    help: "§6/tournament§f: §ejoin§7, §eleave§7, §estatus§7, §ebracket§7, §ekits§7, §ekit <name>§7, §espectate"
+    admin-help: "§cAdmin: §f/tournament admin open|start|stop|status§7, §fkit <list|create|delete|add|clear|show>§7, §fconfig <get|set|reload>"
     player-only: "§cDieser Befehl kann nur von einem Spieler verwendet werden."
     disabled: "§cDas PvP-Turnier ist deaktiviert."
     registration-open: "§6Das PvP-Turnier ist geöffnet! §fAnmeldung: §e{seconds}s§f | mindestens §e{min}§f, maximal §e{max}§f Teilnehmer."
