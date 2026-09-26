@@ -362,10 +362,10 @@ messages:
       error: "§cError setting team color: "
     team-not-found: "§cTeam '"
   elimination:
-    prefix: "[Elemination]: "
-    broadcast-message: "Team wurde eliminiert: " # Format: prefix + broadcast-message + Team Name
+    prefix: "[Elimination]: "
+    broadcast-message: "Team wurde eliminiert: "
     welcome-message: "Dein Team wurde leider eliminiert"
-    command-usage: ""
+    command-usage: "§eElimination-Befehle:\n§7/elimination help §8- §fZeigt diese Hilfe\n§7/elimination list §8- §fListet eliminierte Teams\n§7/elimination admin eliminate <Team> §8- §fEliminiert ein Team\n§7/elimination admin deeliminate <Team> §8- §fHebt eine Eliminierung auf"
   monsters:
     prefix: "[Monster]: "
     token-name: "§6Token-Monster"
