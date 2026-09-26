@@ -26,12 +26,12 @@ public class ManagementCommand extends Command {
     private final DeathManager deathManager;
     private final TeamEnderChestManager teamEnderChestManager;
 
-    public ManagementCommand(SiedlerPlugin plugin) {
+    public ManagementCommand(SiedlerPlugin plugin, ModerationManager moderationManager) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
         this.plugin = plugin;
         this.messageManager = new MessageManager();
         this.prefix = messageManager.getPrefix("essentials");
-        this.moderationManager = new ModerationManager(plugin);
+        this.moderationManager = moderationManager == null ? new ModerationManager(plugin) : moderationManager;
         this.teamManager = new TeamManager(plugin);
         this.deathManager = new DeathManager(plugin);
         this.teamEnderChestManager = new TeamEnderChestManager(plugin);
