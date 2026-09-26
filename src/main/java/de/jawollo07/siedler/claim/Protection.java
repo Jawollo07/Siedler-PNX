@@ -60,7 +60,7 @@ public class Protection implements Listener {
             double blockY = block.getY();
             double blockZ = block.getZ();
             String claimId = utils.get_claimID(player);
-            if (claimId != null && !claimId.isEmpty() && utils.isBlockInClaim(blockX, blockY, blockZ)) {
+            if (claimId != null && !claimId.isEmpty() && utils.isBlockInClaim(player.getLevel().getName(), blockX, blockY, blockZ)) {
                 String teamId = utils.getClaimTeam(claimId);
                 if (teamId != null && !teamId.isBlank()) {
                     elimination.eliminationBlockModified(teamId);
