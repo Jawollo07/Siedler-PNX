@@ -45,23 +45,24 @@ public class Elimination extends Command {
             })
         );
 
-        tree.getRoot().then(
-            RouteNode.literal("eliminate")
-                .permission("siedler.command.elimination.eliminate", messageManager.getCommandMessage("no-permission"))
+        RouteNode admin = RouteNode.literal("admin")
+                .permission("siedler.admin", messageManager.getCommandMessage("no-permission"));
+
+        admin.then(RouteNode.literal("help").exec(context -> {
+            sendHelpMessage(context.getSender());
+            return CommandResult.success();
+        }));
+        admin.then(RouteNode.literal("eliminate")
                 .then(RouteNode.argument("team", new StringNode()).exec(context -> {
                     setTeamEliminated(context.getArg("team"), context.getSender());
                     return CommandResult.success();
-                }))
-        );
-
-        tree.getRoot().then(
-            RouteNode.literal("deeliminate")
-                .permission("siedler.command.elimination.deeliminate", messageManager.getCommandMessage("no-permission"))
+                })));
+        admin.then(RouteNode.literal("deeliminate")
                 .then(RouteNode.argument("team", new StringNode()).exec(context -> {
                     setTeamDeEliminated(context.getArg("team"), context.getSender());
                     return CommandResult.success();
-                }))
-        );
+                })));
+        tree.getRoot().then(admin);
 
         tree.getRoot().then(
             RouteNode.literal("list")
@@ -75,11 +76,7 @@ public class Elimination extends Command {
 
     public void sendHelpMessage(CommandSender sender) {
         if (sender == null) return;
-        sender.sendMessage(prefix + "§eElimination-Befehle:");
-        sender.sendMessage("§7/elimination help §8- §fZeigt diese Hilfe");
-        sender.sendMessage("§7/elimination list §8- §fListet eliminierte Teams");
-        sender.sendMessage("§7/elimination eliminate <Team> §8- §fEliminiert ein Team");
-        sender.sendMessage("§7/elimination deeliminate <Team> §8- §fHebt eine Eliminierung auf");
+        sender.sendMessage(prefix + messageManager.getMessage("elimination", "command-usage"));
     }
 
     public void listEleminations(CommandSender sender) {
@@ -110,7 +107,7 @@ public class Elimination extends Command {
     public void teamEliminated(String teamId) {
         String teamName = teamManager.getTeamByID(teamId);
         if (teamName == null || teamName.isBlank()) teamName = teamId;
-        String message = messageManager.getMessage("elimination", "broadcast") + teamName;
+        String message = messageManager.getMessage("elimination", "broadcast-message") + teamName;
         Server.getInstance().broadcast(message, "siedler.broadcast.elimination");
     }
 
@@ -220,7 +217,7 @@ public class Elimination extends Command {
 
     public void playerIsEliminated(Player player) {
         if (player == null) return;
-        player.sendMessage(messageManager.getMessage("elimination", "welcome-messsage"));
+        player.sendMessage(messageManager.getMessage("elimination", "welcome-message"));
         player.setGamemode(3);
     }
 }
