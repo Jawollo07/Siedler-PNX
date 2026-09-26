@@ -72,6 +72,7 @@ public final class ClaimCommand extends Command {
 
         tree.getRoot().then(
                 RouteNode.literal("admin")
+                        .permission(ADMIN_PERMISSION, messageManager.getCommandMessage("no-permission"))
                         .then(
                                 RouteNode.literal("help")
                                         .exec(context -> {
@@ -97,7 +98,7 @@ public final class ClaimCommand extends Command {
 
                                             return claim != null
                                                     ? CommandResult.success()
-                                                    : CommandResult.fail("Claim konnte nicht erstellt werden");
+                                                    : CommandResult.fail(messageManager.getMessage("claim", "claim-in-other-claim"));
                                         }))
                         )
                         .then(
@@ -113,7 +114,7 @@ public final class ClaimCommand extends Command {
 
                                             return claimManager.deleteClaim(player)
                                                     ? CommandResult.success()
-                                                    : CommandResult.fail("Claim konnte nicht gelöscht werden");
+                                                    : CommandResult.fail(messageManager.getMessage("claim", "claim-in-other-claim"));
                                         })
                         )
         );
