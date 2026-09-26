@@ -206,6 +206,8 @@ antiafk:
 # All coordinates are configurable. Worlds must be loaded by the server.
 tournament:
   enabled: true
+  # single_elimination | double_elimination | round_robin
+  format: single_elimination
   registration:
     duration-seconds: 120
     min-participants: 2
@@ -217,6 +219,10 @@ tournament:
     # Prevents participants from fighting anyone except their current bracket opponent.
     cancel-player-damage-outside-matches: true
   match:
+    # Best-of series: 1, 3, 5, ...
+    best-of: 1
+    # 0 disables the match time limit.
+    timeout-seconds: 0
     # Prevents normal inventory/XP loss when a tournament participant dies.
     keep-inventory: true
   rewards:
