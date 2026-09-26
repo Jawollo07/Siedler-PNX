@@ -40,7 +40,7 @@ public final class TournamentCommand extends Command {
                                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.player-only"));
                                 return CommandResult.fail();
                             }
-                            manager.selectKit(p, ctx.getArg("kit"));
+                            manager.selectKit(p, String.valueOf(ctx.getArg("kit")));
                             return CommandResult.success();
                         })));
 
@@ -64,7 +64,7 @@ public final class TournamentCommand extends Command {
             return kitResult(ctx.getSender(), manager.adminKitCreate(first(ctx.getArg("args"))), "kit-created", "kit-create-failed", first(ctx.getArg("args")));
         })));
         kitAdmin.then(RouteNode.literal("delete").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String kit = ctx.getArg("args").trim();
+            String kit = String.valueOf(ctx.getArg("args")).trim();
             return kitResult(ctx.getSender(), manager.adminKitDelete(kit), "kit-deleted", "kit-delete-failed", kit);
         })));
         kitAdmin.then(RouteNode.literal("clear").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
@@ -90,7 +90,7 @@ public final class TournamentCommand extends Command {
 
         RouteNode configAdmin = RouteNode.literal("config");
         configAdmin.then(RouteNode.literal("get").then(RouteNode.argument("path", new MessageStringNode()).exec(ctx -> {
-            String path = ctx.getArg("path").trim();
+            String path = String.valueOf(ctx.getArg("path")).trim();
             Object value = manager.adminConfigGet(path);
             ctx.getSender().sendMessage(messages.getMessage("messages.tournament.config-value")
                     .replace("{path}", path).replace("{value}", String.valueOf(value)));
