@@ -19,13 +19,16 @@ public class PlayerListener implements Listener{
     private final ConfigManager configManager;
     private final Config config;
     private final PermanentEffect permanentEffect;
-    public PlayerListener() {
-        this.plugin = SiedlerPlugin.getInstance();
+    private final ModerationManager moderationManager;
+    public PlayerListener(SiedlerPlugin plugin, ModerationManager moderationManager) {
+        this.plugin = plugin;
+        if (this.plugin == null) {
+            throw new IllegalArgumentException("Plugin darf nicht null sein");
+        }
+        this.moderationManager = moderationManager == null ? new ModerationManager(this.plugin) : moderationManager;
         this.messageManager = new MessageManager();
         this.configManager = new ConfigManager();
-        if (this.plugin != null) {
-            this.configManager.initialize(this.plugin.getDataFolder());
-        }
+        this.configManager.initialize(this.plugin.getDataFolder());
         this.config = this.configManager.getConfig();
         this.elimination = new Elimination(plugin);
         this.permanentEffect = new PermanentEffect();
@@ -34,9 +37,15 @@ public class PlayerListener implements Listener{
     public void onJoin(PlayerJoinEvent event) throws SQLException {
         Player player = event.getPlayer();
         player.sendMessage(messageManager.getMessage("essentials", "welcome-message"));
-        if((elimination.isPlayerEliminated(player))) {
-            elimination.playerIsEliminated(player);
+        if (moderationManager.enforce(player)) {
+            return;
         }
+
+        if (elimination.isPlayerEliminated(player)) {
+            elimination.playerIsEliminated(player);
+            return;
+        }
+
         permanentEffect.give_weakness(player);
         player.setGamemode(0);
     }
