@@ -37,6 +37,7 @@ public final class TournamentManager implements Listener {
     private UUID winner;
     private final Map<UUID,Integer> matchWins = new ConcurrentHashMap<>();
     private final Set<String> usedArenas = ConcurrentHashMap.newKeySet();
+    private final Map<UUID,int[]> matchScores = new ConcurrentHashMap<>();
 
     public TournamentManager(SiedlerPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin);
@@ -51,7 +52,7 @@ public final class TournamentManager implements Listener {
 
     public synchronized boolean openRegistration() {
         if (!enabled() || state == State.REGISTRATION || state == State.COUNTDOWN || state == State.RUNNING) return false;
-        participants.clear(); matches.clear(); spectators.clear(); usedArenas.clear(); wins.clear(); roundWinners.clear(); selectedKits.clear();
+        participants.clear(); matches.clear(); matchScores.clear(); spectators.clear(); usedArenas.clear(); wins.clear(); roundWinners.clear(); selectedKits.clear();
         pendingMatches = 0; round = 0; winner = null; state = State.REGISTRATION;
         broadcast(msg("registration-open")
                 .replace("{seconds}", String.valueOf(config.getInt("tournament.registration.duration-seconds", 120)))
@@ -137,6 +138,7 @@ public final class TournamentManager implements Listener {
             UUID b = players.get(i + 1);
             Match match = new Match(UUID.randomUUID(), a, b, round);
             matches.put(match.id(), match);
+            matchScores.put(match.id(), new int[]{0,0});
             pendingMatches++;
             prepareMatch(match);
         }
@@ -166,6 +168,14 @@ public final class TournamentManager implements Listener {
                 broadcast(msg("fight").replace("{a}", name(match.a())).replace("{b}", name(match.b())));
             }
         }, delay * 20);
+        int timeout=Math.max(0,config.getInt("tournament.match.timeout-seconds",0));
+        if(timeout>0) plugin.getServer().getScheduler().scheduleDelayedTask(() -> {
+            if(!matches.containsKey(match.id())) return;
+            int[] score=matchScores.getOrDefault(match.id(),new int[]{0,0});
+            UUID win=score[0]>=score[1]?match.a():match.b();
+            resolveMatch(match,win);
+            broadcast(msg("match-timeout").replace("{winner}",name(win)));
+        },timeout*20);
     }
 
     @EventHandler
@@ -193,7 +203,21 @@ public final class TournamentManager implements Listener {
             event.setKeepInventory(true);
         }
         UUID win = match.a().equals(loser.getUniqueId()) ? match.b() : match.a();
-        resolveMatch(match, win);
+        int[] score = matchScores.computeIfAbsent(match.id(), k -> new int[]{0,0});
+        int winnerIndex = match.a().equals(win) ? 0 : 1;
+        score[winnerIndex]++;
+        int needed = Math.max(1, config.getInt("tournament.match.best-of", 1) / 2 + 1);
+        if (score[winnerIndex] >= needed) {
+            resolveMatch(match, win);
+        } else {
+            plugin.getServer().getScheduler().scheduleDelayedTask(() -> {
+                Player pa=find(match.a()), pb=find(match.b());
+                if (pa!=null) { applyKit(pa); teleportMatchPlayer(pa, match, true); }
+                if (pb!=null) { applyKit(pb); teleportMatchPlayer(pb, match, false); }
+                broadcast(msg("match-point").replace("{a}",name(match.a())).replace("{b}",name(match.b()))
+                    .replace("{scoreA}",String.valueOf(score[0])).replace("{scoreB}",String.valueOf(score[1])));
+            }, 20); 
+        }
     }
 
     @EventHandler
@@ -207,6 +231,7 @@ public final class TournamentManager implements Listener {
     private synchronized void resolveMatch(Match match, UUID win) {
         if (!matches.remove(match.id(), match)) return;
         UUID loser = match.a().equals(win) ? match.b() : match.a();
+        matchScores.remove(match.id());
         roundWinners.add(win);
         wins.merge(win, 1, Integer::sum);
         broadcast(msg("match-finished").replace("{winner}", name(win)).replace("{loser}", name(loser))
@@ -310,6 +335,12 @@ public final class TournamentManager implements Listener {
     public boolean adminArenaCreate(String n){return arenas.create(n);}
     public boolean adminArenaDelete(String n){return arenas.delete(n);}
     public boolean adminArenaSet(String arena,String key,String value){return arenas.set("tournament.arenas."+arena+"."+key,value)&&arenas.save();}
+
+    private void teleportMatchPlayer(Player player, Match match, boolean first) {
+        TournamentArenaManager.Arena arena=chooseArena();
+        if(arena!=null) teleport(player,arena.world(),first?arena.ax():arena.bx(),first?arena.ay():arena.by(),first?arena.az():arena.bz());
+        else teleport(player, first?"spawn-a":"spawn-b");
+    }
 
     private void applyKit(Player player) {
         String kit = selectedKits.getOrDefault(player.getUniqueId(), kits.getDefaultKit());
