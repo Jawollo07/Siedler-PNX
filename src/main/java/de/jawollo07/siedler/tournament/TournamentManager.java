@@ -134,7 +134,7 @@ public final class TournamentManager implements Listener {
     }
 
     private synchronized void startRoundRobinRound() {
-        roundWinners.clear(); pendingMatches=0; round++;
+        roundWinners.clear(); pendingMatches=0; round++; rrRound++;
         List<UUID> list=new ArrayList<>(rrOrder);
         if((list.size()&1)==1) list.add(null);
         int n=list.size();
