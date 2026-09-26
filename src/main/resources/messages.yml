@@ -221,7 +221,7 @@ messages:
       "4": "§e/claim admin delete §8- §7Löscht den Claim an deiner Position."
       "5": "§e/claim help §8- §7Zeigt diese Hilfe an."
     command-usage:
-      set: "§cVerwendung: §f/claim set <team>"
+      set: "§cVerwendung: §f/claim admin set <team>"
       info: "§cVerwendung: §f/claim info"
       delete: "§cVerwendung: §f/claim delete"
     protection:
