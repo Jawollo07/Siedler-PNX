@@ -37,6 +37,8 @@ public final class TournamentManager implements Listener {
     private UUID winner;
     private final Map<UUID,Integer> matchWins = new ConcurrentHashMap<>();
     private final Map<UUID,Integer> losses = new ConcurrentHashMap<>();
+    private final List<UUID> rrOrder = new ArrayList<>();
+    private int rrRound;
     private final Set<String> usedArenas = ConcurrentHashMap.newKeySet();
     private final Map<UUID,int[]> matchScores = new ConcurrentHashMap<>();
     private final Map<UUID,TournamentArenaManager.Arena> matchArenas = new ConcurrentHashMap<>();
@@ -128,12 +130,22 @@ public final class TournamentManager implements Listener {
     }
 
     private synchronized void startRoundRobin(List<UUID> players) {
-        roundWinners.clear(); pendingMatches=0;
-        for(int i=0;i<players.size();i++) for(int j=i+1;j<players.size();j++){
-            Match m=new Match(UUID.randomUUID(),players.get(i),players.get(j),round);
+        rrOrder.clear(); rrOrder.addAll(players); rrRound=0; startRoundRobinRound();
+    }
+
+    private synchronized void startRoundRobinRound() {
+        roundWinners.clear(); pendingMatches=0; round++;
+        List<UUID> list=new ArrayList<>(rrOrder);
+        if((list.size()&1)==1) list.add(null);
+        int n=list.size();
+        for(int i=0;i<n/2;i++){
+            UUID a=list.get(i), b=list.get(n-1-i);
+            if(a==null||b==null){ if(a!=null) wins.merge(a,1,Integer::sum); else if(b!=null) wins.merge(b,1,Integer::sum); continue; }
+            Match m=new Match(UUID.randomUUID(),a,b,round);
             matches.put(m.id(),m); matchScores.put(m.id(),new int[]{0,0}); pendingMatches++; prepareMatch(m);
         }
-        if(pendingMatches==0) finish(players.get(0));
+        if(n>2){ UUID last=rrOrder.remove(rrOrder.size()-1); rrOrder.add(1,last); }
+        if(pendingMatches==0) finish(rrOrder.get(0));
     }
 
     private synchronized void startRound(List<UUID> players) {
@@ -255,7 +267,9 @@ public final class TournamentManager implements Listener {
                 .replace("{round}", String.valueOf(match.round())));
         pendingMatches--;
         Player loserPlayer = find(loser);
-        if (loserPlayer != null) {
+        boolean eliminated = !"round_robin".equalsIgnoreCase(format())
+                && !("double_elimination".equalsIgnoreCase(format()) && losses.getOrDefault(loser,0) < 2);
+        if (loserPlayer != null && eliminated) {
             spectators.add(loser);
             plugin.getServer().getScheduler().scheduleDelayedTask(() -> {
                 loserPlayer.setGamemode(3); teleport(loserPlayer, "spectator");
@@ -269,8 +283,11 @@ public final class TournamentManager implements Listener {
     private synchronized void advanceRound() {
         if (state != State.RUNNING) return;
         if ("round_robin".equalsIgnoreCase(format())) {
-            UUID best=null; int score=-1; for(UUID u:participants.keySet()){int s=wins.getOrDefault(u,0); if(s>score){score=s;best=u;}}
-            if(best!=null) finish(best); return;
+            if (rrRound >= Math.max(1, participants.size()-1)) {
+                UUID best=null; int score=-1; for(UUID u:participants.keySet()){int s=wins.getOrDefault(u,0); if(s>score){score=s;best=u;}}
+                if(best!=null) finish(best); return;
+            }
+            startRoundRobinRound(); return;
         }
         List<UUID> next = new ArrayList<>(roundWinners);
         roundWinners.clear();
