@@ -274,6 +274,59 @@ Die Standardkonfiguration enthält unter anderem Händler für:
 
 Die Händler verwenden **das gemeinsame Teamkonto** als Währung. Beim Kauf werden keine Emeralds aus dem Spielerinventar verbraucht. Der in der Trade-Konfiguration angegebene `buy.count` ist der Preis in der Teamwährung. Eine optionale `buy2`-Angabe kann weiterhin ein zusätzlich benötigtes Item aus dem Spielerinventar verlangen.
 
+## 14a. PvP-Turniere
+
+Siedler 2.0 besitzt ein PvP-Turniersystem. Spieler können sich für ein geöffnetes Turnier anmelden und ihren Kampfstatus verfolgen.
+
+### Befehle
+```
+/tournament help
+/tournament join
+/tournament leave
+/tournament status
+/tournament bracket
+/tournament kits
+/tournament kit <Name>
+/tournament spectate
+```
+
+### Registrierung
+Mit `/tournament join` meldet sich ein Spieler während der Registrierungsphase an. Mindest- und Maximalteilnehmerzahl sind serverseitig konfiguriert. Mit `/tournament leave` kann die Anmeldung vor dem Start verlassen werden.
+
+### Turnierformate
+- Single Elimination: eine Niederlage beendet die Teilnahme.
+- Double Elimination: zwei Niederlagen beenden die Teilnahme.
+- Round Robin: jeder Teilnehmer spielt gegen jeden.
+
+### Mehrere Matches
+Ein Turnier kann mehrere Matches gleichzeitig durchführen. Spieler werden auf verfügbare Turnier-Arenen verteilt.
+
+### Best-of
+Eine Paarung kann aus mehreren Spielen bestehen. Bei Best-of-3 gewinnt, wer zuerst zwei Spiele gewinnt. Best-of-1 und Best-of-5 sind ebenfalls möglich.
+
+### Kits
+Mit `/tournament kits` werden verfügbare Kits angezeigt. Während der Registrierung kann mit `/tournament kit <Name>` ein Kit gewählt werden.
+
+### Matchablauf
+1. Registrierung
+2. Start-Countdown
+3. Paarung
+4. Arena-Teleport
+5. Match-Countdown
+6. Kampf
+7. Siegerermittlung
+8. nächste Runde bzw. nächstes Serienspiel
+9. Spectator für ausgeschiedene Spieler
+10. Finale und Rückkehr zur Lobby
+
+Ein Verlassen des Servers während eines laufenden Matches zählt als Niederlage.
+
+### Spectator
+Nach dem Ausscheiden kann `/tournament spectate` verwendet werden, sofern das Turnier Spectating zulässt.
+
+### Fairness
+Außerhalb der eigenen aktiven Match-Paarung wird PvP serverseitig geschützt.
+
 ## 15. Anti-AFK
 
 Das Anti-AFK-System erkennt längere Inaktivität anhand tatsächlicher Positionsbewegung.
