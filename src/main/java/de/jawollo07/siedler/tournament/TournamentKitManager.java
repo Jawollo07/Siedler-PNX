@@ -46,11 +46,10 @@ public final class TournamentKitManager {
         Object kits = get("tournament.kits");
         if (!(kits instanceof Map<?, ?> map)) return false;
         try {
-            Method remove = map.getClass().getMethod("remove", Object.class);
-            remove.invoke(map, kit);
+            map.remove(kit);
             return save();
         } catch (Exception ignored) {
-            return set("tournament.kits." + kit, null) && save();
+            return false;
         }
     }
 
@@ -76,7 +75,7 @@ public final class TournamentKitManager {
 
     public boolean apply(Player player, String kit) {
         if (kit == null || kit.isBlank() || !kitExists(kit)) return false;
-        execute("clear {player}");
+        execute("clear " + player.getName());
         for (String command : getCommands(kit)) {
             if (!command.isBlank()) execute(command.replace("{player}", player.getName()));
         }
