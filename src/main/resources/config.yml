@@ -223,6 +223,23 @@ tournament:
     # Optional console command. Use {player} for the winner's name.
     # Example: "give {player} diamond 8"
     command: ""
+  # Multiple arenas can run matches in parallel. Each match reserves one arena.
+  arenas:
+    arena1:
+      world: overworld
+      spawn-a: {x: 100, y: 100, z: 100}
+      spawn-b: {x: 120, y: 100, z: 100}
+      spectator: {x: 110, y: 110, z: 120}
+    arena2:
+      world: overworld
+      spawn-a: {x: 200, y: 100, z: 100}
+      spawn-b: {x: 220, y: 100, z: 100}
+      spectator: {x: 210, y: 110, z: 120}
+    arena3:
+      world: overworld
+      spawn-a: {x: 300, y: 100, z: 100}
+      spawn-b: {x: 320, y: 100, z: 100}
+      spectator: {x: 310, y: 110, z: 120}
   lobby:
     world: overworld
     x: 0
