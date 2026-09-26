@@ -84,9 +84,9 @@ public final class TournamentKitManager {
 
     private void execute(String command) {
         try {
-            plugin.getServer().dispatchCommand(
+            plugin.getServer().getCommandMap().executeCommand(
                     plugin.getServer().getConsoleSender(),
-                    command.replace("{player}", "").trim()
+                    command.trim()
             );
         } catch (Exception e) {
             plugin.getLogger().warning("Tournament kit command failed: " + command + " (" + e.getMessage() + ")");
