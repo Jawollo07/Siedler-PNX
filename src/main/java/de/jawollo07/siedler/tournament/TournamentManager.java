@@ -38,6 +38,7 @@ public final class TournamentManager implements Listener {
     private final Map<UUID,Integer> matchWins = new ConcurrentHashMap<>();
     private final Set<String> usedArenas = ConcurrentHashMap.newKeySet();
     private final Map<UUID,int[]> matchScores = new ConcurrentHashMap<>();
+    private final Map<UUID,TournamentArenaManager.Arena> matchArenas = new ConcurrentHashMap<>();
 
     public TournamentManager(SiedlerPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin);
@@ -155,6 +156,7 @@ public final class TournamentManager implements Listener {
         TournamentArenaManager.Arena arena = chooseArena();
         if (arena != null) {
             usedArenas.add(arena.name());
+            matchArenas.put(match.id(), arena);
             teleport(a, arena.world(), arena.ax(), arena.ay(), arena.az());
             teleport(b, arena.world(), arena.bx(), arena.by(), arena.bz());
         } else {
@@ -232,6 +234,7 @@ public final class TournamentManager implements Listener {
         if (!matches.remove(match.id(), match)) return;
         UUID loser = match.a().equals(win) ? match.b() : match.a();
         matchScores.remove(match.id());
+        matchArenas.remove(match.id());
         roundWinners.add(win);
         wins.merge(win, 1, Integer::sum);
         broadcast(msg("match-finished").replace("{winner}", name(win)).replace("{loser}", name(loser))
@@ -337,7 +340,7 @@ public final class TournamentManager implements Listener {
     public boolean adminArenaSet(String arena,String key,String value){return arenas.set("tournament.arenas."+arena+"."+key,value)&&arenas.save();}
 
     private void teleportMatchPlayer(Player player, Match match, boolean first) {
-        TournamentArenaManager.Arena arena=chooseArena();
+        TournamentArenaManager.Arena arena=matchArenas.get(match.id());
         if(arena!=null) teleport(player,arena.world(),first?arena.ax():arena.bx(),first?arena.ay():arena.by(),first?arena.az():arena.bz());
         else teleport(player, first?"spawn-a":"spawn-b");
     }
