@@ -216,9 +216,9 @@ messages:
     prefix: "[Claim]: "
     help:
       "1": "§6§lSiedler §8» §fClaim-Befehle"
-      "2": "§e/claim set <team> §8- §7Erstellt einen Claim für ein Team."
+      "2": "§e/claim admin set <team> §8- §7Erstellt einen Claim für ein Team."
       "3": "§e/claim info §8- §7Zeigt Informationen zum Claim an deiner Position."
-      "4": "§e/claim delete §8- §7Löscht den Claim an deiner Position."
+      "4": "§e/claim admin delete §8- §7Löscht den Claim an deiner Position."
       "5": "§e/claim help §8- §7Zeigt diese Hilfe an."
     command-usage:
       set: "§cVerwendung: §f/claim set <team>"
