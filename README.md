@@ -230,7 +230,7 @@ Requires **JDK 21** and **Maven**.
 mvn clean package
 ```
 
-The plugin JAR is produced under `target/`. The current Maven project version is **`7.0.0-SNAPSHOT`**.
+The plugin JAR is produced under `target/`. The current Maven project version is **`8.0.0`**.
 
 ## Migration reference
 
