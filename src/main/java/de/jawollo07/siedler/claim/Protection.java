@@ -39,10 +39,10 @@ public class Protection implements Listener {
         this.interactionBlacklist = Set.copyOf(
             config.getStringList("claims.protection.interaction-blacklist")
         );
-        this.eliminationBlock = config.getString("claims.elimination.block");
+        this.eliminationBlock = config.getString("elimination.block");
         this.elimination = new Elimination(plugin);
         this.messageManager = new MessageManager();
-        this.prefix = messageManager.getPrefix("claim.protection");
+        this.prefix = messageManager.getPrefix("claim");
     }
 
     @EventHandler
