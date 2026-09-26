@@ -83,7 +83,7 @@ public class Elimination extends Command {
         if (sender == null) return;
 
         String sql = "SELECT id FROM teams WHERE eliminated = 1 ORDER BY name";
-        StringBuilder message = new StringBuilder(prefix).append("Eliminierte Teams:");
+        StringBuilder message = new StringBuilder(prefix).append(messageManager.getMessage("elimination", "list-header"));
         boolean found = false;
 
         try (PreparedStatement statement = storageManager.getConnection().prepareStatement(sql);
@@ -96,11 +96,11 @@ public class Elimination extends Command {
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning("Could not list eliminated teams: " + exception.getMessage());
-            sender.sendMessage(prefix + "Die eliminierten Teams konnten nicht geladen werden.");
+            sender.sendMessage(prefix + messageManager.getMessage("elimination", "list-error"));
             return;
         }
 
-        if (!found) message.append("\nKeine Teams sind eliminiert.");
+        if (!found) message.append("\n").append(messageManager.getMessage("elimination", "list-empty"));
         sender.sendMessage(message.toString());
     }
 
@@ -146,7 +146,7 @@ public class Elimination extends Command {
         if (team == null) return;
 
         if (team.eliminated() == 1) {
-            if (sender != null) sender.sendMessage(prefix + "Dieses Team ist bereits eliminiert.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "already-eliminated"));
             return;
         }
 
@@ -155,11 +155,11 @@ public class Elimination extends Command {
             statement.setString(1, team.id());
             if (statement.executeUpdate() > 0) {
                 teamEliminated(team.id());
-                if (sender != null) sender.sendMessage(prefix + "Team " + team.name() + " wurde eliminiert.");
+                if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "eliminated").replace("{team}", team.name()));
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning("Could not eliminate team " + team.id() + ": " + exception.getMessage());
-            if (sender != null) sender.sendMessage(prefix + "Das Team konnte nicht eliminiert werden.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "eliminate-error"));
         }
     }
 
@@ -172,7 +172,7 @@ public class Elimination extends Command {
         if (team == null) return;
 
         if (team.eliminated() == 0) {
-            if (sender != null) sender.sendMessage(prefix + "Dieses Team ist nicht eliminiert.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "not-eliminated"));
             return;
         }
 
@@ -180,17 +180,17 @@ public class Elimination extends Command {
         try (PreparedStatement statement = storageManager.getConnection().prepareStatement(sql)) {
             statement.setString(1, team.id());
             if (statement.executeUpdate() > 0 && sender != null) {
-                sender.sendMessage(prefix + "Die Eliminierung von Team " + team.name() + " wurde aufgehoben.");
+                sender.sendMessage(prefix + messageManager.getMessage("elimination", "deeliminated").replace("{team}", team.name()));
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning("Could not restore team " + team.id() + ": " + exception.getMessage());
-            if (sender != null) sender.sendMessage(prefix + "Die Eliminierung konnte nicht aufgehoben werden.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "deeliminate-error"));
         }
     }
 
     private Team resolveTeam(String input, CommandSender sender) {
         if (input == null || input.isBlank()) {
-            if (sender != null) sender.sendMessage(prefix + "Bitte gib einen Teamnamen an.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "team-required"));
             return null;
         }
 
@@ -198,7 +198,7 @@ public class Elimination extends Command {
             return teamManager.getTeamByName(input.trim());
         } catch (SQLException exception) {
             plugin.getLogger().warning("Could not find team '" + input + "': " + exception.getMessage());
-            if (sender != null) sender.sendMessage(prefix + "Das Team '" + input + "' wurde nicht gefunden.");
+            if (sender != null) sender.sendMessage(prefix + messageManager.getMessage("elimination", "team-not-found").replace("{team}", input));
             return null;
         }
     }
