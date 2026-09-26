@@ -16,6 +16,7 @@ import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
 import de.jawollo07.siedler.essentials.ManagementCommand;
+import de.jawollo07.siedler.essentials.ModerationManager;
 import de.jawollo07.siedler.essentials.SetHomeCommand;
 import de.jawollo07.siedler.essentials.HomeCommand;
 import de.jawollo07.siedler.essentials.HomesCommand;
@@ -78,6 +79,7 @@ public final class SiedlerPlugin extends PluginBase {
     private MonsterManager monsterManager;
     private MarketManager marketManager;
     private TraderManager traderManager;
+    private ModerationManager moderationManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -123,6 +125,7 @@ public final class SiedlerPlugin extends PluginBase {
         monsterManager = new MonsterManager(this);
         marketManager = new MarketManager(this);
         traderManager = new TraderManager(this, marketManager);
+        moderationManager = new ModerationManager(this);
 
         // Registration
         registerCommands();
@@ -153,7 +156,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new ClaimCommand(this));
         commandManager.register(new Elimination(this));
         commandManager.register(new EcoCommand(this));
-        commandManager.register(new ManagementCommand(this));
+        commandManager.register(new ManagementCommand(this, moderationManager));
         commandManager.register(new SetHomeCommand(this));
         commandManager.register(new HomeCommand(this));
         commandManager.register(new HomesCommand(this));
@@ -204,22 +207,26 @@ public final class SiedlerPlugin extends PluginBase {
         getLogger().info("All Tasks registered");
     }
     private void registerListener() {
+        registerListenerSafe(new ChatListener(storage), "ChatListener");
+        registerListenerSafe(new PlayerListener(this, moderationManager), "PlayerListener");
+        registerListenerSafe(new DeathListener(deathManager), "DeathListener");
+        registerListenerSafe(new InventorySnapshotListener(inventorySnapshotManager), "InventorySnapshotListener");
+        registerListenerSafe(new StatsListener(statsManager), "StatsListener");
+        registerListenerSafe(antiAfkManager, "AntiAfkManager");
+        registerListenerSafe(tokenManager, "TokenManager");
+        registerListenerSafe(raidManager, "RaidManager");
+        registerListenerSafe(monsterManager, "MonsterManager");
+        registerListenerSafe(marketManager, "MarketManager");
+        registerListenerSafe(traderManager, "TraderManager");
+        getLogger().info("Listener registration completed.");
+    }
+
+    private void registerListenerSafe(org.powernukkitx.event.Listener listener, String name) {
         try {
-            getServer().getPluginManager().registerEvents(new ChatListener(storage), this);
-            getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-            getServer().getPluginManager().registerEvents(new DeathListener(deathManager), this);
-            getServer().getPluginManager().registerEvents(new InventorySnapshotListener(inventorySnapshotManager), this);
-            getServer().getPluginManager().registerEvents(new StatsListener(statsManager), this);
-            getServer().getPluginManager().registerEvents(antiAfkManager, this);
-            getServer().getPluginManager().registerEvents(tokenManager, this);
-            getServer().getPluginManager().registerEvents(raidManager, this);
-            getServer().getPluginManager().registerEvents(monsterManager, this);
-            getServer().getPluginManager().registerEvents(marketManager, this);
-            getServer().getPluginManager().registerEvents(traderManager, this);
+            getServer().getPluginManager().registerEvents(listener, this);
         } catch (Exception e) {
-            this.getLogger().error("Error with Listener registration: " + e);
+            getLogger().error("Failed to register " + name + ": " + e);
         }
-        getLogger().info("All Listener registered");
     }
     @Override
     public void onDisable() {
@@ -277,6 +284,10 @@ public final class SiedlerPlugin extends PluginBase {
 
     public OutpostManager getOutpostManager() {
         return outpostManager;
+    }
+
+    public ModerationManager getModerationManager() {
+        return moderationManager;
     }
 
     public StorageManager getStorage() {
