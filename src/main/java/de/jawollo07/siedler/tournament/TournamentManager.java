@@ -36,6 +36,7 @@ public final class TournamentManager implements Listener {
     private State state = State.IDLE;
     private UUID winner;
     private final Map<UUID,Integer> matchWins = new ConcurrentHashMap<>();
+    private final Map<UUID,Integer> losses = new ConcurrentHashMap<>();
     private final Set<String> usedArenas = ConcurrentHashMap.newKeySet();
     private final Map<UUID,int[]> matchScores = new ConcurrentHashMap<>();
     private final Map<UUID,TournamentArenaManager.Arena> matchArenas = new ConcurrentHashMap<>();
@@ -71,6 +72,7 @@ public final class TournamentManager implements Listener {
         if (participants.size() >= maxParticipants()) { tell(player, "full"); return false; }
         participants.put(player.getUniqueId(), new Participant(player.getUniqueId(), player.getName()));
         wins.put(player.getUniqueId(), 0);
+        losses.put(player.getUniqueId(), 0);
         String defaultKit = kits.getDefaultKit();
         if (!defaultKit.isBlank()) selectedKits.put(player.getUniqueId(), defaultKit);
         broadcast(msg("joined").replace("{player}", player.getName())
@@ -86,6 +88,7 @@ public final class TournamentManager implements Listener {
             tell(player, "not-in-registration"); return false;
         }
         wins.remove(player.getUniqueId());
+        losses.remove(player.getUniqueId());
         selectedKits.remove(player.getUniqueId());
         tell(player, "left");
         return true;
@@ -121,7 +124,16 @@ public final class TournamentManager implements Listener {
         state = State.RUNNING;
         round = 1;
         broadcast(msg("tournament-started").replace("{players}", String.valueOf(seeded.size())));
-        startRound(seeded);
+        if ("round_robin".equalsIgnoreCase(format())) startRoundRobin(seeded); else startRound(seeded);
+    }
+
+    private synchronized void startRoundRobin(List<UUID> players) {
+        roundWinners.clear(); pendingMatches=0;
+        for(int i=0;i<players.size();i++) for(int j=i+1;j<players.size();j++){
+            Match m=new Match(UUID.randomUUID(),players.get(i),players.get(j),round);
+            matches.put(m.id(),m); matchScores.put(m.id(),new int[]{0,0}); pendingMatches++; prepareMatch(m);
+        }
+        if(pendingMatches==0) finish(players.get(0));
     }
 
     private synchronized void startRound(List<UUID> players) {
@@ -233,10 +245,12 @@ public final class TournamentManager implements Listener {
     private synchronized void resolveMatch(Match match, UUID win) {
         if (!matches.remove(match.id(), match)) return;
         UUID loser = match.a().equals(win) ? match.b() : match.a();
+        losses.merge(loser,1,Integer::sum);
         matchScores.remove(match.id());
         matchArenas.remove(match.id());
         roundWinners.add(win);
         wins.merge(win, 1, Integer::sum);
+        if ("double_elimination".equalsIgnoreCase(format()) && losses.getOrDefault(loser,0) < 2) roundWinners.add(loser);
         broadcast(msg("match-finished").replace("{winner}", name(win)).replace("{loser}", name(loser))
                 .replace("{round}", String.valueOf(match.round())));
         pendingMatches--;
@@ -254,6 +268,10 @@ public final class TournamentManager implements Listener {
 
     private synchronized void advanceRound() {
         if (state != State.RUNNING) return;
+        if ("round_robin".equalsIgnoreCase(format())) {
+            UUID best=null; int score=-1; for(UUID u:participants.keySet()){int s=wins.getOrDefault(u,0); if(s>score){score=s;best=u;}}
+            if(best!=null) finish(best); return;
+        }
         List<UUID> next = new ArrayList<>(roundWinners);
         roundWinners.clear();
         round++;
@@ -397,6 +415,7 @@ public final class TournamentManager implements Listener {
     private boolean enabled() { return config.getBoolean("tournament.enabled", true); }
     private int minParticipants() { return Math.max(2, config.getInt("tournament.registration.min-participants", 2)); }
     private int maxParticipants() { return Math.max(minParticipants(), config.getInt("tournament.registration.max-participants", 16)); }
+    private String format() { return config.getString("tournament.format", "single_elimination"); }
 
     private void teleportLocation(Player player, String worldName, double x, double y, double z) {
         try {
