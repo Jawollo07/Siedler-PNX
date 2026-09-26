@@ -384,3 +384,23 @@ market:
     automatic: true
     count-per-type: 1
 ```
+
+
+## PvP-Turniersystem
+
+Das PvP-Turnier ist vollständig über `config.yml` steuerbar.
+
+Spieler:
+- `/tournament join` – anmelden
+- `/tournament leave` – Anmeldung verlassen
+- `/tournament status` – Status anzeigen
+- `/tournament bracket` – aktuelles Bracket anzeigen
+- `/tournament spectate` – Turnier beobachten
+
+Administratoren mit `siedler.admin`:
+- `/tournament admin open` – Anmeldung öffnen
+- `/tournament admin start` – vorzeitig starten
+- `/tournament admin stop` – Turnier abbrechen
+- `/tournament admin status` – Admin-Status
+
+Der aktuelle Modus ist **Single Elimination** mit automatischen Freilosen bei ungeraden Teilnehmerzahlen. Arena-, Lobby- und Zuschauerpositionen, Welten, Teilnehmerlimits, Anmeldezeit, Countdowns, PvP-Schutz, KeepInventory und eine optionale Sieger-Belohnung per Console-Command werden in `config.yml` konfiguriert.
