@@ -98,7 +98,7 @@ public final class ClaimCommand extends Command {
 
                                             return claim != null
                                                     ? CommandResult.success()
-                                                    : CommandResult.fail(messageManager.getMessage("claim", "claim-in-other-claim"));
+                                                    : CommandResult.fail(messageManager.getMessage("claim", "create-failed"));
                                         }))
                         )
                         .then(
@@ -114,7 +114,7 @@ public final class ClaimCommand extends Command {
 
                                             return claimManager.deleteClaim(player)
                                                     ? CommandResult.success()
-                                                    : CommandResult.fail(messageManager.getMessage("claim", "claim-in-other-claim"));
+                                                    : CommandResult.fail(messageManager.getMessage("claim", "delete-failed"));
                                         })
                         )
         );
