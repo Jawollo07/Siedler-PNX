@@ -395,12 +395,25 @@ Spieler:
 - `/tournament leave` – Anmeldung verlassen
 - `/tournament status` – Status anzeigen
 - `/tournament bracket` – aktuelles Bracket anzeigen
+- `/tournament kits` – verfügbare PvP-Kits anzeigen
+- `/tournament kit <name>` – während der Anmeldung ein Kit auswählen
 - `/tournament spectate` – Turnier beobachten
 
 Administratoren mit `siedler.admin`:
 - `/tournament admin open` – Anmeldung öffnen
 - `/tournament admin start` – vorzeitig starten
 - `/tournament admin stop` – Turnier abbrechen
-- `/tournament admin status` – Admin-Status
+- `/tournament admin status` – Status anzeigen
+- `/tournament admin kit list` – Kits anzeigen
+- `/tournament admin kit create <name>` – Kit erstellen
+- `/tournament admin kit delete <name>` – Kit löschen
+- `/tournament admin kit add <name> <command>` – Kit-Befehl hinzufügen
+- `/tournament admin kit clear <name>` – Kit-Befehle löschen
+- `/tournament admin kit show <name>` – Kit-Befehle anzeigen
+- `/tournament admin config get <path>` – Turnierwert auslesen
+- `/tournament admin config set <path> <value>` – Turnierwert dauerhaft ändern
+- `/tournament admin config reload` – Konfiguration neu laden
 
-Der aktuelle Modus ist **Single Elimination** mit automatischen Freilosen bei ungeraden Teilnehmerzahlen. Arena-, Lobby- und Zuschauerpositionen, Welten, Teilnehmerlimits, Anmeldezeit, Countdowns, PvP-Schutz, KeepInventory und eine optionale Sieger-Belohnung per Console-Command werden in `config.yml` konfiguriert.
+Kits werden als Server-Commands in `config.yml` definiert. Vor jedem Match wird das Inventar geleert und anschließend das ausgewählte Kit angewendet. `{player}` wird in Kit-Befehlen durch den Spielernamen ersetzt. Dadurch können Items, Rüstung, Effekte und weitere Vanilla-/PNX-Commands ohne Codeänderung konfiguriert werden.
+
+Der aktuelle Modus ist **Single Elimination** mit automatischen Freilosen bei ungeraden Teilnehmerzahlen. Arena-, Lobby- und Zuschauerpositionen, Welten, Teilnehmerlimits, Anmeldezeit, Countdowns, PvP-Schutz, KeepInventory, Kits und eine optionale Sieger-Belohnung per Console-Command werden in `config.yml` konfiguriert. Über `/tournament admin config set ...` können Werte unter `tournament.*` auch während des laufenden Servers geändert und gespeichert werden.
