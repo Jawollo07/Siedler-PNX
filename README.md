@@ -416,4 +416,13 @@ Administratoren mit `siedler.admin`:
 
 Kits werden als Server-Commands in `config.yml` definiert. Vor jedem Match wird das Inventar geleert und anschließend das ausgewählte Kit angewendet. `{player}` wird in Kit-Befehlen durch den Spielernamen ersetzt. Dadurch können Items, Rüstung, Effekte und weitere Vanilla-/PNX-Commands ohne Codeänderung konfiguriert werden.
 
+
+Unterstützte Turnierformate:
+- **Single Elimination** – Verlierer scheiden aus.
+- **Double Elimination** – zwei Niederlagen bedeuten das Ausscheiden.
+- **Round Robin** – jeder Teilnehmer spielt gegen jeden.
+- Best-of-Serien können über `tournament.match.best-of` auf 1, 3, 5 usw. gesetzt werden.
+- `tournament.match.timeout-seconds` kann ein Match-Zeitlimit aktivieren.
+- Mehrere konfigurierte Arenen werden parallel für laufende Matches verwendet.
+
 Der aktuelle Modus ist **Single Elimination** mit automatischen Freilosen bei ungeraden Teilnehmerzahlen. Arena-, Lobby- und Zuschauerpositionen, Welten, Teilnehmerlimits, Anmeldezeit, Countdowns, PvP-Schutz, KeepInventory, Kits und eine optionale Sieger-Belohnung per Console-Command werden in `config.yml` konfiguriert. Über `/tournament admin config set ...` können Werte unter `tournament.*` auch während des laufenden Servers geändert und gespeichert werden.
