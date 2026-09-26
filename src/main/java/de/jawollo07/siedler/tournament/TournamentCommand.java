@@ -88,6 +88,25 @@ public final class TournamentCommand extends Command {
         })));
         admin.then(kitAdmin);
 
+        RouteNode arenaAdmin = RouteNode.literal("arena");
+        arenaAdmin.then(RouteNode.literal("list").exec(ctx -> { 
+            ctx.getSender().sendMessage(messages.getMessage("messages.tournament.arena-list-header"));
+            for(String n: manager.adminArenaNames()) ctx.getSender().sendMessage(messages.getMessage("messages.tournament.arena-list-entry").replace("{arena}",n));
+            return CommandResult.success();
+        }));
+        arenaAdmin.then(RouteNode.literal("create").then(RouteNode.argument("name", new MessageStringNode()).exec(ctx -> {
+            String n=String.valueOf(ctx.getArg("name")).trim(); return kitResult(ctx.getSender(),manager.adminArenaCreate(n),"arena-created","arena-create-failed",n);
+        })));
+        arenaAdmin.then(RouteNode.literal("delete").then(RouteNode.argument("name", new MessageStringNode()).exec(ctx -> {
+            String n=String.valueOf(ctx.getArg("name")).trim(); return kitResult(ctx.getSender(),manager.adminArenaDelete(n),"arena-deleted","arena-delete-failed",n);
+        })));
+        arenaAdmin.then(RouteNode.literal("set").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
+            String[] parts=splitFirst(String.valueOf(ctx.getArg("args"))); if(parts.length<2){ctx.getSender().sendMessage(messages.getMessage("messages.tournament.arena-set-usage"));return CommandResult.fail();}
+            String[] rest=splitFirst(parts[1]); if(rest.length<2){ctx.getSender().sendMessage(messages.getMessage("messages.tournament.arena-set-usage"));return CommandResult.fail();}
+            boolean ok=manager.adminArenaSet(parts[0],rest[0],rest[1]); ctx.getSender().sendMessage(messages.getMessage("messages.tournament."+(ok?"arena-set":"arena-set-failed")).replace("{arena}",parts[0]).replace("{path}",rest[0]).replace("{value}",rest[1])); return ok?CommandResult.success():CommandResult.fail();
+        })));
+        admin.then(arenaAdmin);
+
         RouteNode configAdmin = RouteNode.literal("config");
         configAdmin.then(RouteNode.literal("get").then(RouteNode.argument("path", new MessageStringNode()).exec(ctx -> {
             String path = String.valueOf(String.valueOf(ctx.getArg("path"))).trim();
