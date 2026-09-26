@@ -55,12 +55,12 @@ public class Protection implements Listener {
                 prefix + messageManager.getMessage("claim", "protection.block-breaking-not-allowed")
             );
         }
-        if (block.getId() == this.eliminationBlock) {
-            double block_x = block.getX();
-            double block_y = block.getY();
-            double block_z = block.getZ();
+        if (!event.isCancelled() && block.getId() == this.eliminationBlock) {
+            double blockX = block.getX();
+            double blockY = block.getY();
+            double blockZ = block.getZ();
             String claimId = utils.get_claimID(player);
-            if (claimId != null && !claimId.isEmpty() && utils.isBlockInClaim(block_x, block_y, block_z)) {
+            if (claimId != null && !claimId.isEmpty() && utils.isBlockInClaim(blockX, blockY, blockZ)) {
                 String teamId = utils.getClaimTeam(claimId);
                 if (teamId != null && !teamId.isBlank()) {
                     elimination.eliminationBlockModified(teamId);
