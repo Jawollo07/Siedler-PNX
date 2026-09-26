@@ -17,14 +17,12 @@ import org.powernukkitx.utils.Config;
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.core.ConfigManager;
 import de.jawollo07.siedler.core.MessageManager;
-import de.jawollo07.siedler.team.TeamManager;
 import de.jawollo07.siedler.team.Elimination;
 
 public class Protection implements Listener {
 
     private final String prefix;
     private final ConfigManager configManager = new ConfigManager();
-    private final TeamManager teamManager;
     private final Elimination elimination;
     private final MessageManager messageManager;
     private final Utils utils;
@@ -42,7 +40,6 @@ public class Protection implements Listener {
             config.getStringList("claims.protection.interaction-blacklist")
         );
         this.eliminationBlock = config.getString("claims.elimination.block");
-        this.teamManager = new TeamManager(plugin);
         this.elimination = new Elimination(plugin);
         this.messageManager = new MessageManager();
         this.prefix = messageManager.getPrefix("claim.protection");
@@ -62,14 +59,17 @@ public class Protection implements Listener {
             double block_x = block.getX();
             double block_y = block.getY();
             double block_z = block.getZ();
-            String team_id = teamManager.getTeamByName(player.getName()).toString();
-            if(utils.isBlockInClaim(block_x, block_y, block_z)) {
-                elimination.eliminationBlockModified(team_id);
-                Server.getInstance().getScheduler().scheduleDelayedTask(()-> {
-                  if(!(event.isCancelled())) {
-                    elimination.eliminationBlockModified(team_id);
-                  }  
-                }, 1);
+            String claimId = utils.get_claimID(player);
+            if (claimId != null && !claimId.isEmpty() && utils.isBlockInClaim(block_x, block_y, block_z)) {
+                String teamId = utils.getClaimTeam(claimId);
+                if (teamId != null && !teamId.isBlank()) {
+                    elimination.eliminationBlockModified(teamId);
+                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
+                        if (!event.isCancelled()) {
+                            elimination.eliminationBlockModified(teamId);
+                        }
+                    }, 1);
+                }
             }
         }
     }
