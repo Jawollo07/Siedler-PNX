@@ -2,10 +2,13 @@ package de.jawollo07.siedler.claim;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
-import de.jawollo07.siedler.claim.ClaimManager;
 import org.powernukkitx.Player;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.passive.EntityVillager;
+import org.powernukkitx.entity.passive.EntityVillagerV2;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,15 +144,43 @@ public class Utils {
             throw new IllegalStateException("Claim-Team konnte nicht ermittelt werden", exception);
         }
     }
-    /**
-     * Legacy helper retained for compatibility. Villager counting is handled by
-     * TaxManager because it has the required world/chunk/entity context.
-     */
+    /** Counts villagers in all chunks covered by the given claim. */
     public Integer countVillagerInClaim(String claimID) {
         if (claimID == null || claimID.isBlank()) {
             throw new IllegalArgumentException("Claim-ID darf nicht leer sein");
         }
-        return 0;
+
+        Claim claim = claimManager.claimInfoById(claimID);
+        if (claim == null) return 0;
+
+        Level level = plugin.getServer().getLevelByName(claim.world());
+        if (level == null) return 0;
+
+        int count = 0;
+        java.util.Set<String> counted = new java.util.HashSet<>();
+
+        for (int x = claim.min_x(); x <= claim.max_x(); x++) {
+            for (int z = claim.min_z(); z <= claim.max_z(); z++) {
+                IChunk chunk = level.getProvider().getLoadedChunk(x, z);
+                boolean wasLoaded = chunk != null;
+                if (!wasLoaded && !level.getProvider().loadChunk(x, z, false)) continue;
+                if (!wasLoaded) chunk = level.getProvider().getLoadedChunk(x, z);
+
+                if (chunk != null) {
+                    for (Entity entity : chunk.getEntities().values()) {
+                        if (entity instanceof EntityVillagerV2
+                                || entity instanceof EntityVillager
+                                || "minecraft:villager".equals(entity.getIdentifier())) {
+                            String key = claim.world() + ":" + entity.getId();
+                            if (counted.add(key)) count++;
+                        }
+                    }
+                }
+
+                if (!wasLoaded && chunk != null) chunk.unload(true, true);
+            }
+        }
+        return count;
     }
 }
 
