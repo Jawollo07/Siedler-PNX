@@ -24,6 +24,7 @@ public final class TournamentManager implements Listener {
     private final MessageManager messages = new MessageManager();
     private final Config config;
     private final TournamentKitManager kits;
+    private final TournamentArenaManager arenas;
     private final Map<UUID, String> selectedKits = new ConcurrentHashMap<>();
     private final Map<UUID, Participant> participants = new LinkedHashMap<>();
     private final Map<UUID, Match> matches = new ConcurrentHashMap<>();
@@ -34,11 +35,14 @@ public final class TournamentManager implements Listener {
     private int round;
     private State state = State.IDLE;
     private UUID winner;
+    private final Map<UUID,Integer> matchWins = new ConcurrentHashMap<>();
+    private final Set<String> usedArenas = ConcurrentHashMap.newKeySet();
 
     public TournamentManager(SiedlerPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin);
         this.config = plugin.getConfig();
         this.kits = new TournamentKitManager(plugin);
+        this.arenas = new TournamentArenaManager(plugin);
     }
 
     public State getState() { return state; }
@@ -47,7 +51,7 @@ public final class TournamentManager implements Listener {
 
     public synchronized boolean openRegistration() {
         if (!enabled() || state == State.REGISTRATION || state == State.COUNTDOWN || state == State.RUNNING) return false;
-        participants.clear(); matches.clear(); spectators.clear(); wins.clear(); roundWinners.clear(); selectedKits.clear();
+        participants.clear(); matches.clear(); spectators.clear(); usedArenas.clear(); wins.clear(); roundWinners.clear(); selectedKits.clear();
         pendingMatches = 0; round = 0; winner = null; state = State.REGISTRATION;
         broadcast(msg("registration-open")
                 .replace("{seconds}", String.valueOf(config.getInt("tournament.registration.duration-seconds", 120)))
@@ -146,7 +150,14 @@ public final class TournamentManager implements Listener {
             return;
         }
         applyKit(a); applyKit(b);
-        teleport(a, "spawn-a"); teleport(b, "spawn-b");
+        TournamentArenaManager.Arena arena = chooseArena();
+        if (arena != null) {
+            usedArenas.add(arena.name());
+            teleport(a, arena.world(), arena.ax(), arena.ay(), arena.az());
+            teleport(b, arena.world(), arena.bx(), arena.by(), arena.bz());
+        } else {
+            teleport(a, "spawn-a"); teleport(b, "spawn-b");
+        }
         broadcast(msg("match-ready").replace("{a}", a.getName()).replace("{b}", b.getName())
                 .replace("{round}", String.valueOf(match.round())));
         int delay = Math.max(0, config.getInt("tournament.match-countdown-seconds", 5));
@@ -295,6 +306,10 @@ public final class TournamentManager implements Listener {
     public boolean adminConfigSet(String path, String value) { return kits.setConfigValue(path, value); }
     public Object adminConfigGet(String path) { return kits.getConfigValue(path); }
     public boolean adminConfigReload() { return kits.reloadConfig(); }
+    public List<String> adminArenaNames(){return arenas.names();}
+    public boolean adminArenaCreate(String n){return arenas.create(n);}
+    public boolean adminArenaDelete(String n){return arenas.delete(n);}
+    public boolean adminArenaSet(String arena,String key,String value){return arenas.set("tournament.arenas."+arena+"."+key,value)&&arenas.save();}
 
     private void applyKit(Player player) {
         String kit = selectedKits.getOrDefault(player.getUniqueId(), kits.getDefaultKit());
@@ -305,6 +320,17 @@ public final class TournamentManager implements Listener {
         if (state != State.RUNNING && state != State.FINISHED) { tell(player, "spectate-unavailable"); return false; }
         spectators.add(player.getUniqueId()); player.setGamemode(3); teleport(player, "spectator");
         tell(player, "spectating"); return true;
+    }
+
+    private TournamentArenaManager.Arena chooseArena() {
+        List<String> available=new ArrayList<>(arenas.names()); available.removeIf(usedArenas::contains);
+        if(available.isEmpty()){ usedArenas.clear(); available.addAll(arenas.names()); }
+        if(available.isEmpty()) return null;
+        return arenas.get(available.get(new Random().nextInt(available.size())));
+    }
+
+    private void teleport(Player player, String worldName, double x, double y, double z) {
+        teleportLocation(player, worldName, x, y, z);
     }
 
     private void reward(Player p) {
@@ -337,6 +363,25 @@ public final class TournamentManager implements Listener {
     private boolean enabled() { return config.getBoolean("tournament.enabled", true); }
     private int minParticipants() { return Math.max(2, config.getInt("tournament.registration.min-participants", 2)); }
     private int maxParticipants() { return Math.max(minParticipants(), config.getInt("tournament.registration.max-participants", 16)); }
+
+    private void teleportLocation(Player player, String worldName, double x, double y, double z) {
+        try {
+            Object level=plugin.getServer().getLevelByName(worldName); if(level==null)return;
+            Class<?> lc=Class.forName("org.powernukkitx.level.Location"); Object loc=null;
+            for(Constructor<?> cc:lc.getConstructors()){
+                Class<?>[] t=cc.getParameterTypes();
+                if(t.length==6&&t[0]==double.class&&t[1]==double.class&&t[2]==double.class&&t[3]==float.class&&t[4]==float.class&&t[5].isAssignableFrom(level.getClass())){
+                    loc=cc.newInstance(x,y,z,player.getYaw(),player.getPitch(),level);break;
+                }
+            }
+            if(loc==null)return;
+            for(Method m:player.getClass().getMethods()) if(m.getName().equals("teleport")&&m.getParameterCount()==2&&m.getParameterTypes()[0].isAssignableFrom(lc)){
+                Class<?> cause=m.getParameterTypes()[1]; if(!cause.isEnum())continue;
+                Object v=cause.getEnumConstants()[0]; for(Object e:cause.getEnumConstants())if("COMMAND".equals(String.valueOf(e)))v=e;
+                m.invoke(player,loc,v);return;
+            }
+        }catch(Exception e){plugin.getLogger().warning("Tournament teleport failed: "+e.getMessage());}
+    }
 
     private void teleport(Player player, String target) {
         try {
