@@ -40,7 +40,7 @@ public final class TournamentCommand extends Command {
                                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.player-only"));
                                 return CommandResult.fail();
                             }
-                            manager.selectKit(p, String.valueOf(ctx.getArg("kit")));
+                            manager.selectKit(p, String.valueOf(String.valueOf(ctx.getArg("kit"))));
                             return CommandResult.success();
                         })));
 
@@ -61,18 +61,18 @@ public final class TournamentCommand extends Command {
         RouteNode kitAdmin = RouteNode.literal("kit");
         kitAdmin.then(RouteNode.literal("list").exec(ctx -> { adminKitList(ctx.getSender()); return CommandResult.success(); }));
         kitAdmin.then(RouteNode.literal("create").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            return kitResult(ctx.getSender(), manager.adminKitCreate(first(ctx.getArg("args"))), "kit-created", "kit-create-failed", first(ctx.getArg("args")));
+            return kitResult(ctx.getSender(), manager.adminKitCreate(first(String.valueOf(ctx.getArg("args")))), "kit-created", "kit-create-failed", first(String.valueOf(ctx.getArg("args"))));
         })));
         kitAdmin.then(RouteNode.literal("delete").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String kit = String.valueOf(ctx.getArg("args")).trim();
+            String kit = String.valueOf(String.valueOf(ctx.getArg("args"))).trim();
             return kitResult(ctx.getSender(), manager.adminKitDelete(kit), "kit-deleted", "kit-delete-failed", kit);
         })));
         kitAdmin.then(RouteNode.literal("clear").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String kit = ctx.getArg("args").trim();
+            String kit = String.valueOf(ctx.getArg("args")).trim();
             return kitResult(ctx.getSender(), manager.adminKitClear(kit), "kit-cleared", "kit-clear-failed", kit);
         })));
         kitAdmin.then(RouteNode.literal("add").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String[] parts = splitFirst(ctx.getArg("args"));
+            String[] parts = splitFirst(String.valueOf(ctx.getArg("args")));
             if (parts.length < 2) {
                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.kit-add-usage"));
                 return CommandResult.fail();
@@ -80,7 +80,7 @@ public final class TournamentCommand extends Command {
             return kitResult(ctx.getSender(), manager.adminKitAdd(parts[0], parts[1]), "kit-command-added", "kit-command-add-failed", parts[0]);
         })));
         kitAdmin.then(RouteNode.literal("show").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String kit = ctx.getArg("args").trim();
+            String kit = String.valueOf(ctx.getArg("args")).trim();
             ctx.getSender().sendMessage(messages.getMessage("messages.tournament.kit-show-header").replace("{kit}", kit));
             for (String command : manager.adminKitCommands(kit))
                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.kit-show-entry").replace("{command}", command));
@@ -90,14 +90,14 @@ public final class TournamentCommand extends Command {
 
         RouteNode configAdmin = RouteNode.literal("config");
         configAdmin.then(RouteNode.literal("get").then(RouteNode.argument("path", new MessageStringNode()).exec(ctx -> {
-            String path = String.valueOf(ctx.getArg("path")).trim();
+            String path = String.valueOf(String.valueOf(ctx.getArg("path"))).trim();
             Object value = manager.adminConfigGet(path);
             ctx.getSender().sendMessage(messages.getMessage("messages.tournament.config-value")
                     .replace("{path}", path).replace("{value}", String.valueOf(value)));
             return CommandResult.success();
         })));
         configAdmin.then(RouteNode.literal("set").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            String[] parts = splitFirst(ctx.getArg("args"));
+            String[] parts = splitFirst(String.valueOf(ctx.getArg("args")));
             if (parts.length < 2) {
                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.config-set-usage"));
                 return CommandResult.fail();
