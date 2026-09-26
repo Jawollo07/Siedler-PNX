@@ -406,7 +406,7 @@ Dort sind standardmäßig:
 
 ### Händler
 
-Die Händler verwenden native PowerNukkitX-`VillagerV2`-Entities und die native `TradeInventory`.
+Die Händler verwenden native PowerNukkitX-`VillagerV2`-Entities und eine Siedler-`SimpleForm`-Handelsoberfläche.
 
 Trades können konfigurieren:
 
