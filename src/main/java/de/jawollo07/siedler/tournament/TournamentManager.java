@@ -180,7 +180,6 @@ public final class TournamentManager implements Listener {
         if (match == null) return;
         if (config.getBoolean("tournament.match.keep-inventory", true)) {
             event.setKeepInventory(true);
-            event.setKeepLevel(true);
         }
         UUID win = match.a().equals(loser.getUniqueId()) ? match.b() : match.a();
         resolveMatch(match, win);
@@ -311,7 +310,7 @@ public final class TournamentManager implements Listener {
     private void reward(Player p) {
         String command = config.getString("tournament.rewards.command", "");
         if (command == null || command.isBlank()) return;
-        try { plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command.replace("{player}", p.getName())); }
+        try { plugin.getServer().getCommandMap().executeCommand(plugin.getServer().getConsoleSender(), command.replace("{player}", p.getName())); }
         catch (Exception e) { plugin.getLogger().warning("Tournament reward failed: " + e.getMessage()); }
     }
 
