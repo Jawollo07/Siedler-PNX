@@ -76,6 +76,7 @@ public final class TournamentKitManager {
     public boolean apply(Player player, String kit) {
         if (kit == null || kit.isBlank() || !kitExists(kit)) return false;
         execute("clear " + player.getName());
+        execute("effect " + player.getName() + " clear");
         for (String command : getCommands(kit)) {
             if (!command.isBlank()) execute(command.replace("{player}", player.getName()));
         }
