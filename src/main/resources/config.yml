@@ -97,7 +97,7 @@ monsters:
     allow-ravager: true
 
 soldiers:
-  enabled: true
+  enabled: false
   max-level: 7
 
 market:
@@ -190,7 +190,7 @@ market:
             trader-exp: 2
 
 mines:
-  enabled: true
+  enabled: false
   fuse-seconds: 1
   rearm-seconds: 15
 
