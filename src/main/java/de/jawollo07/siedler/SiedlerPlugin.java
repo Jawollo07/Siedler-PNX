@@ -47,6 +47,8 @@ import de.jawollo07.siedler.monsters.MonsterManager;
 import de.jawollo07.siedler.market.MarketManager;
 import de.jawollo07.siedler.market.TraderManager;
 import de.jawollo07.siedler.market.MarketCommand;
+import de.jawollo07.siedler.tournament.TournamentManager;
+import de.jawollo07.siedler.tournament.TournamentCommand;
 import de.jawollo07.siedler.essentials.TPAManager;
 import de.jawollo07.siedler.essentials.DeathManager;
 import org.powernukkitx.plugin.PluginBase;
@@ -80,6 +82,7 @@ public final class SiedlerPlugin extends PluginBase {
     private MarketManager marketManager;
     private TraderManager traderManager;
     private ModerationManager moderationManager;
+    private TournamentManager tournamentManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -126,6 +129,7 @@ public final class SiedlerPlugin extends PluginBase {
         marketManager = new MarketManager(this);
         traderManager = new TraderManager(this, marketManager);
         moderationManager = new ModerationManager(this);
+        tournamentManager = new TournamentManager(this);
 
         // Registration
         registerCommands();
@@ -172,6 +176,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new OutpostCommand(this, outpostManager));
         commandManager.register(new RaidCommand(this, raidManager));
         commandManager.register(new MarketCommand(this, marketManager, traderManager));
+        commandManager.register(new TournamentCommand(this, tournamentManager));
     }
 
     private void registerTasks() {
@@ -209,6 +214,7 @@ public final class SiedlerPlugin extends PluginBase {
         registerListenerSafe(monsterManager, "MonsterManager");
         registerListenerSafe(marketManager, "MarketManager");
         registerListenerSafe(traderManager, "TraderManager");
+        registerListenerSafe(tournamentManager, "TournamentManager");
         getLogger().info("Listener registration completed.");
     }
 
@@ -275,6 +281,10 @@ public final class SiedlerPlugin extends PluginBase {
 
     public OutpostManager getOutpostManager() {
         return outpostManager;
+    }
+
+    public TournamentManager getTournamentManager() {
+        return tournamentManager;
     }
 
     public ModerationManager getModerationManager() {
