@@ -61,16 +61,15 @@ public final class TournamentCommand extends Command {
         RouteNode kitAdmin = RouteNode.literal("kit");
         kitAdmin.then(RouteNode.literal("list").exec(ctx -> { adminKitList(ctx.getSender()); return CommandResult.success(); }));
         kitAdmin.then(RouteNode.literal("create").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
-            return result(ctx.getSender(), manager.adminKitCreate(ctx.getArg("args").trim()), "kit-created", "kit-create-failed")
-                    .replace("{kit}", first(ctx.getArg("args")));
+            return kitResult(ctx.getSender(), manager.adminKitCreate(first(ctx.getArg("args"))), "kit-created", "kit-create-failed", first(ctx.getArg("args")));
         })));
         kitAdmin.then(RouteNode.literal("delete").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
             String kit = ctx.getArg("args").trim();
-            return result(ctx.getSender(), manager.adminKitDelete(kit), "kit-deleted", "kit-delete-failed").replace("{kit}", kit);
+            return kitResult(ctx.getSender(), manager.adminKitDelete(kit), "kit-deleted", "kit-delete-failed", kit);
         })));
         kitAdmin.then(RouteNode.literal("clear").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
             String kit = ctx.getArg("args").trim();
-            return result(ctx.getSender(), manager.adminKitClear(kit), "kit-cleared", "kit-clear-failed").replace("{kit}", kit);
+            return kitResult(ctx.getSender(), manager.adminKitClear(kit), "kit-cleared", "kit-clear-failed", kit);
         })));
         kitAdmin.then(RouteNode.literal("add").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
             String[] parts = splitFirst(ctx.getArg("args"));
@@ -78,8 +77,7 @@ public final class TournamentCommand extends Command {
                 ctx.getSender().sendMessage(messages.getMessage("messages.tournament.kit-add-usage"));
                 return CommandResult.fail();
             }
-            return result(ctx.getSender(), manager.adminKitAdd(parts[0], parts[1]), "kit-command-added", "kit-command-add-failed")
-                    .replace("{kit}", parts[0]);
+            return kitResult(ctx.getSender(), manager.adminKitAdd(parts[0], parts[1]), "kit-command-added", "kit-command-add-failed", parts[0]);
         })));
         kitAdmin.then(RouteNode.literal("show").then(RouteNode.argument("args", new MessageStringNode()).exec(ctx -> {
             String kit = ctx.getArg("args").trim();
@@ -146,8 +144,9 @@ public final class TournamentCommand extends Command {
                     .replace("{default}", kit.equalsIgnoreCase(manager.adminKitDefault()) ? "*" : ""));
     }
 
-    private String result(CommandSender sender, boolean ok, String yes, String no) {
-        return messages.getMessage("messages.tournament." + (ok ? yes : no));
+    private CommandResult kitResult(CommandSender sender, boolean ok, String yes, String no, String kit) {
+        sender.sendMessage(messages.getMessage("messages.tournament." + (ok ? yes : no)).replace("{kit}", kit));
+        return ok ? CommandResult.success() : CommandResult.fail();
     }
 
     private void reply(CommandSender s, boolean ok, String yes, String no) {
