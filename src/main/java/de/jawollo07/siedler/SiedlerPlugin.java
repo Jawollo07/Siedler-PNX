@@ -129,7 +129,6 @@ public final class SiedlerPlugin extends PluginBase {
 
         // Registration
         registerCommands();
-        registerEvents();
         registerListener();
         registerTasks();
         
@@ -175,14 +174,6 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new MarketCommand(this, marketManager, traderManager));
     }
 
-    private void registerEvents() {
-        try {
-            this.getServer().getPluginManager().registerEvents(new Protection(this), this);
-        } catch (Exception e) {
-            this.getLogger().error("Error with Event registration: " + e);
-        }
-        getLogger().info("All Events registered");
-    }
     private void registerTasks() {
         try {
             this.getServer().getScheduler().scheduleRepeatingTask(this, new PermanentEffect(), 20);
