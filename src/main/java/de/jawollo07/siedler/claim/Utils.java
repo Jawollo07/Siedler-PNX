@@ -104,6 +104,14 @@ public class Utils {
         }
     }
     public boolean isBlockInClaim(Double x, Double y, Double z) {
+        return isBlockInClaim(null, x, y, z);
+    }
+
+    /**
+     * Checks whether the block position belongs to a claim in the given world.
+     * The world filter is important because chunk coordinates are reused by every world.
+     */
+    public boolean isBlockInClaim(String world, Double x, Double y, Double z) {
         if (x == null || y == null || z == null) {
             throw new IllegalArgumentException("Koordinaten dürfen nicht null sein");
         }
@@ -115,13 +123,19 @@ public class Utils {
         int chunkZ = (int) Math.floor(z / 16.0);
         String sql = "SELECT 1 FROM claims "
                 + "WHERE min_x <= ? AND max_x >= ? "
-                + "AND min_z <= ? AND max_z >= ? LIMIT 1";
+                + "AND min_z <= ? AND max_z >= ? "
+                + (world == null ? "" : "AND world = ? ")
+                + "LIMIT 1";
 
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, chunkX);
-            statement.setInt(2, chunkX);
-            statement.setInt(3, chunkZ);
-            statement.setInt(4, chunkZ);
+            int index = 1;
+            statement.setInt(index++, chunkX);
+            statement.setInt(index++, chunkX);
+            statement.setInt(index++, chunkZ);
+            statement.setInt(index++, chunkZ);
+            if (world != null && !world.isBlank()) {
+                statement.setString(index, world);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
             }
