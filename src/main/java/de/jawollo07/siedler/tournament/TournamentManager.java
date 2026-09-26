@@ -23,6 +23,8 @@ public final class TournamentManager implements Listener {
     private final SiedlerPlugin plugin;
     private final MessageManager messages = new MessageManager();
     private final Config config;
+    private final TournamentKitManager kits;
+    private final Map<UUID, String> selectedKits = new ConcurrentHashMap<>();
     private final Map<UUID, Participant> participants = new LinkedHashMap<>();
     private final Map<UUID, Match> matches = new ConcurrentHashMap<>();
     private final Set<UUID> spectators = ConcurrentHashMap.newKeySet();
@@ -36,6 +38,7 @@ public final class TournamentManager implements Listener {
     public TournamentManager(SiedlerPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin);
         this.config = plugin.getConfig();
+        this.kits = new TournamentKitManager(plugin);
     }
 
     public State getState() { return state; }
@@ -44,7 +47,7 @@ public final class TournamentManager implements Listener {
 
     public synchronized boolean openRegistration() {
         if (!enabled() || state == State.REGISTRATION || state == State.COUNTDOWN || state == State.RUNNING) return false;
-        participants.clear(); matches.clear(); spectators.clear(); wins.clear(); roundWinners.clear();
+        participants.clear(); matches.clear(); spectators.clear(); wins.clear(); roundWinners.clear(); selectedKits.clear();
         pendingMatches = 0; round = 0; winner = null; state = State.REGISTRATION;
         broadcast(msg("registration-open")
                 .replace("{seconds}", String.valueOf(config.getInt("tournament.registration.duration-seconds", 120)))
@@ -62,6 +65,8 @@ public final class TournamentManager implements Listener {
         if (participants.size() >= maxParticipants()) { tell(player, "full"); return false; }
         participants.put(player.getUniqueId(), new Participant(player.getUniqueId(), player.getName()));
         wins.put(player.getUniqueId(), 0);
+        String defaultKit = kits.getDefaultKit();
+        if (!defaultKit.isBlank()) selectedKits.put(player.getUniqueId(), defaultKit);
         broadcast(msg("joined").replace("{player}", player.getName())
                 .replace("{count}", String.valueOf(participants.size()))
                 .replace("{max}", String.valueOf(maxParticipants())));
@@ -75,6 +80,7 @@ public final class TournamentManager implements Listener {
             tell(player, "not-in-registration"); return false;
         }
         wins.remove(player.getUniqueId());
+        selectedKits.remove(player.getUniqueId());
         tell(player, "left");
         return true;
     }
@@ -139,6 +145,7 @@ public final class TournamentManager implements Listener {
             resolveMatch(match, a == null ? match.b() : match.a());
             return;
         }
+        applyKit(a); applyKit(b);
         teleport(a, "spawn-a"); teleport(b, "spawn-b");
         broadcast(msg("match-ready").replace("{a}", a.getName()).replace("{b}", b.getName())
                 .replace("{round}", String.valueOf(match.round())));
@@ -257,6 +264,42 @@ public final class TournamentManager implements Listener {
                     .replace("{wins}", String.valueOf(wins.getOrDefault(p.uuid(), 0)))
                     .replace("{status}", spectators.contains(p.uuid()) ? "OUT" : "ACTIVE"));
         }
+    }
+
+    public boolean selectKit(Player player, String kit) {
+        if (state != State.REGISTRATION) { tell(player, "kit-selection-closed"); return false; }
+        if (!participants.containsKey(player.getUniqueId())) { tell(player, "not-in-registration"); return false; }
+        if (!kits.kitExists(kit)) { tell(player, "kit-not-found"); return false; }
+        selectedKits.put(player.getUniqueId(), kit);
+        tell(player, "kit-selected");
+        return true;
+    }
+
+    public void kits(Player player) {
+        List<String> names = kits.getKitNames();
+        player.sendMessage(msg("kit-list-header"));
+        if (names.isEmpty()) { player.sendMessage(msg("kit-list-empty")); return; }
+        String selected = selectedKits.getOrDefault(player.getUniqueId(), kits.getDefaultKit());
+        for (String kit : names) {
+            player.sendMessage(msg("kit-list-entry").replace("{kit}", kit)
+                    .replace("{selected}", kit.equalsIgnoreCase(selected) ? "*" : ""));
+        }
+    }
+
+    public boolean adminKitCreate(String kit) { return kits.createKit(kit); }
+    public boolean adminKitDelete(String kit) { return kits.deleteKit(kit); }
+    public boolean adminKitAdd(String kit, String command) { return kits.addCommand(kit, command); }
+    public boolean adminKitClear(String kit) { return kits.clearCommands(kit); }
+    public List<String> adminKitNames() { return kits.getKitNames(); }
+    public List<String> adminKitCommands(String kit) { return kits.getCommands(kit); }
+    public String adminKitDefault() { return kits.getDefaultKit(); }
+    public boolean adminConfigSet(String path, String value) { return kits.setConfigValue(path, value); }
+    public Object adminConfigGet(String path) { return kits.getConfigValue(path); }
+    public boolean adminConfigReload() { return kits.reloadConfig(); }
+
+    private void applyKit(Player player) {
+        String kit = selectedKits.getOrDefault(player.getUniqueId(), kits.getDefaultKit());
+        if (!kit.isBlank()) kits.apply(player, kit);
     }
 
     public boolean spectate(Player player) {
