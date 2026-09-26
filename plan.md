@@ -1,6 +1,6 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 25.09.2026
+Stand: 26.09.2026
 
 ## Versionsschema
 
@@ -292,9 +292,52 @@ Unterstützte Maßnahmen:
 - [ ] saubere Fehlerbehandlung
 - [ ] Release-Build
 
+## Cross-Cutting Feature – PvP-Turniersystem
+
+Der aktuelle `beta`-Stand enthält ein eigenständiges PvP-Turniersystem. Es wird als Cross-Cutting-Feature geführt.
+
+### Umgesetzt
+- [x] Registrierungsphase mit Mindest-/Maximalteilnehmern
+- [x] zufälliges Seeding und automatische Freilose
+- [x] Single Elimination
+- [x] Double Elimination
+- [x] Round Robin
+- [x] mehrere gleichzeitig laufende Matches
+- [x] mehrere konfigurierte Arenen
+- [x] Arena-Zuweisung
+- [x] Match-Countdown
+- [x] Best-of-Serien
+- [x] Match-Zeitlimit
+- [x] Match-/Serien-Score
+- [x] automatische nächste Spiele und Runden
+- [x] Disconnect-Auflösung
+- [x] Spectator-Modus
+- [x] PvP-Schutz außerhalb aktiver Matches
+- [x] konfigurierbare Kits
+- [x] Sieger-Reward-Command
+- [x] Lobby-, Arena- und Spectator-Teleports
+- [x] Admin-Konfiguration
+- [x] Arena- und Kit-Verwaltung
+- [x] Dokumentation in README und beiden Guides
+
+### Offene Erweiterungen
+- [ ] mehrere vollständig unabhängige Turniere gleichzeitig
+- [ ] Gruppenphase → K.-o.-Phase
+- [ ] Swiss-System
+- [ ] persistente Turnierhistorie und Statistiken
+- [ ] Ready-System pro Match
+- [ ] Match-spezifische AFK-/Timeout-Regeln
+- [ ] Arena-Reset/World-Snapshot
+- [ ] Match-spezifische Regelprofile
+- [ ] erweiterte Zuschauer- und Bracket-Verwaltung
+
+Das Turniersystem ist damit als funktionsfähiges PvP-Framework dokumentiert; die offenen Punkte sind Erweiterungen.
+
 ## Aktueller Stand
 
 **Aktuelle Planphase:** Phase 7 – Market & Traders
+
+Das PvP-Turniersystem ist als Cross-Cutting-Feature bereits im beta-Branch umgesetzt und wird unabhängig von den linearen Migrationsphasen weiter ausgebaut.
 
 Phase 0 und Phase 1 sind abgeschlossen. Phase 2 – Teams ist abgeschlossen, einschließlich Teamchat, Diplomatie, Eliminierung und der zugehörigen Spectator-/Eliminierungsregeln.
 
