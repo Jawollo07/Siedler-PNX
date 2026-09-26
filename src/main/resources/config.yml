@@ -200,3 +200,47 @@ antiafk:
   warning-seconds: 60
   # Players with this permission are excluded from Anti-AFK.
   exempt-permission: siedler.admin
+
+
+# PvP tournament system
+# All coordinates are configurable. Worlds must be loaded by the server.
+tournament:
+  enabled: true
+  registration:
+    duration-seconds: 120
+    min-participants: 2
+    max-participants: 16
+    auto-start-when-full: true
+  start-countdown-seconds: 10
+  match-countdown-seconds: 5
+  protection:
+    # Prevents participants from fighting anyone except their current bracket opponent.
+    cancel-player-damage-outside-matches: true
+  match:
+    # Prevents normal inventory/XP loss when a tournament participant dies.
+    keep-inventory: true
+  rewards:
+    # Optional console command. Use {player} for the winner's name.
+    # Example: "give {player} diamond 8"
+    command: ""
+  lobby:
+    world: overworld
+    x: 0
+    y: 100
+    z: 0
+  arena:
+    spawn-a:
+      world: overworld
+      x: 100
+      y: 100
+      z: 100
+    spawn-b:
+      world: overworld
+      x: 120
+      y: 100
+      z: 100
+    spectator:
+      world: overworld
+      x: 110
+      y: 110
+      z: 120
