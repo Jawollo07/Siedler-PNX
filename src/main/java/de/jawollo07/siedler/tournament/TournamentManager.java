@@ -126,7 +126,7 @@ public final class TournamentManager implements Listener {
         state = State.RUNNING;
         round = 1;
         broadcast(msg("tournament-started").replace("{players}", String.valueOf(seeded.size())));
-        if ("round_robin".equalsIgnoreCase(format())) startRoundRobin(seeded); else startRound(seeded);
+        if ("round_robin".equalsIgnoreCase(format())) startRoundRobin(seeded); else startKnockoutOrElimination(seeded);
     }
 
     private synchronized void startRoundRobin(List<UUID> players) {
@@ -148,7 +148,7 @@ public final class TournamentManager implements Listener {
         if(pendingMatches==0) finish(rrOrder.get(0));
     }
 
-    private synchronized void startRound(List<UUID> players) {
+    private synchronized void startKnockoutOrElimination(List<UUID> players) {
         if (players.size() == 1) { finish(players.get(0)); return; }
         roundWinners.clear();
         pendingMatches = 0;
@@ -293,7 +293,7 @@ public final class TournamentManager implements Listener {
         roundWinners.clear();
         round++;
         if (next.size() == 1) { finish(next.get(0)); return; }
-        startRound(next);
+        startKnockoutOrElimination(next);
     }
 
     private synchronized void finish(UUID winningPlayer) {
