@@ -10,6 +10,10 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.event.EventHandler;
 import org.powernukkitx.event.Listener;
 import org.powernukkitx.event.block.BlockBreakEvent;
+import org.powernukkitx.event.block.BlockBurnEvent;
+import org.powernukkitx.event.block.BlockExplodeEvent;
+import org.powernukkitx.event.block.BlockFromToEvent;
+import org.powernukkitx.event.block.BlockIgniteEvent;
 import org.powernukkitx.event.block.BlockPlaceEvent;
 import org.powernukkitx.event.player.PlayerInteractEvent;
 import org.powernukkitx.utils.Config;
@@ -74,6 +78,46 @@ public class Protection implements Listener {
                     }, 1);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        if (!claimsProtectionEnabled) return;
+        Block block = event.getBlock();
+        if (utils.isBlockInClaim(block.getLevel().getName(), block.getX(), block.getY(), block.getZ())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        if (!claimsProtectionEnabled) return;
+        Block block = event.getBlock();
+        if (utils.isBlockInClaim(block.getLevel().getName(), block.getX(), block.getY(), block.getZ())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockFromTo(BlockFromToEvent event) {
+        if (!claimsProtectionEnabled) return;
+        Block target = event.getTo();
+        if (target != null && utils.isBlockInClaim(target.getLevel().getName(), target.getX(), target.getY(), target.getZ())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent event) {
+        if (!claimsProtectionEnabled) return;
+        var affected = event.getAffectedBlocks();
+        if (affected == null || affected.isEmpty()) return;
+
+        affected.removeIf(block ->
+                utils.isBlockInClaim(block.getLevel().getName(), block.getX(), block.getY(), block.getZ()));
+        if (affected.isEmpty()) {
+            event.setCancelled(true);
         }
     }
 
