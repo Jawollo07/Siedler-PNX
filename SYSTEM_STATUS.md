@@ -16,29 +16,29 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Plugin lädt | Server startet ohne Siedler-Fehler |
-| [ ] | Plugin deaktivieren | Server stoppt sauber |
-| [ ] | Manager-Initialisierung | Alle Manager starten |
-| [ ] | Konfiguration | config.yml wird korrekt geladen |
-| [ ] | MessageManager | Spieler-Meldungen kommen aus messages.yml |
-| [ ] | Tree Command API | Commands registrieren/routen korrekt |
-| [ ] | Permission-System | siedler.admin schützt Admin-Routen |
-| [ ] | Join | Spielerdaten werden erstellt/aktualisiert |
-| [ ] | Quit | Spielerdaten werden gespeichert |
-| [ ] | Restart-Persistenz | Daten bleiben nach Neustart erhalten |
+| [x] | Plugin lädt | Server startet ohne Siedler-Fehler |
+| [x] | Plugin deaktivieren | Server stoppt sauber |
+| [x] | Manager-Initialisierung | Alle Manager starten |
+| [x] | Konfiguration | config.yml wird korrekt geladen |
+| [x] | MessageManager | Spieler-Meldungen kommen aus messages.yml |
+| [x] | Tree Command API | Commands registrieren/routen korrekt |
+| [x] | Permission-System | siedler.admin schützt Admin-Routen |
+| [x] | Join | Spielerdaten werden erstellt/aktualisiert |
+| [x] | Quit | Spielerdaten werden gespeichert |
+| [x] | Restart-Persistenz | Daten bleiben nach Neustart erhalten |
 
 ## 2. Storage / Datenbank
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | SQLite | Neue DB initialisiert |
-| [ ] | SQLite-Persistenz | Daten überleben Neustart |
-| [ ] | MariaDB-Verbindung | Verbindung funktioniert |
-| [ ] | MariaDB-Schema | Alle Tabellen/Spalten vorhanden |
-| [ ] | Schema-Versionierung | Bestehende DB wird korrekt migriert |
-| [ ] | Spieler-IDs | Stabile IDs/UUIDs werden verwendet |
-| [ ] | Transaktionen | Kritische DB-Vorgänge sind atomar |
-| [ ] | Fehlerbehandlung | SQL-Fehler crashen nicht das Gameplay |
+| [x] | SQLite | Neue DB initialisiert |
+| [x] | SQLite-Persistenz | Daten überleben Neustart |
+| [x] | MariaDB-Verbindung | Verbindung funktioniert |
+| [x] | MariaDB-Schema | Alle Tabellen/Spalten vorhanden |
+| [x] | Schema-Versionierung | Bestehende DB wird korrekt migriert |
+| [x] | Spieler-IDs | Stabile IDs/UUIDs werden verwendet |
+| [x] | Transaktionen | Kritische DB-Vorgänge sind atomar |
+| [x] | Fehlerbehandlung | SQL-Fehler crashen nicht das Gameplay |
 
 **Bekannter Prüfpunkt:** Bei alten MariaDB-Datenbanken kann eine Migration für players.id erforderlich sein.
 
@@ -46,14 +46,14 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Team erstellen | Team kann erstellt werden |
-| [ ] | Team löschen | Team kann sicher gelöscht werden |
-| [ ] | Mitglieder | Spieler hinzufügen/entfernen |
-| [ ] | Stabile Spieleridentität | Rename/Rejoin erzeugt keine Duplikate |
-| [ ] | Teamfarben | Farben/Anzeige funktionieren |
-| [ ] | Teaminfo | Info/List funktionieren |
-| [ ] | Teamchat | Team-Nachrichten funktionieren |
-| [ ] | Persistenz | Teams überleben Neustart |
+| [x] | Team erstellen | Team kann erstellt werden |
+| [x] | Team löschen | Team kann sicher gelöscht werden |
+| [x] | Mitglieder | Spieler hinzufügen/entfernen |
+| [x] | Stabile Spieleridentität | Rename/Rejoin erzeugt keine Duplikate |
+| [x] | Teamfarben | Farben/Anzeige funktionieren |
+| [x] | Teaminfo | Info/List funktionieren |
+| [x] | Teamchat | Team-Nachrichten funktionieren |
+| [x] | Persistenz | Teams überleben Neustart |
 
 ## 4. Diplomatie / Relations
 
@@ -70,39 +70,39 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Claim erstellen | Team kann Claim erstellen |
-| [ ] | Claim löschen | Berechtigtes Team kann Claim löschen |
-| [ ] | Claim-Info | Richtiger Claim wird erkannt |
-| [ ] | Welten | Claims sind nach Welt getrennt |
-| [ ] | Grenzen | Chunk-/Blockgrenzen stimmen |
-| [ ] | Block-Abbau | Fremde Spieler können nicht abbauen |
-| [ ] | Block-Platzieren | Fremde Spieler können nicht bauen |
-| [ ] | Interaktionen | Buttons/Lever/etc. sind geschützt |
-| [ ] | Teammitglieder | Mitglieder können normal bauen |
-| [ ] | Admin-Funktionen | Admin-Funktionen funktionieren |
-| [ ] | Grenzvisualisierung | Nahe Claim-Grenzen sind dauerhaft sichtbar |
-| [ ] | TNT/Explosionen | Explosions-Griefing ist verhindert |
-| [ ] | Pistons | Pistons umgehen Claims nicht |
-| [ ] | Feuer | Feuer umgeht Claims nicht |
-| [ ] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht |
-| [ ] | Container/Hopper | Geschützte Inventare können nicht missbraucht werden |
-| [ ] | Entity-Griefing | Relevante Entity-Blockänderungen sind geschützt |
-| [ ] | Protection-Schalter | claims.protection.enabled funktioniert |
-| [ ] | Persistenz | Claims überleben Neustart |
+| [x] | Claim erstellen | Team kann Claim erstellen |
+| [x] | Claim löschen | Berechtigtes Team kann Claim löschen |
+| [x] | Claim-Info | Richtiger Claim wird erkannt |
+| [x] | Welten | Claims sind nach Welt getrennt |
+| [x] | Grenzen | Chunk-/Blockgrenzen stimmen |
+| [x] | Block-Abbau | Fremde Spieler können nicht abbauen |
+| [x] | Block-Platzieren | Fremde Spieler können nicht bauen |
+| [x] | Interaktionen | Buttons/Lever/etc. sind geschützt |
+| [x] | Teammitglieder | Mitglieder können normal bauen |
+| [x] | Admin-Funktionen | Admin-Funktionen funktionieren |
+| [x] | Grenzvisualisierung | Nahe Claim-Grenzen sind dauerhaft sichtbar |
+| [x] | TNT/Explosionen | Explosions-Griefing ist verhindert |
+| [x] | Pistons | Pistons umgehen Claims nicht |
+| [!] | Feuer | Feuer umgeht Claims nicht | Notes: Man kann ein Feuerzeug normal verwenden
+| [!] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht | Notes: Wasser und Lava lässt sich platzieren
+| [x] | Container/Hopper | Geschützte Inventare können nicht missbraucht werden |
+| [x] | Entity-Griefing | Relevante Entity-Blockänderungen sind geschützt |
+| [x] | Protection-Schalter | claims.protection.enabled funktioniert |
+| [x] | Persistenz | Claims überleben Neustart |
 
 ## 6. Economy
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Team-Guthaben | Balance existiert/persistiert |
-| [ ] | Geld hinzufügen | Admin kann Geld hinzufügen |
-| [ ] | Geld entfernen | Admin kann Geld entfernen |
-| [ ] | Balance setzen | Admin kann Balance setzen |
-| [ ] | Balance anzeigen | Spieler können Balance sehen |
-| [ ] | Transaktionen | Transaktionen werden protokolliert |
-| [ ] | Balance-History | Historie wird gespeichert |
-| [ ] | Atomare Zahlung | Fehlgeschlagene Zahlung rollt sauber zurück |
-| [ ] | Persistenz | Guthaben überlebt Neustart |
+| [x] | Team-Guthaben | Balance existiert/persistiert |
+| [x] | Geld hinzufügen | Admin kann Geld hinzufügen |
+| [x] | Geld entfernen | Admin kann Geld entfernen |
+| [x] | Balance setzen | Admin kann Balance setzen |
+| [x] | Balance anzeigen | Spieler können Balance sehen |
+| [x] | Transaktionen | Transaktionen werden protokolliert |
+| [x] | Balance-History | Historie wird gespeichert |
+| [x] | Atomare Zahlung | Fehlgeschlagene Zahlung rollt sauber zurück |
+| [x] | Persistenz | Guthaben überlebt Neustart |
 
 ## 7. Steuern / TaxBonus
 
@@ -124,26 +124,26 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Team eliminieren | Admin kann Team eliminieren |
-| [ ] | De-Eliminieren | Admin kann Team wiederherstellen |
-| [ ] | Eliminierungsstatus | Status wird gespeichert |
-| [ ] | Permanenter Spectator | Eliminierte Spieler werden korrekt behandelt |
+| [x] | Team eliminieren | Admin kann Team eliminieren |
+| [x] | De-Eliminieren | Admin kann Team wiederherstellen |
+| [x] | Eliminierungsstatus | Status wird gespeichert |
+| [x] | Permanenter Spectator | Eliminierte Spieler werden korrekt behandelt |
 | [ ] | Eliminierungsblock | Konfigurierter Block funktioniert |
-| [ ] | Claim-Verhalten | Eliminierte Teams umgehen Schutz nicht |
-| [ ] | Persistenz | Status überlebt Neustart |
+| [x] | Claim-Verhalten | Eliminierte Teams umgehen Schutz nicht |
+| [x] | Persistenz | Status überlebt Neustart |
 
 ## 9. Homes
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | sethome | Home wird gespeichert |
-| [ ] | home | Teleport funktioniert |
-| [ ] | homes | GUI funktioniert |
-| [ ] | delhome | Home wird gelöscht |
-| [ ] | Welt | Welt wird korrekt wiederhergestellt |
-| [ ] | Position | Koordinaten stimmen |
-| [ ] | Rotation | Yaw/Pitch stimmen |
-| [ ] | Persistenz | Homes überleben Neustart |
+| [x] | sethome | Home wird gespeichert |
+| [x] | home | Teleport funktioniert |
+| [x] | homes | GUI funktioniert |
+| [x] | delhome | Home wird gelöscht |
+| [x] | Welt | Welt wird korrekt wiederhergestellt |
+| [x] | Position | Koordinaten stimmen |
+| [x] | Rotation | Yaw/Pitch stimmen |
+| [x] | Persistenz | Homes überleben Neustart |
 
 ## 10. TPA
 
@@ -154,46 +154,46 @@
 | [ ] | tpdeny | Anfrage wird abgelehnt |
 | [ ] | tpacancel | Anfrage kann abgebrochen werden |
 | [ ] | Timeout | Abgelaufene Anfrage nicht mehr annehmbar |
-| [ ] | Offline-Spieler | Offline-Ziele werden sicher behandelt |
+| [x] | Offline-Spieler | Offline-Ziele werden sicher behandelt |
 
 ## 11. Essentials / Administration
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Verwaltung-GUI | Admin-GUI öffnet |
-| [ ] | Spieler-Lookup | Spielerinformationen werden angezeigt |
-| [ ] | Kick | Kick funktioniert |
-| [ ] | Warnung | Warnung funktioniert |
-| [ ] | Ban | Permanenter Ban funktioniert |
-| [ ] | Tempban | Temporärer Ban läuft korrekt ab |
-| [ ] | Join-Ban | Gebannte Spieler können nicht joinen |
-| [ ] | Moderations-History | Aktionen werden gespeichert |
-| [ ] | Death-History | Todesdaten werden gespeichert |
-| [ ] | Inventory-Snapshots | Snapshots werden gespeichert |
-| [ ] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten |
-| [ ] | Permissions | Unberechtigte Spieler kommen nicht hinein |
+| [!] | Verwaltung-GUI | Admin-GUI öffnet | Notes: "\n" Wird als Text behandelt
+| [x] | Spieler-Lookup | Spielerinformationen werden angezeigt |
+| [x] | Kick | Kick funktioniert |
+| [!] | Warnung | Warnung funktioniert | Notes: Verwarnung wird dem Spieler nicht angezeigt
+| [x] | Ban | Permanenter Ban funktioniert |
+| [x] | Tempban | Temporärer Ban läuft korrekt ab |
+| [x] | Join-Ban | Gebannte Spieler können nicht joinen |
+| [x] | Moderations-History | Aktionen werden gespeichert |
+| [x] | Death-History | Todesdaten werden gespeichert |
+| [!] | Inventory-Snapshots | Snapshots werden gespeichert |
+| [!] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten |
+| [x] | Permissions | Unberechtigte Spieler kommen nicht hinein |
 
 ## 12. Enderchests / Inventare
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | ec | Persönlicher Enderchest öffnet |
-| [ ] | Personal-Persistenz | Inhalt überlebt Neustart |
-| [ ] | tec | Team-Enderchest öffnet |
-| [ ] | Team-Persistenz | Inhalt überlebt Neustart |
-| [ ] | Teamzugriff | Nur berechtigte Mitglieder greifen zu |
-| [ ] | Verwaltung | Admin kann Enderchests verwalten |
-| [ ] | MariaDB | Inventare funktionieren mit MariaDB |
+| [!] | ec | Persönlicher Enderchest öffnet |
+| [x] | Personal-Persistenz | Inhalt überlebt Neustart |
+| [!] | tec | Team-Enderchest öffnet |
+| [x] | Team-Persistenz | Inhalt überlebt Neustart |
+| [x] | Teamzugriff | Nur berechtigte Mitglieder greifen zu |
+| [x] | Verwaltung | Admin kann Enderchests verwalten |
+| [x] | MariaDB | Inventare funktionieren mit MariaDB |
 
 ## 13. Statistiken
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Spielerstatistiken | Werte werden aufgezeichnet |
-| [ ] | Anzeige | Statistiken können angezeigt werden |
-| [ ] | Persistenz | Statistiken überleben Neustart |
-| [ ] | Tode | Tode werden aufgezeichnet |
-| [ ] | Kills | Kills werden aufgezeichnet |
+| [!] | Spielerstatistiken | Werte werden aufgezeichnet | Notes: "\n" wird als Text erkannt
+| [!] | Anzeige | Statistiken können angezeigt werden | Notes: "\n" wird als Text erkannt
+| [x] | Persistenz | Statistiken überleben Neustart |
+| [x] | Tode | Tode werden aufgezeichnet |
+| [x] | Kills | Kills werden aufgezeichnet |
 
 ## 14. Anti-AFK
 
