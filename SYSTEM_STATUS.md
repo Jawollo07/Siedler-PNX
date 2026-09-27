@@ -268,18 +268,18 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Marktbereich | Bereich funktioniert |
-| [ ] | Marktschutz | Blockschutz funktioniert |
-| [ ] | Monsterfrei | Normale Monster werden blockiert/entfernt |
-| [ ] | Trader Entities | VillagerV2-Trader funktionieren |
-| [ ] | Trader UI | Handelsmenü öffnet |
-| [ ] | Team-Geld | Kauf belastet Teamkonto |
-| [ ] | Atomare Zahlung | Fehlgeschlagener Kauf verliert kein Geld |
-| [ ] | Material-Anforderungen | Zusätzliche Anforderungen funktionieren |
-| [ ] | Custom Trades | Konfigurierbare Trades funktionieren |
-| [ ] | Siedler-3 Presets | Presets funktionieren |
-| [ ] | Market-Befehle | Player-Routen funktionieren |
-| [ ] | Market-Admin | reload/cleanup/spawn funktionieren |
+| [x] | Marktbereich | Bereich funktioniert |
+| [x] | Marktschutz | Blockschutz funktioniert |
+| [x] | Monsterfrei | Normale Monster werden blockiert/entfernt |
+| [x] | Trader Entities | VillagerV2-Trader funktionieren |
+| [x] | Trader UI | Handelsmenü öffnet |
+| [x] | Team-Geld | Kauf belastet Teamkonto |
+| [x] | Atomare Zahlung | Fehlgeschlagener Kauf verliert kein Geld |
+| [x] | Material-Anforderungen | Zusätzliche Anforderungen funktionieren |
+| [x] | Custom Trades | Konfigurierbare Trades funktionieren |
+| [x] | Siedler-3 Presets | Presets funktionieren |
+| [x] | Market-Befehle | Player-Routen funktionieren |
+| [x] | Market-Admin | reload/cleanup/spawn funktionieren |
 
 ## 20. Kommunikation
 
