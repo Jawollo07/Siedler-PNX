@@ -160,7 +160,7 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [!] | Verwaltung-GUI | Admin-GUI öffnet | Notes: "\n" Wird als Text behandelt
+| [ ] | Verwaltung-GUI | Admin-GUI öffnet | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
 | [x] | Spieler-Lookup | Spielerinformationen werden angezeigt |
 | [x] | Kick | Kick funktioniert |
 | [ ] | Warnung | Warnung funktioniert | Warnung wird nun zusätzlich direkt an den Spieler gesendet; Ingame verifizieren
@@ -189,8 +189,8 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [!] | Spielerstatistiken | Werte werden aufgezeichnet | Notes: "\n" wird als Text erkannt
-| [!] | Anzeige | Statistiken können angezeigt werden | Notes: "\n" wird als Text erkannt
+| [ ] | Spielerstatistiken | Werte werden aufgezeichnet | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
+| [ ] | Anzeige | Statistiken können angezeigt werden | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
 | [x] | Persistenz | Statistiken überleben Neustart |
 | [x] | Tode | Tode werden aufgezeichnet |
 | [x] | Kills | Kills werden aufgezeichnet |
