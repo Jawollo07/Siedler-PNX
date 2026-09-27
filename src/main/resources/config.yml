@@ -43,6 +43,38 @@ economy:
   start-money: 0
   symbol: "€"
   name: "Eurolles"
+start-system:
+  enabled: true
+  # Admin setzt die Positionen mit /start admin set <Team>.
+  # Das Starterkit wird pro Spieler nur einmal automatisch vergeben.
+  starter-kit:
+    - item: minecraft:stone_pickaxe
+      count: 1
+    - item: minecraft:stone_axe
+      count: 1
+    - item: minecraft:stone_shovel
+      count: 1
+    - item: minecraft:stone_sword
+      count: 1
+    - item: minecraft:bread
+      count: 12
+    - item: minecraft:oak_log
+      count: 16
+    - item: minecraft:coal
+      count: 8
+    - item: minecraft:torch
+      count: 16
+    - item: minecraft:wheat_seeds
+      count: 8
+    - item: minecraft:bucket
+      count: 1
+    - item: minecraft:leather
+      count: 4
+    - item: minecraft:iron_ingot
+      count: 3
+    - item: minecraft:villager_spawn_egg
+      count: 5
+
 elimination:
   block: minecraft:beacon
 weakness:
