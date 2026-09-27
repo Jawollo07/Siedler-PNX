@@ -5,6 +5,8 @@ set -Eeuo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 plugin_dir="${SERVER_PLUGIN_DIR:-/home/jannik/Cloud/Dev/test-server-pnx/plugins}"
 
+git pull
+
 cd "$script_dir"
 
 if [[ ! -d "$plugin_dir" ]]; then
