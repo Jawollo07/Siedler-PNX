@@ -49,7 +49,7 @@ public final class EnderChestCommand extends Command {
                 return CommandResult.success();
             }
 
-            if (player.isEnderChestOpen()) {
+            if (player.getEnderChestOpen()) {
                 player.sendMessage(messageManager.getMessage("messages.essentials.enderchest-already-open"));
                 return CommandResult.success();
             }
