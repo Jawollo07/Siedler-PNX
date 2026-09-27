@@ -25,6 +25,7 @@ public class ManagementCommand extends Command {
     private final TeamManager teamManager;
     private final DeathManager deathManager;
     private final TeamEnderChestManager teamEnderChestManager;
+    private final InventorySnapshotManager inventorySnapshotManager;
 
     public ManagementCommand(SiedlerPlugin plugin, ModerationManager moderationManager) {
         super("verwaltung", "Öffnet die Siedler-Verwaltung", "/verwaltung");
@@ -35,6 +36,7 @@ public class ManagementCommand extends Command {
         this.teamManager = new TeamManager(plugin);
         this.deathManager = new DeathManager(plugin);
         this.teamEnderChestManager = new TeamEnderChestManager(plugin);
+        this.inventorySnapshotManager = new InventorySnapshotManager(plugin);
         setPermission("siedler.admin");
         setPermissionMessage(messageManager.getCommandMessage("no-permission"));
         enableCommandTree();
@@ -191,9 +193,80 @@ public class ManagementCommand extends Command {
                         ignored -> openHistory(admin, target))
                 .addButton(messageManager.getMessage("messages.essentials.management-death-history"),
                         ignored -> openDeathHistory(admin, target))
+                .addButton(messageManager.getMessage("messages.essentials.management-inventory-snapshots"),
+                        ignored -> openInventorySnapshots(admin, target))
                 .addButton(messageManager.getMessage("messages.essentials.management-back"),
                         ignored -> openOnlineActions(admin))
                 .send(admin);
+    }
+
+    private void openInventorySnapshots(Player admin, Player target) {
+        try {
+            List<InventorySnapshotManager.InventorySnapshot> snapshots =
+                    inventorySnapshotManager.getHistory(target.getUniqueId().toString(), 50);
+
+            SimpleForm form = new SimpleForm(
+                    messageManager.getMessage("messages.essentials.management-inventory-snapshots-title"),
+                    messageManager.getMessage("messages.essentials.management-inventory-snapshots-header")
+                            .replace("{player}", target.getName())
+                            .replace("{count}", String.valueOf(snapshots.size())));
+
+            if (snapshots.isEmpty()) {
+                form.addButton(messageManager.getMessage("messages.essentials.management-inventory-snapshots-empty"));
+            } else {
+                for (InventorySnapshotManager.InventorySnapshot snapshot : snapshots) {
+                    form.addButton(formatSnapshot(snapshot),
+                            ignored -> openInventorySnapshot(admin, target, snapshot));
+                }
+            }
+
+            form.addButton(messageManager.getMessage("messages.essentials.management-back"),
+                    ignored -> openPlayerInfo(admin, target));
+            form.send(admin);
+        } catch (Exception exception) {
+            admin.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null
+                            ? messageManager.getMessage("messages.essentials.error-unknown")
+                            : exception.getMessage()));
+        }
+    }
+
+    private void openInventorySnapshot(Player admin, Player target,
+                                       InventorySnapshotManager.InventorySnapshot snapshot) {
+        String date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
+                .format(new Date(snapshot.capturedAt()));
+        String data = snapshot.inventoryData();
+        int itemLines = 0;
+        if (data != null && !data.isBlank()) {
+            for (String line : data.split("\\n")) {
+                if (!line.isBlank() && !line.startsWith("inventory_error=")
+                        && !line.contains("|error=")) {
+                    itemLines++;
+                }
+            }
+        }
+
+        String details = messageManager.getMessage("messages.essentials.management-inventory-snapshot-detail")
+                .replace("{player}", target.getName())
+                .replace("{reason}", snapshot.reason())
+                .replace("{date}", date)
+                .replace("{world}", snapshot.world() == null ? "-" : snapshot.world())
+                .replace("{x}", formatCoordinate(snapshot.x() == null ? 0 : snapshot.x()))
+                .replace("{y}", formatCoordinate(snapshot.y() == null ? 0 : snapshot.y()))
+                .replace("{z}", formatCoordinate(snapshot.z() == null ? 0 : snapshot.z()))
+                .replace("{items}", String.valueOf(itemLines));
+
+        new SimpleForm(
+                messageManager.getMessage("messages.essentials.management-inventory-snapshot-detail-title"),
+                details)
+                .addButton(messageManager.getMessage("messages.essentials.management-back"),
+                        ignored -> openInventorySnapshots(admin, target))
+                .send(admin);
+    }
+
+    private String formatSnapshot(InventorySnapshotManager.InventorySnapshot snapshot) {
+        String date = new SimpleDateFormat("dd.MM HH:mm:ss").format(new Date(snapshot.capturedAt()));
+        return "§e" + snapshot.reason() + " §8• §7" + date;
     }
 
     private void openDeathHistory(Player admin, Player target) {
