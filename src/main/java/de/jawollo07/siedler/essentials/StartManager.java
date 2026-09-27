@@ -173,7 +173,8 @@ public final class StartManager {
     }
 
     private void saveSetting(String key, String value) {
-        String sql = plugin.getStorage().isMariaDb()
+        String storageType = plugin.getStorage().getActiveType();
+        String sql = "mariadb".equalsIgnoreCase(storageType)
                 ? "INSERT INTO settings (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)"
                 : "INSERT INTO settings (`key`, value) VALUES (?, ?) ON CONFLICT(`key`) DO UPDATE SET value = excluded.value";
         try (PreparedStatement ps = plugin.getStorage().getConnection().prepareStatement(sql)) { ps.setString(1, key); ps.setString(2, value); ps.executeUpdate(); }
