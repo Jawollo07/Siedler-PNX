@@ -85,6 +85,7 @@ public final class SiedlerPlugin extends PluginBase {
     private ModerationManager moderationManager;
     private TournamentManager tournamentManager;
     private ClaimBoundaryRenderer claimBoundaryRenderer;
+    private Protection protection;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -133,6 +134,7 @@ public final class SiedlerPlugin extends PluginBase {
         moderationManager = new ModerationManager(this);
         tournamentManager = new TournamentManager(this);
         claimBoundaryRenderer = new ClaimBoundaryRenderer(this);
+        protection = new Protection(this);
 
         // Registration
         registerCommands();
@@ -223,6 +225,7 @@ public final class SiedlerPlugin extends PluginBase {
         registerListenerSafe(traderManager, "TraderManager");
         registerListenerSafe(tournamentManager, "TournamentManager");
         registerListenerSafe(claimBoundaryRenderer, "ClaimBoundaryRenderer");
+        registerListenerSafe(protection, "ClaimProtection");
         getLogger().info("Listener registration completed.");
     }
 
