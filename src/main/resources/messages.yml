@@ -489,6 +489,29 @@ messages:
     trader-error: "§cHändler-Fehler: {error}"
 
 
+  start:
+    prefix: "[Start]: "
+    help: "§6/start§r – §7Zeigt den Start-System-Status. §f/start kit §7fordert dein Starterkit an."
+    admin-help: "§6/start admin§r – §7set <Team>, clear <Team>, teamtp <Spieler>, starterkit <Spieler>, game"
+    status: "§7Konfigurierte Team-Startpunkte: §f{teams}"
+    team-start-set: "§aStartpunkt für Team §f{team}§a gesetzt: §f{world} {x} {y} {z}"
+    team-start-cleared: "§eStartpunkt für Team §f{team}§e entfernt."
+    teleported: "§aDu wurdest zum Startpunkt von Team §f{team}§a teleportiert."
+    no-team: "§cDu bist keinem Team zugeordnet."
+    no-team-start: "§cFür Team §f{team}§c wurde noch kein Startpunkt gesetzt."
+    world-not-loaded: "§cDie Startwelt §f{world}§c ist nicht geladen."
+    teleport-error: "§cTeam-Teleport fehlgeschlagen: {error}"
+    player-not-found: "§cSpieler nicht gefunden."
+    kit-received: "§aStarterkit erhalten!"
+    kit-partial: "§eStarterkit teilweise erhalten. §7{failed} Items konnten nicht hinzugefügt werden."
+    kit-already: "§7Du hast dein Starterkit bereits erhalten."
+    kit-empty: "§cDas Starterkit ist nicht konfiguriert."
+    kit-failed: "§cDas Starterkit konnte nicht ins Inventar gelegt werden. Ist dein Inventar voll?"
+    game-started: "§aDas Siedler-Spiel wurde gestartet! §7{players} Spieler wurden zu ihren Team-Startpunkten teleportiert und {kits} Starterkits vergeben."
+    no-players: "§cDas Spiel konnte nicht gestartet werden: Kein Spieler mit gültigem Team-Startpunkt ist online."
+    disabled: "§cDas Start-System ist deaktiviert."
+    error: "§cStart-System-Fehler: {error}"
+
   tournament:
     prefix: "[Turnier] "
     help: "§6/tournament§f: §ejoin§7, §eleave§7, §estatus§7, §ebracket§7, §ekits§7, §ekit <name>§7, §espectate"
