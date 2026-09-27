@@ -169,7 +169,7 @@ Die Steuer wird standardmäßig alle 24 Stunden geprüft. Fehlgeschlagene Steuer
 - [x] `/tpacancel`
 - [x] automatische Anfrage-Ablaufzeit (60 Sekunden)
 - [x] nur eine offene Anfrage pro Absender/Ziel
-- [ ] Start-System
+- [x] Start-System
 - [x] Death Points
 - [x] `/death` Teleport zum letzten Todespunkt
 - [x] Persistenter letzter Todespunkt mit Welt, Position und Rotation
@@ -348,7 +348,7 @@ Phase 4 – Economy & Taxes ist weit fortgeschritten. Die Economy verwendet `tea
 Der Build läuft über **Maven** mit **Java 21** und verwendet PowerNukkitX `org.powernukkitx:server:3.0.4-SNAPSHOT` als `provided`-Dependency.
 
 
-Die Phase 5 – Essentials & Statistics wurde mit dem Home-System und dem TPA-System und der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats und Anti-AFK sind umgesetzt. Phase 6 wurde mit dem Token- und Outpost-System begonnen. Outposts, Capture/Contesting, Pillager Squads/Raids und die permanente Outpost-TaxBonus-Quelle sind umgesetzt; die allgemeine Monstersteuerung mit Quoten, Blacklist, Claim-Schutz, Welt-Blacklist und Spawn-Limits ist umgesetzt.
+Die Phase 5 – Essentials & Statistics wurde mit dem Home-System, TPA und dem vollständigen Start-System sowie der zentralen Verwaltungs-/Moderationsoberfläche begonnen. Homes sind persistent und über eigene Tree-Command-Commands sowie eine SimpleForm-GUI nutzbar. Die Moderation unterstützt Warnungen, Kicks, permanente und temporäre Bans sowie Unbans und eine persistente Historie. TPA, Start-System mit Team-Startpunkten, `/start admin game`, Team-Teleport und konfigurierbarem einmaligem Starterkit, Death Points, persistente Ender-/Teamchests mit Admin-Verwaltung, Player Stats und Anti-AFK sind umgesetzt. Phase 6 wurde mit dem Token- und Outpost-System begonnen. Outposts, Capture/Contesting, Pillager Squads/Raids und die permanente Outpost-TaxBonus-Quelle sind umgesetzt; die allgemeine Monstersteuerung mit Quoten, Blacklist, Claim-Schutz, Welt-Blacklist und Spawn-Limits ist umgesetzt.
 
 
 ### TPA-System
