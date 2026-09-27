@@ -101,7 +101,6 @@ public final class InventorySnapshotManager {
         return value instanceof Number number ? number : null;
     }
 
-
     /** Captures all currently online players. Reflection keeps this compatible with Map/Collection/array server APIs. */
     public void snapshotOnlinePlayers(String reason) {
         try {
@@ -204,11 +203,21 @@ public final class InventorySnapshotManager {
     }
 
     private void ensurePlayer(Player player) throws SQLException {
-        String sql = """
-                INSERT OR IGNORE INTO players
-                    (id, last_name, first_join, last_seen)
-                VALUES (?, ?, ?, ?)
-                """;
+        // SQLite uses INSERT OR IGNORE, while MariaDB/MySQL uses INSERT IGNORE.
+        // Both statements provide the required "insert if missing" semantics
+        // without treating an existing player as an error.
+        String sql = "mariadb".equals(storage.getActiveType())
+                ? """
+                  INSERT IGNORE INTO players
+                      (id, last_name, first_join, last_seen)
+                  VALUES (?, ?, ?, ?)
+                  """
+                : """
+                  INSERT OR IGNORE INTO players
+                      (id, last_name, first_join, last_seen)
+                  VALUES (?, ?, ?, ?)
+                  """;
+
         long now = System.currentTimeMillis();
         try (PreparedStatement statement = storage.getConnection().prepareStatement(sql)) {
             statement.setString(1, player.getUniqueId().toString());
