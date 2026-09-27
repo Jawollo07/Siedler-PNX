@@ -38,6 +38,9 @@ The previous Siedler 1.x implementation is a Bedrock Script API behavior pack. S
 - Tree Command API for command routing
 - Administrative command routes protected by `siedler.admin`
 - Essentials Home system with persistent homes
+- Complete Siedler start system with persistent team start positions
+- `/start`, `/start kit` and admin `/start admin set|clear|teamtp|starterkit|game`
+- Configurable one-time starter kit and game-start teleportation
 - `/sethome`, `/home`, `/homes` and `/delhome`
 - Home teleportation with saved world, position and rotation
 - Administrative management GUI with player information and moderation actions
