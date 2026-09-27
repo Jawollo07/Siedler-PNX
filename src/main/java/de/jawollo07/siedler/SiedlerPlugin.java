@@ -200,6 +200,10 @@ public final class SiedlerPlugin extends PluginBase {
             if (traderManager != null) {
                 this.getServer().getScheduler().scheduleRepeatingTask(this, traderManager, 20 * 10);
             }
+            if (claimBoundaryRenderer != null) {
+                // Refresh the client-side boundary particles twice per second.
+                this.getServer().getScheduler().scheduleRepeatingTask(this, claimBoundaryRenderer, 10);
+            }
         } catch (Exception e) {
             this.getLogger().error("Error with Task registration: " + e);
         }
