@@ -13,6 +13,7 @@ import org.powernukkitx.event.Listener;
 import org.powernukkitx.event.player.PlayerInteractEntityEvent;
 import org.powernukkitx.form.window.SimpleForm;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.ConfigSection;
 
 import java.util.ArrayList;
@@ -111,24 +112,19 @@ public final class TraderManager implements Listener, Runnable {
             return null;
         }
 
-        Entity[] created = new Entity[1];
-        de.jawollo07.siedler.monsters.MonsterManager.runWithBypass(() ->
-                created[0] = Entity.createEntity(
-                        Entity.VILLAGER_V2,
-                        new org.powernukkitx.level.Position(
-                                player.getX() + 1,
-                                player.getY(),
-                                player.getZ() + 1,
-                                player.getLevel()
-                        )
-                )
+        EntityVillagerV2 trader = createTrader(
+                player.getLevel(),
+                player.getX() + 1,
+                player.getY(),
+                player.getZ() + 1,
+                traderType
         );
-        Entity entity = created[0];
 
-        if (!(entity instanceof EntityVillagerV2 trader)) return null;
-
-        configure(trader, traderType);
-        trader.spawnToAll();
+        if (trader == null) {
+            player.sendMessage(messages.getMessage("messages.market.trader-error")
+                    .replace("{error}", "Der Händler konnte von PowerNukkitX nicht erzeugt werden."));
+            return null;
+        }
 
         player.sendMessage(messages.getMessage("messages.market.trader-spawned")
                 .replace("{name}", traderType.name()));
@@ -142,8 +138,14 @@ public final class TraderManager implements Listener, Runnable {
         for (MarketManager.Market market : marketManager.getMarkets()) {
             if (!market.enabled()) continue;
 
-            var level = plugin.getServer().getLevelByName(market.world());
-            if (level == null) continue;
+            var level = resolveLevel(market.world());
+            if (level == null) {
+                plugin.getLogger().warning(
+                        "Markt '" + market.id() + "' konnte nicht geladen werden: Welt '"
+                                + market.world() + "' ist nicht geladen."
+                );
+                continue;
+            }
 
             int target = Math.max(
                     0,
@@ -167,28 +169,94 @@ public final class TraderManager implements Listener, Runnable {
                 }
 
                 while (count < target) {
-                    Entity[] created = new Entity[1];
-                    de.jawollo07.siedler.monsters.MonsterManager.runWithBypass(() ->
-                            created[0] = Entity.createEntity(
-                                    Entity.VILLAGER_V2,
-                                    new org.powernukkitx.level.Position(
-                                            market.spawnX(),
-                                            market.spawnY(),
-                                            market.spawnZ(),
-                                            level
-                                    )
-                            )
+                    EntityVillagerV2 trader = createTrader(
+                            level,
+                            market.spawnX(),
+                            market.spawnY(),
+                            market.spawnZ(),
+                            type
                     );
-                    Entity entity = created[0];
 
-                    if (!(entity instanceof EntityVillagerV2 trader)) break;
+                    if (trader == null) {
+                        plugin.getLogger().warning(
+                                "Händler '" + type.id() + "' konnte im Markt '"
+                                        + market.id() + "' nicht gespawnt werden."
+                        );
+                        break;
+                    }
 
-                    configure(trader, type);
-                    trader.spawnToAll();
                     count++;
                 }
             }
         }
+    }
+
+    /**
+     * Creates a persistent Siedler trader. PowerNukkitX fires EntitySpawnEvent
+     * during Entity.createEntity(), therefore the MonsterManager bypass must
+     * surround the actual creation. The Persistent NBT flag prevents the
+     * villager from being treated like an ordinary despawnable mob.
+     */
+    private EntityVillagerV2 createTrader(
+            org.powernukkitx.level.Level level,
+            double x,
+            double y,
+            double z,
+            TraderType type
+    ) {
+        try {
+            org.powernukkitx.level.Position position =
+                    new org.powernukkitx.level.Position(x, y, z, level);
+            CompoundTag nbt = Entity.getDefaultNBT(position);
+            nbt.putBoolean("Persistent", true);
+
+            Entity[] created = new Entity[1];
+            de.jawollo07.siedler.monsters.MonsterManager.runWithBypass(() ->
+                    created[0] = Entity.createEntity(
+                            Entity.VILLAGER_V2,
+                            position.getChunk(),
+                            nbt
+                    )
+            );
+
+            if (!(created[0] instanceof EntityVillagerV2 trader)) {
+                return null;
+            }
+
+            configure(trader, type);
+            trader.spawnToAll();
+            return trader;
+        } catch (Exception exception) {
+            plugin.getLogger().warning(
+                    "Händler '" + type.id() + "' konnte nicht erzeugt werden: "
+                            + safeError(exception)
+            );
+            return null;
+        }
+    }
+
+    /**
+     * Accepts both the configured PNX level name and the common
+     * "overworld"/"world" aliases.
+     */
+    private org.powernukkitx.level.Level resolveLevel(String configuredWorld) {
+        if (configuredWorld == null || configuredWorld.isBlank()) return null;
+
+        String world = configuredWorld.startsWith("minecraft:")
+                ? configuredWorld.substring("minecraft:".length())
+                : configuredWorld;
+
+        var level = plugin.getServer().getLevelByName(world);
+        if (level != null) return level;
+
+        if ("overworld".equalsIgnoreCase(world)) {
+            return plugin.getServer().getLevelByName("world");
+        }
+        if ("world".equalsIgnoreCase(world)) {
+            return plugin.getServer().getLevelByName("overworld");
+        }
+
+        return null;
     }
 
     @EventHandler
