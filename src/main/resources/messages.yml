@@ -153,6 +153,7 @@ messages:
     home-button: "§e{name}\\n§7{world} §8• §f{x} / {y} / {z}"
     home-close: "Schließen"
     enderchest-already-open: "§cDeine Enderchest ist bereits geöffnet."
+    enderchest-error: "§cDie Enderchest konnte nicht geöffnet werden."
     team-enderchest-no-team: "§cDu bist in keinem Team."
     team-enderchest-already-open: "§cDeine Team-Enderchest ist bereits geöffnet."
     team-enderchest-error: "§cDie Team-Enderchest konnte nicht geöffnet werden."
