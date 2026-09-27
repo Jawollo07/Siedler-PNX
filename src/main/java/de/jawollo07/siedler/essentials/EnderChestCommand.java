@@ -92,7 +92,14 @@ public final class EnderChestCommand extends Command {
                 }
 
                 inventory.setBlockEntityEnderChest(player, virtualChest);
-                player.addWindow(inventory);
+                int windowId = player.addWindow(inventory);
+                if (windowId == -1) {
+                    // addWindow() can fail when another temporary window is open.
+                    // Reset the native EnderChest state so the next /ec is not
+                    // incorrectly rejected as "already open".
+                    inventory.setBlockEntityEnderChest(player, null);
+                    throw new IllegalStateException("Enderchest-Fenster konnte nicht geöffnet werden.");
+                }
 
                 final BlockEntityEnderChest entityToRemove = virtualChest;
                 plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () -> {
