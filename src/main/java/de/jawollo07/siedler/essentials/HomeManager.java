@@ -342,25 +342,29 @@ public class HomeManager {
         Class<?> locationClass = Class.forName("org.powernukkitx.level.Location");
         Object location = null;
 
-        for (java.lang.reflect.Constructor<?> constructor : locationClass.getConstructors()) {
-            Class<?>[] types = constructor.getParameterTypes();
-            if (types.length == 6
-                    && types[0] == double.class
-                    && types[1] == double.class
-                    && types[2] == double.class
-                    && types[3] == float.class
-                    && types[4] == float.class
-                    && types[5].isAssignableFrom(level.getClass())) {
-                location = constructor.newInstance(
-                        home.getX(),
-                        home.getY(),
-                        home.getZ(),
-                        (float) home.getYaw(),
-                        (float) home.getPitch(),
-                        level
-                );
-                break;
-            }
+        // PNX Location uses double yaw/pitch and Level in this API generation.
+        // The previous implementation searched for float yaw/pitch, so it never
+        // found the actual constructor and every /home teleport failed.
+        try {
+            location = locationClass
+                    .getConstructor(
+                            double.class,
+                            double.class,
+                            double.class,
+                            double.class,
+                            double.class,
+                            org.powernukkitx.level.Level.class
+                    )
+                    .newInstance(
+                            home.getX(),
+                            home.getY(),
+                            home.getZ(),
+                            home.getYaw(),
+                            home.getPitch(),
+                            level
+                    );
+        } catch (NoSuchMethodException ignored) {
+            // Keep the explicit error below for incompatible PNX API versions.
         }
 
         if (location == null) {
