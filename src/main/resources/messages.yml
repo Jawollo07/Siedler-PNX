@@ -128,7 +128,7 @@ messages:
     management-death-inventory-item: "§e{section} §8Slot {slot}: §f{name} §7x{count}"
     management-death-inventory-damage: " §8(Damage {damage})"
     management-death-history-entry-button: "§f{player} §8({date})\\n§7{world} §8• §f{x} {y} {z}"
-    management-reason-header: "§7Spieler: §f{player}\\n§7Wähle einen Grund:"
+    management-reason-header: "§7Spieler: §f{player}\n§7Wähle einen Grund:"
     error-unknown: "Unbekannter Fehler"
 
     # Spielerstatistiken

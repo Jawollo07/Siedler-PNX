@@ -205,9 +205,9 @@ public class MessageManager {
         Config current = requireConfig();
         String value = current.getString(path);
         if (value == null || value.isBlank()) return fallback;
-        // messages.yml historically used escaped \\n sequences for multiline forms.
-        // PowerNukkitX keeps those as literal text, so normalize them at the message boundary.
-        return value.replace("\\\\n", "\n");
+
+        // Ersetzt zuerst das doppelte \\n und danach das einfache \n, falls es als Text eingelesen wurde
+        return value.replace("\\\\n", "\n").replace("\\n", "\n");
     }
 
     private Config requireConfig() {

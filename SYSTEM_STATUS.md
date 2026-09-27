@@ -83,8 +83,8 @@
 | [x] | Grenzvisualisierung | Nahe Claim-Grenzen sind dauerhaft sichtbar |
 | [x] | TNT/Explosionen | Explosions-Griefing ist verhindert |
 | [x] | Pistons | Pistons umgehen Claims nicht |
-| [ ] | Feuer | Feuer umgeht Claims nicht | Schutz für Burn/Ignite ergänzt; Ingame verifizieren
-| [ ] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht | BlockFromTo-Schutz ergänzt; Ingame verifizieren
+| [x] | Feuer | Feuer umgeht Claims nicht | Schutz für Burn/Ignite ergänzt; Ingame verifizieren
+| [!] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht | Flüssigkeiten sind immernoch platzierbar
 | [x] | Container/Hopper | Geschützte Inventare können nicht missbraucht werden |
 | [x] | Entity-Griefing | Relevante Entity-Blockänderungen sind geschützt |
 | [x] | Protection-Schalter | claims.protection.enabled funktioniert |
@@ -160,26 +160,26 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Verwaltung-GUI | Admin-GUI öffnet | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
+| [!] | Verwaltung-GUI | Admin-GUI öffnet | "\n\n" Wird als Text angezeigt
 | [x] | Spieler-Lookup | Spielerinformationen werden angezeigt |
 | [x] | Kick | Kick funktioniert |
-| [ ] | Warnung | Warnung funktioniert | Warnung wird nun zusätzlich direkt an den Spieler gesendet; Ingame verifizieren
+| [x] | Warnung | Warnung funktioniert | Warnung wird nun zusätzlich direkt an den Spieler gesendet; Ingame verifizieren
 | [x] | Ban | Permanenter Ban funktioniert |
 | [x] | Tempban | Temporärer Ban läuft korrekt ab |
 | [x] | Join-Ban | Gebannte Spieler können nicht joinen |
 | [x] | Moderations-History | Aktionen werden gespeichert |
 | [x] | Death-History | Todesdaten werden gespeichert |
-| [ ] | Inventory-Snapshots | Snapshots werden gespeichert | Join/Quit/periodische Snapshots und Admin-Anzeige vorhanden; Ingame/DB verifizieren
-| [ ] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten | Verwaltung um Snapshot-Ansicht erweitert; Ingame verifizieren
+| [x] | Inventory-Snapshots | Snapshots werden gespeichert | Join/Quit/periodische Snapshots und Admin-Anzeige vorhanden; Ingame/DB verifizieren
+| [x] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten | Verwaltung um Snapshot-Ansicht erweitert; Ingame verifizieren
 | [x] | Permissions | Unberechtigte Spieler kommen nicht hinein |
 
 ## 12. Enderchests / Inventare
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | ec | Persönlicher Enderchest öffnet | Fehlgeschlagenes addWindow setzt EnderChest-Status zurück; Ingame verifizieren
+| [!] | ec | Persönlicher Enderchest öffnet | Enderchest wird nicht angezeigt
 | [x] | Personal-Persistenz | Inhalt überlebt Neustart |
-| [ ] | tec | Team-Enderchest öffnet | Slot-Mapping an native ChestInventory angepasst; Ingame verifizieren
+| [!] | tec | Team-Enderchest öffnet | Enderchest wird nicht angezeigt
 | [x] | Team-Persistenz | Inhalt überlebt Neustart |
 | [x] | Teamzugriff | Nur berechtigte Mitglieder greifen zu |
 | [x] | Verwaltung | Admin kann Enderchests verwalten |
@@ -189,8 +189,8 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Spielerstatistiken | Werte werden aufgezeichnet | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
-| [ ] | Anzeige | Statistiken können angezeigt werden | Escaped-Newline-Darstellung korrigiert; Ingame verifizieren
+| [x] | Spielerstatistiken | Werte werden aufgezeichnet |
+| [x] | Anzeige | Statistiken können angezeigt werden |
 | [x] | Persistenz | Statistiken überleben Neustart |
 | [x] | Tode | Tode werden aufgezeichnet |
 | [x] | Kills | Kills werden aufgezeichnet |
@@ -209,15 +209,15 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Global Controller | Normales Monster-Spawning wird kontrolliert |
-| [ ] | Blacklist | Blacklisted Mobs werden blockiert |
-| [ ] | Controlled-Mob-Liste | Verwaltete Mobs korrekt behandelt |
-| [ ] | Quotas | Spawn-Wahrscheinlichkeiten funktionieren |
-| [ ] | Chunk-Limit | Chunk-Limit funktioniert |
-| [ ] | World-Limit | World-Limit funktioniert |
-| [ ] | World-Blacklist | Konfigurierte Welten geschützt |
-| [ ] | Claim-Schutz | Normale Monster in Claims blockiert |
-| [ ] | Villager-Limit | Lokales Villager-Limit funktioniert |
+| [x] | Global Controller | Normales Monster-Spawning wird kontrolliert |
+| [x] | Blacklist | Blacklisted Mobs werden blockiert |
+| [x] | Controlled-Mob-Liste | Verwaltete Mobs korrekt behandelt |
+| [x] | Quotas | Spawn-Wahrscheinlichkeiten funktionieren |
+| [x] | Chunk-Limit | Chunk-Limit funktioniert |
+| [x] | World-Limit | World-Limit funktioniert |
+| [x] | World-Blacklist | Konfigurierte Welten geschützt |
+| [x] | Claim-Schutz | Normale Monster in Claims blockiert |
+| [x] | Villager-Limit | Lokales Villager-Limit funktioniert |
 | [ ] | Token-Bypass | Token-Encounter können spawnen |
 | [ ] | Raid-Bypass | Raid-Encounter können spawnen |
 
@@ -285,12 +285,12 @@
 
 | Status | System | Prüfung |
 |---|---|---|
-| [ ] | Global Chat | Öffentlicher Chat funktioniert |
-| [ ] | Team Chat | Teamchat funktioniert |
-| [ ] | Direct Message | dm funktioniert |
-| [ ] | MessageManager | Meldungen sind zentralisiert |
-| [ ] | Prefixe | Richtige Prefixe |
-| [ ] | messages.yml | Änderungen werden übernommen |
+| [x] | Global Chat | Öffentlicher Chat funktioniert |
+| [x] | Team Chat | Teamchat funktioniert |
+| [x] | Direct Message | dm funktioniert |
+| [x] | MessageManager | Meldungen sind zentralisiert |
+| [x] | Prefixe | Richtige Prefixe |
+| [x] | messages.yml | Änderungen werden übernommen |
 
 ## 21. PvP / Tournament
 
