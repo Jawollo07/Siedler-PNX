@@ -2,6 +2,7 @@ package de.jawollo07.siedler.essentials;
 
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.storage.StorageManager;
+import de.jawollo07.siedler.core.MessageManager;
 import org.powernukkitx.Player;
 
 import java.lang.reflect.Method;
@@ -25,7 +26,15 @@ public final class ModerationManager {
 
     public synchronized Punishment warn(String playerId, String playerName, String reason,
                                         String moderatorId, String moderatorName) throws SQLException {
-        return create(playerId, playerName, "WARN", reason, moderatorId, moderatorName, null);
+        Punishment punishment = create(playerId, playerName, "WARN", reason, moderatorId, moderatorName, null);
+        Player player = findOnline(playerName);
+        if (player != null) {
+            MessageManager messages = new MessageManager();
+            String warning = messages.getMessage("messages.essentials.management-warn-player")
+                    .replace("{reason}", reason == null || reason.isBlank() ? messages.getMessage("messages.essentials.management-no-reason") : reason);
+            player.sendMessage(warning);
+        }
+        return punishment;
     }
 
     public synchronized Punishment kick(String playerId, String playerName, String reason,
