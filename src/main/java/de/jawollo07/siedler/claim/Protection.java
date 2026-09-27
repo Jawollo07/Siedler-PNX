@@ -47,6 +47,9 @@ public class Protection implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) throws SQLException {
+        if (!claimsProtectionEnabled) {
+            return;
+        }
         Player player = event.getPlayer();
         Block block = event.getBlock();
         if (!hasClaimAccess(player)) {
@@ -76,6 +79,9 @@ public class Protection implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (!claimsProtectionEnabled) {
+            return;
+        }
         Player player = event.getPlayer();
 
         if (!hasClaimAccess(player)) {
@@ -88,6 +94,9 @@ public class Protection implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!claimsProtectionEnabled) {
+            return;
+        }
         Player player = event.getPlayer();
 
         String claimID = utils.get_claimID(player);
