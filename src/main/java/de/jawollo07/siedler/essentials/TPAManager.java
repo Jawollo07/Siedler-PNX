@@ -123,38 +123,81 @@ public final class TPAManager {
     }
 
     private void teleport(Player requester, Player target) throws Exception {
+        if (requester == null || target == null) {
+            throw new IllegalArgumentException("Spieler darf nicht null sein.");
+        }
+
+        org.powernukkitx.level.Level level = target.getLevel();
+        if (level == null) {
+            throw new IllegalStateException("Die aktuelle Welt konnte nicht ermittelt werden.");
+        }
+
         Class<?> locationClass = Class.forName("org.powernukkitx.level.Location");
         Object location = null;
-        for (java.lang.reflect.Constructor<?> constructor : locationClass.getConstructors()) {
-            Class<?>[] types = constructor.getParameterTypes();
-            if (types.length == 6 && types[0] == double.class && types[1] == double.class
-                    && types[2] == double.class && types[3] == float.class
-                    && types[4] == float.class && types[5].isAssignableFrom(target.getLevel().getClass())) {
-                location = constructor.newInstance(
-                        target.getPosition().getX(), target.getPosition().getY(), target.getPosition().getZ(),
-                        (float) target.getYaw(), (float) target.getPitch(), target.getLevel());
-                break;
-            }
+
+        // PNX 3.0.5 uses double yaw/pitch in the Location constructor.
+        // The old implementation searched for float yaw/pitch and therefore
+        // failed with "Die PNX-Location-API konnte nicht aufgelöst werden."
+        try {
+            location = locationClass
+                    .getConstructor(
+                            double.class,
+                            double.class,
+                            double.class,
+                            double.class,
+                            double.class,
+                            org.powernukkitx.level.Level.class
+                    )
+                    .newInstance(
+                            target.getPosition().getX(),
+                            target.getPosition().getY(),
+                            target.getPosition().getZ(),
+                            target.getYaw(),
+                            target.getPitch(),
+                            level
+                    );
+        } catch (NoSuchMethodException ignored) {
+            // Keep the explicit error below for incompatible PNX API versions.
         }
-        if (location == null) throw new IllegalStateException("Die PNX-Location-API konnte nicht aufgelöst werden.");
+
+        if (location == null) {
+            throw new IllegalStateException("Die PNX-Location-API konnte nicht aufgelöst werden.");
+        }
 
         for (java.lang.reflect.Method method : requester.getClass().getMethods()) {
-            if (!"teleport".equals(method.getName()) || method.getParameterCount() != 2) continue;
-            if (!method.getParameterTypes()[0].isAssignableFrom(locationClass)) continue;
+            if (!"teleport".equals(method.getName()) || method.getParameterCount() != 2) {
+                continue;
+            }
+            if (!method.getParameterTypes()[0].isAssignableFrom(locationClass)) {
+                continue;
+            }
+
             Class<?> causeType = method.getParameterTypes()[1];
-            if (!causeType.isEnum()) continue;
+            if (!causeType.isEnum()) {
+                continue;
+            }
+
             Object cause = null;
             for (Object constant : causeType.getEnumConstants()) {
-                if ("COMMAND".equals(String.valueOf(constant))) { cause = constant; break; }
+                if ("COMMAND".equals(String.valueOf(constant))) {
+                    cause = constant;
+                    break;
+                }
             }
-            if (cause == null && causeType.getEnumConstants().length > 0) cause = causeType.getEnumConstants()[0];
-            if (cause == null) throw new IllegalStateException("Keine Teleport-Ursache verfügbar.");
+            if (cause == null && causeType.getEnumConstants().length > 0) {
+                cause = causeType.getEnumConstants()[0];
+            }
+            if (cause == null) {
+                throw new IllegalStateException("Keine Teleport-Ursache verfügbar.");
+            }
+
             Object result = method.invoke(requester, location, cause);
             if (result instanceof Boolean success && !success) {
                 throw new IllegalStateException("Der Teleport wurde abgelehnt.");
             }
             return;
         }
+
         throw new IllegalStateException("Die PNX-Teleport-API konnte nicht aufgelöst werden.");
     }
 }
