@@ -206,8 +206,10 @@ antiafk:
 # All coordinates are configurable. Worlds must be loaded by the server.
 tournament:
   enabled: true
-  # single_elimination | double_elimination | round_robin
-  format: single_elimination
+  # knockout | single_elimination | double_elimination | round_robin
+  # knockout = klassisches K.-o.-System: eine Niederlage scheidet aus.
+  # single_elimination bleibt als Alias für knockout erhalten.
+  format: knockout
   registration:
     duration-seconds: 120
     min-participants: 2
