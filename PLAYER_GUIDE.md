@@ -450,3 +450,9 @@ Für ein faires Siedler-Spiel gelten insbesondere:
 ---
 
 **Viel Erfolg bei Siedler 2.0 – baut euer Gebiet auf, entwickelt eure Wirtschaft und verteidigt eure Outposts!**
+
+## Start-System
+
+Spieler können mit `/start kit` ihr konfiguriertes Starterkit einmalig anfordern. Das Kit wird persistent gespeichert und kann nicht versehentlich erneut automatisch vergeben werden.
+
+Mit `/start status` lässt sich sehen, wie viele Team-Startpunkte eingerichtet sind.
