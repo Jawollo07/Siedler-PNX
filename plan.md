@@ -113,7 +113,7 @@ Die migrierten Commands verwenden die **PowerNukkitX Tree Command API**.
 - [x] Block-Break-Schutz
 - [x] Block-Place-Schutz
 - [x] Claim-Adminbefehle über `/claim admin`
-- [ ] Claim-Grenzen/Visualisierung
+- [x] Claim-Grenzen/Visualisierung
 - [x] Claim-sicheres Monster-/Pillager-Spawning
 
 ## Phase 4 – Economy & Taxes
