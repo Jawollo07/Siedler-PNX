@@ -294,7 +294,8 @@ Siedler 2.0 besitzt ein PvP-Turniersystem. Spieler können sich für ein geöffn
 Mit `/tournament join` meldet sich ein Spieler während der Registrierungsphase an. Mindest- und Maximalteilnehmerzahl sind serverseitig konfiguriert. Mit `/tournament leave` kann die Anmeldung vor dem Start verlassen werden.
 
 ### Turnierformate
-- Single Elimination: eine Niederlage beendet die Teilnahme.
+- K.-o. (Knockout): klassische direkte Ausscheidung; eine Niederlage beendet die Teilnahme.
+- K.-o. / Single Elimination: identischer Modus als kompatibler Alias für K.-o.
 - Double Elimination: zwei Niederlagen beenden die Teilnahme.
 - Round Robin: jeder Teilnehmer spielt gegen jeden.
 
