@@ -13,6 +13,7 @@ import de.jawollo07.siedler.claim.ClaimCommand;
 import de.jawollo07.siedler.eco.EcoCommand;
 import de.jawollo07.siedler.eco.TaxManager;
 import de.jawollo07.siedler.claim.Protection;
+import de.jawollo07.siedler.claim.ClaimBoundaryRenderer;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
 import de.jawollo07.siedler.essentials.ManagementCommand;
@@ -83,6 +84,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TraderManager traderManager;
     private ModerationManager moderationManager;
     private TournamentManager tournamentManager;
+    private ClaimBoundaryRenderer claimBoundaryRenderer;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -130,6 +132,7 @@ public final class SiedlerPlugin extends PluginBase {
         traderManager = new TraderManager(this, marketManager);
         moderationManager = new ModerationManager(this);
         tournamentManager = new TournamentManager(this);
+        claimBoundaryRenderer = new ClaimBoundaryRenderer(this);
 
         // Registration
         registerCommands();
@@ -215,6 +218,7 @@ public final class SiedlerPlugin extends PluginBase {
         registerListenerSafe(marketManager, "MarketManager");
         registerListenerSafe(traderManager, "TraderManager");
         registerListenerSafe(tournamentManager, "TournamentManager");
+        registerListenerSafe(claimBoundaryRenderer, "ClaimBoundaryRenderer");
         getLogger().info("Listener registration completed.");
     }
 
