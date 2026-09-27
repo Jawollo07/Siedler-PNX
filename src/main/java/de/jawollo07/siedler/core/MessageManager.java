@@ -204,7 +204,10 @@ public class MessageManager {
     private String getString(String path, String fallback) {
         Config current = requireConfig();
         String value = current.getString(path);
-        return value == null || value.isBlank() ? fallback : value;
+        if (value == null || value.isBlank()) return fallback;
+        // messages.yml historically used escaped \\n sequences for multiline forms.
+        // PowerNukkitX keeps those as literal text, so normalize them at the message boundary.
+        return value.replace("\\\\n", "\n");
     }
 
     private Config requireConfig() {
