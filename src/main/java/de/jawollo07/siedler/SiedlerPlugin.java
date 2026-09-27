@@ -16,6 +16,8 @@ import de.jawollo07.siedler.claim.Protection;
 import de.jawollo07.siedler.claim.ClaimBoundaryRenderer;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.essentials.PlayerListener;
+import de.jawollo07.siedler.essentials.StartManager;
+import de.jawollo07.siedler.essentials.StartCommand;
 import de.jawollo07.siedler.essentials.ManagementCommand;
 import de.jawollo07.siedler.essentials.ModerationManager;
 import de.jawollo07.siedler.essentials.SetHomeCommand;
@@ -86,6 +88,7 @@ public final class SiedlerPlugin extends PluginBase {
     private TournamentManager tournamentManager;
     private ClaimBoundaryRenderer claimBoundaryRenderer;
     private Protection protection;
+    private StartManager startManager;
 
     public static SiedlerPlugin getInstance() {
         return instance;
@@ -135,6 +138,7 @@ public final class SiedlerPlugin extends PluginBase {
         tournamentManager = new TournamentManager(this);
         claimBoundaryRenderer = new ClaimBoundaryRenderer(this);
         protection = new Protection(this);
+        startManager = new StartManager(this);
 
         // Registration
         registerCommands();
@@ -182,6 +186,7 @@ public final class SiedlerPlugin extends PluginBase {
         commandManager.register(new RaidCommand(this, raidManager));
         commandManager.register(new MarketCommand(this, marketManager, traderManager));
         commandManager.register(new TournamentCommand(this, tournamentManager));
+        commandManager.register(new StartCommand(this, startManager));
     }
 
     private void registerTasks() {
