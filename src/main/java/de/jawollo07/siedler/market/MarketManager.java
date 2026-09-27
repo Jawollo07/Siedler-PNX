@@ -19,9 +19,22 @@ public final class MarketManager implements Listener {
     public record Market(String id, String world, int minX, int minZ, int maxX, int maxZ,
                          double spawnX, double spawnY, double spawnZ, boolean enabled) {
         public boolean contains(String level, double x, double z) {
-            if (!enabled || !world.equals(level)) return false;
+            if (!enabled || !sameWorld(world, level)) return false;
             return x >= Math.min(minX, maxX) && x <= Math.max(minX, maxX)
                     && z >= Math.min(minZ, maxZ) && z <= Math.max(minZ, maxZ);
+        }
+
+        private static boolean sameWorld(String configured, String actual) {
+            if (configured == null || actual == null) return false;
+            String a = configured.startsWith("minecraft:")
+                    ? configured.substring("minecraft:".length())
+                    : configured;
+            String b = actual.startsWith("minecraft:")
+                    ? actual.substring("minecraft:".length())
+                    : actual;
+            if (a.equalsIgnoreCase(b)) return true;
+            return ("overworld".equalsIgnoreCase(a) && "world".equalsIgnoreCase(b))
+                    || ("world".equalsIgnoreCase(a) && "overworld".equalsIgnoreCase(b));
         }
     }
 
