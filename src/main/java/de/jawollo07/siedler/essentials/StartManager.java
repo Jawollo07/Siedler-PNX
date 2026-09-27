@@ -71,10 +71,20 @@ public final class StartManager {
         if (raw == null || raw.isBlank()) return null;
         try {
             String[] p = raw.split("\\|", -1);
-            if (p.length < 7) return null;
+            // Stored format: world|x|y|z|yaw|pitch (6 fields).
+            // Older versions of StartManager accidentally required 7 fields,
+            // which made every valid start point appear as if it did not exist.
+            if (p.length != 6) {
+                plugin.getLogger().warning("Ungültiger Startpunkt für Team " + team.name() + ": erwartet 6 Felder, erhalten " + p.length);
+                return null;
+            }
+            if (p[0].isBlank()) return null;
             return new StartPosition(team.id(), p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]),
                     Double.parseDouble(p[3]), Double.parseDouble(p[4]), Double.parseDouble(p[5]));
-        } catch (Exception e) { return null; }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Startpunkt für Team " + team.name() + " konnte nicht gelesen werden: " + safe(e));
+            return null;
+        }
     }
 
     public boolean teleportToTeam(Player player) {
