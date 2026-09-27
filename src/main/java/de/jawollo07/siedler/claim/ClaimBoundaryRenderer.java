@@ -62,6 +62,9 @@ public final class ClaimBoundaryRenderer implements Runnable, Listener {
             String world = player.getLevel().getName();
             double playerX = player.getX();
             double playerZ = player.getZ();
+            Claim playerClaim = claimManager.getClaimAtChunk(
+                    world, player.getChunkX(), player.getChunkZ()
+            );
 
             for (Claim claim : claims) {
                 if (!world.equals(claim.world())) {
@@ -78,14 +81,7 @@ public final class ClaimBoundaryRenderer implements Runnable, Listener {
                     continue;
                 }
 
-                boolean own = false;
-                Claim playerClaim = claimManager.getClaimAtChunk(
-                        world, player.getChunkX(), player.getChunkZ()
-                );
-                if (playerClaim != null) {
-                    own = playerClaim.id().equals(claim.id());
-                }
-
+                boolean own = playerClaim != null && playerClaim.id().equals(claim.id());
                 int y = height > 0 ? height : Math.max(1, (int) Math.floor(player.getY()) + 1);
                 renderBoundary(player, minBlockX, minBlockZ, maxBlockX, maxBlockZ,
                         y, spacing, own);
