@@ -1,6 +1,6 @@
 # Siedler 2.0 – Migration Plan
 
-Stand: 26.09.2026
+Stand: 27.09.2026
 
 ## Versionsschema
 
@@ -299,7 +299,7 @@ Der aktuelle `beta`-Stand enthält ein eigenständiges PvP-Turniersystem. Es wir
 ### Umgesetzt
 - [x] Registrierungsphase mit Mindest-/Maximalteilnehmern
 - [x] zufälliges Seeding und automatische Freilose
-- [x] Single Elimination
+- [x] K.-o. / Knockout (Single Elimination)
 - [x] Double Elimination
 - [x] Round Robin
 - [x] mehrere gleichzeitig laufende Matches
