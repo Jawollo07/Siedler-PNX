@@ -83,8 +83,8 @@
 | [x] | Grenzvisualisierung | Nahe Claim-Grenzen sind dauerhaft sichtbar |
 | [x] | TNT/Explosionen | Explosions-Griefing ist verhindert |
 | [x] | Pistons | Pistons umgehen Claims nicht |
-| [!] | Feuer | Feuer umgeht Claims nicht | Notes: Man kann ein Feuerzeug normal verwenden
-| [!] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht | Notes: Wasser und Lava lässt sich platzieren
+| [ ] | Feuer | Feuer umgeht Claims nicht | Schutz für Burn/Ignite ergänzt; Ingame verifizieren
+| [ ] | Flüssigkeiten | Wasser/Lava umgehen Claims nicht | BlockFromTo-Schutz ergänzt; Ingame verifizieren
 | [x] | Container/Hopper | Geschützte Inventare können nicht missbraucht werden |
 | [x] | Entity-Griefing | Relevante Entity-Blockänderungen sind geschützt |
 | [x] | Protection-Schalter | claims.protection.enabled funktioniert |
@@ -163,23 +163,23 @@
 | [!] | Verwaltung-GUI | Admin-GUI öffnet | Notes: "\n" Wird als Text behandelt
 | [x] | Spieler-Lookup | Spielerinformationen werden angezeigt |
 | [x] | Kick | Kick funktioniert |
-| [!] | Warnung | Warnung funktioniert | Notes: Verwarnung wird dem Spieler nicht angezeigt
+| [ ] | Warnung | Warnung funktioniert | Warnung wird nun zusätzlich direkt an den Spieler gesendet; Ingame verifizieren
 | [x] | Ban | Permanenter Ban funktioniert |
 | [x] | Tempban | Temporärer Ban läuft korrekt ab |
 | [x] | Join-Ban | Gebannte Spieler können nicht joinen |
 | [x] | Moderations-History | Aktionen werden gespeichert |
 | [x] | Death-History | Todesdaten werden gespeichert |
-| [!] | Inventory-Snapshots | Snapshots werden gespeichert |
-| [!] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten |
+| [ ] | Inventory-Snapshots | Snapshots werden gespeichert | Join/Quit/periodische Snapshots und Admin-Anzeige vorhanden; Ingame/DB verifizieren
+| [ ] | Snapshot-Verwaltung | Admin kann Snapshots ansehen/verwalten | Verwaltung um Snapshot-Ansicht erweitert; Ingame verifizieren
 | [x] | Permissions | Unberechtigte Spieler kommen nicht hinein |
 
 ## 12. Enderchests / Inventare
 
 | Status | System | Prüfung |
 |---|---|---|
-| [!] | ec | Persönlicher Enderchest öffnet |
+| [ ] | ec | Persönlicher Enderchest öffnet | Fehlgeschlagenes addWindow setzt EnderChest-Status zurück; Ingame verifizieren
 | [x] | Personal-Persistenz | Inhalt überlebt Neustart |
-| [!] | tec | Team-Enderchest öffnet |
+| [ ] | tec | Team-Enderchest öffnet | Slot-Mapping an native ChestInventory angepasst; Ingame verifizieren
 | [x] | Team-Persistenz | Inhalt überlebt Neustart |
 | [x] | Teamzugriff | Nur berechtigte Mitglieder greifen zu |
 | [x] | Verwaltung | Admin kann Enderchests verwalten |
@@ -372,8 +372,8 @@
 | Status | Problem | Notiz |
 |---|---|---|
 | [ ] | MariaDB players.id Migration | Alte Schemas ohne players.id können SQL-Fehler verursachen |
-| [ ] | Claim Protection Regression | Listener wurde kürzlich registriert; Ingame testen |
-| [ ] | /ec Runtime-Test | Temporäres PNX EnderChest-BlockEntity verwenden; Öffnen/Persistenz testen |
+| [ ] | Claim Protection Regression | Fire/Ignite/Liquid/Explosion-Schutz erweitert; vollständigen Ingame-Test durchführen |
+| [ ] | /ec Runtime-Test | Fehlgeschlagenes Öffnen wird sauber zurückgesetzt; Öffnen/Persistenz testen |
 | [ ] | /home Runtime-Test | Location-Konstruktor wurde auf double yaw/pitch korrigiert; Ingame testen |
 
 ## 26. Release Gate
