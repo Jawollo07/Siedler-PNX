@@ -673,3 +673,16 @@ Nur Pfade unter `tournament.*` dürfen über diese Schnittstelle geändert werde
 ---
 
 **Dieses Handbuch beschreibt den aktuellen beta-Stand. Bei Änderungen an Commands, Berechtigungen, Konfiguration oder Gameplay-Regeln muss es entsprechend aktualisiert werden.**
+
+## Start-System
+
+Das Start-System wird vollständig über `/start admin` verwaltet:
+
+- `/start admin set <Team>` – setzt den aktuellen Standort als persistenten Team-Startpunkt.
+- `/start admin clear <Team>` – entfernt den Team-Startpunkt.
+- `/start admin teamtp <Spieler>` – teleportiert einen Spieler zu seinem Team-Startpunkt.
+- `/start admin starterkit <Spieler>` – vergibt das Starterkit manuell erneut.
+- `/start admin game` – startet das Spiel: Online-Spieler werden anhand ihres Teams zu den konfigurierten Startpunkten teleportiert und erhalten ihr Starterkit, sofern sie es noch nicht erhalten haben.
+- `/start admin help` – zeigt die Administration-Hilfe.
+
+Die Team-Startpunkte und der Status des einmalig vergebenen Starterkits werden persistent in der Datenbank gespeichert. Das Starterkit ist unter `start-system.starter-kit` in der Config vollständig anpassbar.
