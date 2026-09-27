@@ -292,6 +292,23 @@ public class ClaimManager {
     }
 
     /**
+     * Returns all claims currently stored in the database.
+     */
+    public java.util.List<Claim> getAllClaims() throws SQLException {
+        String sql = "SELECT id, team_id, world, min_x, min_z, max_x, max_z "
+                + "FROM claims ORDER BY world, min_x, min_z";
+
+        java.util.List<Claim> claims = new java.util.ArrayList<>();
+        try (PreparedStatement statement = storage.getConnection().prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                claims.add(mapClaim(resultSet));
+            }
+        }
+        return claims;
+    }
+
+    /**
      * Returns all claims belonging to a team.
      */
     public java.util.List<Claim> getClaimsForTeam(String teamId) throws SQLException {
