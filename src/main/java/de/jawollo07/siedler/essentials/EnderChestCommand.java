@@ -97,7 +97,7 @@ public final class EnderChestCommand extends Command {
                 final BlockEntityEnderChest entityToRemove = virtualChest;
                 plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () -> {
                     try {
-                        level.removeBlockEntity(entityToRemove);
+                        entityToRemove.close();
                     } catch (Exception ignored) {
                         // The inventory keeps the entity reference until close;
                         // only its temporary world registration is removed.
