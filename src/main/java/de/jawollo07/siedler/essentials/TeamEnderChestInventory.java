@@ -33,6 +33,15 @@ public final class TeamEnderChestInventory extends ContainerInventory {
     }
 
     @Override
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerEnumName.INVENTORY_CONTAINER);
+        }
+        return map;
+    }
+
+    @Override
     public InventoryHolder getHolder() {
         return super.getHolder();
     }
