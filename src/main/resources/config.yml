@@ -24,6 +24,15 @@ taxes:
   emeralds-per-villager-per-bonus: 1
 
 claims:
+  visualization:
+    enabled: true
+    # Only players within this horizontal distance see claim boundaries.
+    radius: 32
+    # Distance between boundary particles in blocks.
+    spacing: 2
+    # 0 = one block above the player's current feet position.
+    # Set to a fixed Y level (> 0) if all boundaries should be rendered at one height.
+    height: 0
   protection:
     enabled: true
     interaction-blacklist:
