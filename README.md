@@ -418,7 +418,7 @@ Kits werden als Server-Commands in `config.yml` definiert. Vor jedem Match wird 
 
 
 Unterstützte Turnierformate:
-- **Single Elimination** – Verlierer scheiden aus.
+- **K.-o. / Single Elimination** – Verlierer scheiden aus.
 - **Double Elimination** – zwei Niederlagen bedeuten das Ausscheiden.
 - **Round Robin** – jeder Teilnehmer spielt gegen jeden.
 - Best-of-Serien können über `tournament.match.best-of` auf 1, 3, 5 usw. gesetzt werden.
