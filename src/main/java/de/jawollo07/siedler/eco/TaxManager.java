@@ -276,13 +276,26 @@ public class TaxManager {
                     }
                 }
 
+                // /eco stats should report the current live villager population.
+                // Historical tax rows must not keep the displayed value at 0.
+                long currentVillagers = 0L;
+                try {
+                    Team currentTeam = teamManager.getTeamById(teamId);
+                    if (currentTeam != null) {
+                        currentVillagers = Math.max(0L, countVillagers(currentTeam));
+                    }
+                } catch (Exception exception) {
+                    plugin.getLogger().warning("Could not count current villagers for /eco stats: "
+                            + exception.getMessage());
+                }
+
                 return new TaxStatistics(
                         teamId,
                         resultSet.getLong("total_cycles"),
                         resultSet.getLong("successful_cycles"),
                         resultSet.getLong("failed_cycles"),
                         resultSet.getLong("total_coins"),
-                        resultSet.getLong("total_villagers"),
+                        currentVillagers,
                         lastTaxTimestamp,
                         lastVillagers,
                         lastBonus,
