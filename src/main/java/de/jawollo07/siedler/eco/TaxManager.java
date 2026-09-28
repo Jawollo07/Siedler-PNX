@@ -153,7 +153,9 @@ public class TaxManager {
                         for (Entity entity : chunk.getEntities().values()) {
                             if (entity instanceof EntityVillagerV2
                                     || entity instanceof EntityVillager
-                                    || "minecraft:villager".equals(entity.getIdentifier())) {
+                                    || "minecraft:villager".equals(entity.getIdentifier())
+                                    || "minecraft:villager_v2".equals(entity.getIdentifier()))
+                                    {
                                 String id = claim.world() + ":" + entity.getId();
                                 if (countedEntities.add(id)) count++;
                             }
