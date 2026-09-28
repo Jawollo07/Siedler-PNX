@@ -250,7 +250,17 @@ public class TaxManager {
             statement.setString(1, teamId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
-                    return new TaxStatistics(teamId, 0, 0, 0, 0L, 0L,
+                    long currentVillagers = 0L;
+                    try {
+                        Team currentTeam = teamManager.getTeamById(teamId);
+                        if (currentTeam != null) {
+                            currentVillagers = Math.max(0L, countVillagers(currentTeam));
+                        }
+                    } catch (Exception exception) {
+                        plugin.getLogger().warning("Could not count current villagers for /eco stats: "
+                                + exception.getMessage());
+                    }
+                    return new TaxStatistics(teamId, 0, 0, 0, 0L, currentVillagers,
                             null, 0, 0, 0L, null);
                 }
 
