@@ -3,6 +3,7 @@ package de.jawollo07.siedler.eco;
 import de.jawollo07.siedler.SiedlerPlugin;
 import de.jawollo07.siedler.claim.Claim;
 import de.jawollo07.siedler.claim.ClaimManager;
+import de.jawollo07.siedler.claim.Utils;
 import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.team.Team;
 import de.jawollo07.siedler.team.TeamManager;
@@ -25,6 +26,7 @@ public class TaxManager {
     private final SiedlerPlugin plugin;
     private final TeamManager teamManager;
     private final ClaimManager claimManager;
+    private final Utils claimUtils;
     private final EcoManager ecoManager;
     private final MessageManager messageManager;
     private TaskHandler task;
@@ -34,6 +36,7 @@ public class TaxManager {
         this.plugin = plugin;
         this.teamManager = new TeamManager(plugin);
         this.claimManager = new ClaimManager(plugin);
+        this.claimUtils = new Utils(plugin);
         this.ecoManager = new EcoManager(plugin);
         this.messageManager = new MessageManager();
     }
@@ -135,36 +138,11 @@ public class TaxManager {
 
     public int countVillagers(Team team) throws SQLException {
         int count = 0;
-        Set<String> countedEntities = new HashSet<>();
+        Set<String> countedClaims = new HashSet<>();
 
         for (Claim claim : claimManager.getClaimsForTeam(team.id())) {
-            Level level = plugin.getServer().getLevelByName(claim.world());
-            if (level == null) continue;
-
-            for (int x = claim.min_x(); x <= claim.max_x(); x++) {
-                for (int z = claim.min_z(); z <= claim.max_z(); z++) {
-                    IChunk chunk = level.getProvider().getLoadedChunk(x, z);
-                    boolean wasLoaded = chunk != null;
-
-                    if (!wasLoaded && !level.getProvider().loadChunk(x, z, false)) continue;
-                    if (!wasLoaded) chunk = level.getProvider().getLoadedChunk(x, z);
-
-                    if (chunk != null) {
-                        for (Entity entity : chunk.getEntities().values()) {
-                            if (entity instanceof EntityVillagerV2
-                                    || entity instanceof EntityVillager
-                                    || "minecraft:villager".equals(entity.getIdentifier())
-                                    || "minecraft:villager_v2".equals(entity.getIdentifier()))
-                                    {
-                                String id = claim.world() + ":" + entity.getId();
-                                if (countedEntities.add(id)) count++;
-                            }
-                        }
-                    }
-
-                    if (!wasLoaded && chunk != null) chunk.unload(true, true);
-                }
-            }
+            if (claim == null || !countedClaims.add(claim.id())) continue;
+            count += Math.max(0, claimUtils.countVillagerInClaim(claim.id()));
         }
         return count;
     }
