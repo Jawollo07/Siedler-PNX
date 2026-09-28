@@ -436,21 +436,19 @@ public final class TournamentManager implements Listener {
 
     private void teleportLocation(Player player, String worldName, double x, double y, double z) {
         try {
-            Object level=plugin.getServer().getLevelByName(worldName); if(level==null)return;
-            Class<?> lc=Class.forName("org.powernukkitx.level.Location"); Object loc=null;
-            for(Constructor<?> cc:lc.getConstructors()){
-                Class<?>[] t=cc.getParameterTypes();
-                if(t.length==6&&t[0]==double.class&&t[1]==double.class&&t[2]==double.class&&t[3]==float.class&&t[4]==float.class&&t[5].isAssignableFrom(level.getClass())){
-                    loc=cc.newInstance(x,y,z,player.getYaw(),player.getPitch(),level);break;
-                }
+            org.powernukkitx.level.Level level = plugin.getServer().getLevelByName(worldName);
+            if (level == null) {
+                plugin.getLogger().warning("Tournament world not loaded: " + worldName);
+                return;
             }
-            if(loc==null)return;
-            for(Method m:player.getClass().getMethods()) if(m.getName().equals("teleport")&&m.getParameterCount()==2&&m.getParameterTypes()[0].isAssignableFrom(lc)){
-                Class<?> cause=m.getParameterTypes()[1]; if(!cause.isEnum())continue;
-                Object v=cause.getEnumConstants()[0]; for(Object e:cause.getEnumConstants())if("COMMAND".equals(String.valueOf(e)))v=e;
-                m.invoke(player,loc,v);return;
-            }
-        }catch(Exception e){plugin.getLogger().warning("Tournament teleport failed: "+e.getMessage());}
+
+            org.powernukkitx.level.Location location = new org.powernukkitx.level.Location(
+                    x, y, z, player.getYaw(), player.getPitch(), level
+            );
+            player.teleport(location);
+        } catch (Exception e) {
+            plugin.getLogger().warning("Tournament teleport failed: " + e.getMessage());
+        }
     }
 
     private void teleport(Player player, String target) {
@@ -460,25 +458,11 @@ public final class TournamentManager implements Listener {
             Object level = plugin.getServer().getLevelByName(worldName);
             if (level == null) { plugin.getLogger().warning("Tournament world not loaded: " + worldName); return; }
             double x = config.getDouble(base + ".x"), y = config.getDouble(base + ".y"), z = config.getDouble(base + ".z");
-            Class<?> lc = Class.forName("org.powernukkitx.level.Location");
-            Object location = null;
-            for (Constructor<?> c : lc.getConstructors()) {
-                Class<?>[] t = c.getParameterTypes();
-                if (t.length == 6 && t[0] == double.class && t[1] == double.class && t[2] == double.class
-                        && t[3] == float.class && t[4] == float.class && t[5].isAssignableFrom(level.getClass())) {
-                    location = c.newInstance(x, y, z, player.getYaw(), player.getPitch(), level); break;
-                }
-            }
-            if (location == null) return;
-            for (Method m : player.getClass().getMethods()) {
-                if (!m.getName().equals("teleport") || m.getParameterCount() != 2) continue;
-                if (!m.getParameterTypes()[0].isAssignableFrom(lc)) continue;
-                Class<?> cause = m.getParameterTypes()[1];
-                if (!cause.isEnum() || cause.getEnumConstants().length == 0) continue;
-                Object value = cause.getEnumConstants()[0];
-                for (Object v : cause.getEnumConstants()) if ("COMMAND".equals(String.valueOf(v))) { value = v; break; }
-                m.invoke(player, location, value); return;
-            }
+            org.powernukkitx.level.Location location = new org.powernukkitx.level.Location(
+                    x, y, z, player.getYaw(), player.getPitch(), level
+            );
+            player.teleport(location);
+            return;
         } catch (Exception e) { plugin.getLogger().warning("Tournament teleport failed: " + e.getMessage()); }
     }
 }
