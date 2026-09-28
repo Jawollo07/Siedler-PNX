@@ -134,6 +134,8 @@ public final class SiedlerPlugin extends PluginBase {
         monsterManager = new MonsterManager(this);
         marketManager = new MarketManager(this);
         traderManager = new TraderManager(this, marketManager);
+        // Never reuse persisted/old VillagerV2 traders. Recreate them from config.
+        traderManager.respawnAllTraders();
         moderationManager = new ModerationManager(this);
         tournamentManager = new TournamentManager(this);
         claimBoundaryRenderer = new ClaimBoundaryRenderer(this);
