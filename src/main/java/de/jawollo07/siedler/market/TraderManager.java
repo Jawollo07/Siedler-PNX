@@ -89,7 +89,34 @@ public final class TraderManager implements Listener, Runnable {
         maintain();
     }
 
+    /** Removes every Siedler trader from every currently loaded world. */
+    public int removeAllTraders() {
+        int removed = 0;
+        for (org.powernukkitx.level.Level level : plugin.getServer().getLevels().values()) {
+            for (Entity entity : level.getEntities()) {
+                if (!(entity instanceof EntityVillagerV2 trader)) continue;
+                if (!isSiedlerTrader(trader)) continue;
+                try {
+                    trader.close();
+                    removed++;
+                } catch (Exception exception) {
+                    plugin.getLogger().warning("Siedler-Händler konnte nicht entfernt werden: " + safeError(exception));
+                }
+            }
+        }
+        if (removed > 0) plugin.getLogger().info(removed + " Siedler-Händler entfernt.");
+        return removed;
+    }
+
+    /** Removes old traders and creates a fresh set from the current config. */
+    public void respawnAllTraders() {
+        removeAllTraders();
+        maintain();
+    }
+
     public void stop() {
+        // Traders are intentionally not persisted between server sessions.
+        removeAllTraders();
     }
 
     public List<TraderType> getTypes() {
@@ -442,6 +469,13 @@ public final class TraderManager implements Listener, Runnable {
         }
 
         return label.toString();
+    }
+
+    private boolean isSiedlerTrader(EntityVillagerV2 trader) {
+        for (TraderType type : types) {
+            if (trader.containTag("siedler:trader:" + type.id())) return true;
+        }
+        return false;
     }
 
     private TraderType findTraderType(EntityVillagerV2 trader) {
