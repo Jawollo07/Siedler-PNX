@@ -455,7 +455,7 @@ public final class TournamentManager implements Listener {
         try {
             String base = target.equals("lobby") ? "tournament.lobby" : "tournament.arena." + target;
             String worldName = config.getString(base + ".world", player.getLevel().getName());
-            Object level = plugin.getServer().getLevelByName(worldName);
+            org.powernukkitx.level.Level level = plugin.getServer().getLevelByName(worldName);
             if (level == null) { plugin.getLogger().warning("Tournament world not loaded: " + worldName); return; }
             double x = config.getDouble(base + ".x"), y = config.getDouble(base + ".y"), z = config.getDouble(base + ".z");
             org.powernukkitx.level.Location location = new org.powernukkitx.level.Location(
