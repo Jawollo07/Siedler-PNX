@@ -5,7 +5,6 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.EventHandler;
 import org.powernukkitx.event.Listener;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
-import org.powernukkitx.event.entity.EntitySpawnEvent;
 import org.powernukkitx.level.Level;
 
 import java.sql.PreparedStatement;
@@ -90,7 +89,7 @@ public final class MonsterManager implements Listener {
     }
 
     @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent event) {
+    public void onEntitySpawn(CreatureSpawnEvent event) {
         if (event == null || isBypassed()) return;
 
         Entity entity = event.getEntity();
@@ -176,7 +175,7 @@ public final class MonsterManager implements Listener {
      * spawner eggs. Such a spawn is intentional player/admin action and must
      * never be blocked by the villager population controller.</p>
      */
-    private boolean isVillagerSpawnEgg(EntitySpawnEvent event) {
+    private boolean isVillagerSpawnEgg(CreatureSpawnEvent event) {
         return event instanceof CreatureSpawnEvent creatureSpawnEvent
                 && creatureSpawnEvent.getReason() == CreatureSpawnEvent.SpawnReason.SPAWN_EGG;
     }
