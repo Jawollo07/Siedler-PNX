@@ -4,6 +4,7 @@ import de.jawollo07.siedler.SiedlerPlugin;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.EventHandler;
 import org.powernukkitx.event.Listener;
+import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.event.entity.EntitySpawnEvent;
 import org.powernukkitx.level.Level;
 
@@ -99,6 +100,14 @@ public final class MonsterManager implements Listener {
             // Villager population control is independent from hostile-monster
             // control. Trader entities use the explicit bypass while spawning.
             if (isVillager(entity)) {
+                // Villager spawn eggs are explicitly exempt from population
+                // control. Players/admins may always create villagers with eggs.
+                if (isVillagerSpawnEgg(event)) {
+                    return;
+                }
+
+                // Breeding and all other villager creation paths are still
+                // subject to the configured population limit.
                 if (villagerLimitReached(entity)) {
                     event.setCancelled(true);
                 }
@@ -158,6 +167,18 @@ public final class MonsterManager implements Listener {
         String identifier = entity.getIdentifier();
         return "minecraft:villager_v2".equalsIgnoreCase(identifier)
                 || "minecraft:villager".equalsIgnoreCase(identifier);
+    }
+
+    /**
+     * Returns true when this villager was created by a villager spawn egg.
+     *
+     * <p>PNX exposes {@link CreatureSpawnEvent.SpawnReason#SPAWN_EGG} for
+     * spawner eggs. Such a spawn is intentional player/admin action and must
+     * never be blocked by the villager population controller.</p>
+     */
+    private boolean isVillagerSpawnEgg(EntitySpawnEvent event) {
+        return event instanceof CreatureSpawnEvent creatureSpawnEvent
+                && creatureSpawnEvent.getReason() == CreatureSpawnEvent.SpawnReason.SPAWN_EGG;
     }
 
     /**
