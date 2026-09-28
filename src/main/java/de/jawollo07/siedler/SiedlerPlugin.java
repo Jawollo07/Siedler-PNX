@@ -47,6 +47,7 @@ import de.jawollo07.siedler.monsters.OutpostCommand;
 import de.jawollo07.siedler.monsters.RaidManager;
 import de.jawollo07.siedler.monsters.RaidCommand;
 import de.jawollo07.siedler.monsters.MonsterManager;
+import de.jawollo07.siedler.monsters.VillagerBreedingManager;
 import de.jawollo07.siedler.market.MarketManager;
 import de.jawollo07.siedler.market.TraderManager;
 import de.jawollo07.siedler.market.MarketCommand;
@@ -82,6 +83,7 @@ public final class SiedlerPlugin extends PluginBase {
     private OutpostManager outpostManager;
     private RaidManager raidManager;
     private MonsterManager monsterManager;
+    private VillagerBreedingManager villagerBreedingManager;
     private MarketManager marketManager;
     private TraderManager traderManager;
     private ModerationManager moderationManager;
@@ -132,6 +134,7 @@ public final class SiedlerPlugin extends PluginBase {
         raidManager = new RaidManager(this);
         raidManager.start();
         monsterManager = new MonsterManager(this);
+        villagerBreedingManager = new VillagerBreedingManager(this);
         marketManager = new MarketManager(this);
         traderManager = new TraderManager(this, marketManager);
         // Never reuse persisted/old VillagerV2 traders. Recreate them from config.
@@ -208,6 +211,13 @@ public final class SiedlerPlugin extends PluginBase {
             }
             if (traderManager != null) {
                 this.getServer().getScheduler().scheduleRepeatingTask(this, traderManager, 20 * 10);
+            }
+            if (villagerBreedingManager != null) {
+                // Check ordinary villager pairs every 5 seconds. The fallback only
+                // acts when PNX cannot breed the pair through its Village system.
+                this.getServer().getScheduler().scheduleRepeatingTask(
+                        this, villagerBreedingManager, 20 * 5
+                );
             }
             if (claimBoundaryRenderer != null) {
                 // Refresh the client-side boundary particles twice per second.
