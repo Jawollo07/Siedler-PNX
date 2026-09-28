@@ -88,6 +88,16 @@ villagers:
     # Maximum number of ordinary Villagers within the horizontal X/Z radius.
     max-per-radius: 5
     radius: 9
+    breeding:
+      # Siedler fallback: allows ordinary Villagers to breed even without a PNX Village.
+      enabled: true
+      # Maximum distance between the two breeding Villagers.
+      radius: 16
+      # A free physical bed must exist within this radius.
+      bed-radius: 16
+      bed-vertical-radius: 5
+      # Delay before the same Villagers can breed again.
+      cooldown-seconds: 300
 
 monsters:
   control:
