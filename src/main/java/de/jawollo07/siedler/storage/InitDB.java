@@ -150,18 +150,37 @@ public class InitDB {
         }
 
         String normalizedType = columnType.toLowerCase(Locale.ROOT);
-        if (normalizedType.contains("timestamp")
-                || normalizedType.contains("datetime")
-                || normalizedType.equals("date")) {
-            try (Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
+            if (normalizedType.contains("timestamp")
+                    || normalizedType.contains("datetime")
+                    || normalizedType.equals("date")) {
+                // Never write Unix milliseconds into the old temporal column:
+                // TIMESTAMP/DATETIME cannot represent that numeric value.
+                statement.executeUpdate(
+                    "ALTER TABLE tax_transactions " +
+                    "ADD COLUMN created_at_millis BIGINT NOT NULL DEFAULT 0"
+                );
                 statement.executeUpdate(
                     "UPDATE tax_transactions " +
-                    "SET created_at = UNIX_TIMESTAMP(created_at) * 1000"
+                    "SET created_at_millis = UNIX_TIMESTAMP(created_at) * 1000"
+                );
+                statement.executeUpdate(
+                    "ALTER TABLE tax_transactions DROP COLUMN created_at"
+                );
+                statement.executeUpdate(
+                    "ALTER TABLE tax_transactions " +
+                    "CHANGE COLUMN created_at_millis created_at BIGINT NOT NULL DEFAULT 0"
+                );
+            } else {
+                // Existing numeric columns can be widened safely.
+                updateColumnType(
+                    connection,
+                    "tax_transactions",
+                    "created_at",
+                    "BIGINT NOT NULL DEFAULT 0"
                 );
             }
         }
-
-        updateColumnType(connection, "tax_transactions", "created_at", "BIGINT NOT NULL DEFAULT 0");
     }
 
     private void migrateV7ToV8(Connection connection) throws Exception {
