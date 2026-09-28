@@ -8,11 +8,6 @@ import de.jawollo07.siedler.core.MessageManager;
 import de.jawollo07.siedler.team.Team;
 import de.jawollo07.siedler.team.TeamManager;
 import org.powernukkitx.Player;
-import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.passive.EntityVillager;
-import org.powernukkitx.entity.passive.EntityVillagerV2;
-import org.powernukkitx.level.Level;
-import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.scheduler.TaskHandler;
 
 import java.sql.PreparedStatement;
@@ -48,16 +43,10 @@ public class TaxManager {
         }
 
         long hours = Math.max(1, plugin.getConfig().getInt("taxes.interval-hours", 24));
-
-        // Check regularly instead of waiting the full tax interval for the first run.
-        // collectDueTaxes() uses the persisted last transaction timestamp to decide
-        // whether a team is actually due. This also makes overdue taxes run shortly
-        // after a server restart.
-        long checkPeriod = 60L * 20L; // once per minute
+        long period = Math.min(Integer.MAX_VALUE, hours * 60L * 60L * 20L);
         task = plugin.getServer().getScheduler().scheduleRepeatingTask(
-                plugin, this::collectDueTaxes, (int) checkPeriod);
-        plugin.getLogger().info("Tax system started: interval=" + hours
-                + "h, due-check=60s");
+                plugin, this::collectDueTaxes, (int) Math.max(20L, period));
+        plugin.getLogger().info("Tax system started: interval=" + hours + "h");
     }
 
     public void stop() {
@@ -256,17 +245,7 @@ public class TaxManager {
             statement.setString(1, teamId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
-                    long currentVillagers = 0L;
-                    try {
-                        Team currentTeam = teamManager.getTeamById(teamId);
-                        if (currentTeam != null) {
-                            currentVillagers = Math.max(0L, countVillagers(currentTeam));
-                        }
-                    } catch (Exception exception) {
-                        plugin.getLogger().warning("Could not count current villagers for /eco stats: "
-                                + exception.getMessage());
-                    }
-                    return new TaxStatistics(teamId, 0, 0, 0, 0L, currentVillagers,
+                    return new TaxStatistics(teamId, 0, 0, 0, 0L, 0L,
                             null, 0, 0, 0L, null);
                 }
 
@@ -292,26 +271,13 @@ public class TaxManager {
                     }
                 }
 
-                // /eco stats should report the current live villager population.
-                // Historical tax rows must not keep the displayed value at 0.
-                long currentVillagers = 0L;
-                try {
-                    Team currentTeam = teamManager.getTeamById(teamId);
-                    if (currentTeam != null) {
-                        currentVillagers = Math.max(0L, countVillagers(currentTeam));
-                    }
-                } catch (Exception exception) {
-                    plugin.getLogger().warning("Could not count current villagers for /eco stats: "
-                            + exception.getMessage());
-                }
-
                 return new TaxStatistics(
                         teamId,
                         resultSet.getLong("total_cycles"),
                         resultSet.getLong("successful_cycles"),
                         resultSet.getLong("failed_cycles"),
                         resultSet.getLong("total_coins"),
-                        currentVillagers,
+                        resultSet.getLong("total_villagers"),
                         lastTaxTimestamp,
                         lastVillagers,
                         lastBonus,
