@@ -92,43 +92,27 @@ public final class MonsterManager implements Listener {
     public void onEntitySpawn(CreatureSpawnEvent event) {
         if (event == null || isBypassed()) return;
 
-        Entity entity = event.getEntity();
-        if (entity == null) return;
+        String identifier = org.powernukkitx.entity.registry.Registries.ENTITY
+                .getEntityIdentifier(event.getEntityNetworkId());
+        if (identifier == null || identifier.isBlank()) return;
 
         try {
-            // Villager population control is independent from hostile-monster
-            // control. Trader entities use the explicit bypass while spawning.
-            if (isVillager(entity)) {
-                // Villager spawn eggs are explicitly exempt from population
-                // control. Players/admins may always create villagers with eggs.
-                if (isVillagerSpawnEgg(event)) {
-                    return;
-                }
+            if (isVillagerIdentifier(identifier)) {
+                if (isVillagerSpawnEgg(event)) return;
 
-                // Breeding and all other villager creation paths are still
-                // subject to the configured population limit.
-                if (villagerLimitReached(entity)) {
+                if (villagerLimitReached(event)) {
                     event.setCancelled(true);
                 }
                 return;
             }
 
-            if (!enabled() || !isControlledMonster(entity)) return;
+            if (!enabled()) return;
 
-            String identifier = entity.getIdentifier();
-            if (identifier == null || identifier.isBlank()) return;
+            Entity entity = findSpawnedEntity(event, identifier);
+            if (entity == null || !isControlledMonster(entity)) return;
 
-            if (isBlacklisted(identifier)) {
-                event.setCancelled(true);
-                return;
-            }
-
-            if (isWorldBlacklisted(entity)) {
-                event.setCancelled(true);
-                return;
-            }
-
-            if (isInsideClaim(entity)) {
+            if (isBlacklisted(identifier) || isWorldBlacklisted(entity)
+                    || isInsideClaim(entity)) {
                 event.setCancelled(true);
                 return;
             }
@@ -153,8 +137,6 @@ public final class MonsterManager implements Listener {
                 event.setCancelled(true);
             }
         } catch (Exception exception) {
-            // Never allow a database/config failure to silently create an
-            // uncontrolled mob population.
             event.setCancelled(true);
             plugin.getLogger().warning(
                     "Monster spawn was blocked because MonsterManager failed: "
@@ -162,30 +144,34 @@ public final class MonsterManager implements Listener {
         }
     }
 
+    private Entity findSpawnedEntity(CreatureSpawnEvent event, String identifier) {
+        Level level = event.getPosition().getLevel();
+        if (level == null) return null;
+
+        for (Entity entity : level.getEntities()) {
+            if (identifier.equalsIgnoreCase(entity.getIdentifier())
+                    && Math.abs(entity.getX() - event.getPosition().getX()) < 0.01D
+                    && Math.abs(entity.getZ() - event.getPosition().getZ()) < 0.01D) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
     private boolean isVillager(Entity entity) {
-        String identifier = entity.getIdentifier();
+        return entity != null && isVillagerIdentifier(entity.getIdentifier());
+    }
+
+    private boolean isVillagerIdentifier(String identifier) {
         return "minecraft:villager_v2".equalsIgnoreCase(identifier)
                 || "minecraft:villager".equalsIgnoreCase(identifier);
     }
 
-    /**
-     * Returns true when this villager was created by a villager spawn egg.
-     *
-     * <p>PNX exposes {@link CreatureSpawnEvent.SpawnReason#SPAWN_EGG} for
-     * spawner eggs. Such a spawn is intentional player/admin action and must
-     * never be blocked by the villager population controller.</p>
-     */
     private boolean isVillagerSpawnEgg(CreatureSpawnEvent event) {
-        return event instanceof CreatureSpawnEvent creatureSpawnEvent
-                && creatureSpawnEvent.getReason() == CreatureSpawnEvent.SpawnReason.SPAWN_EGG;
+        return event.getReason() == CreatureSpawnEvent.SpawnReason.SPAWN_EGG;
     }
 
-    /**
-     * Limits ordinary villager spawning by horizontal X/Z distance.
-     * Existing Siedler traders are ignored because they are intentionally
-     * created through the MonsterManager bypass.
-     */
-    private boolean villagerLimitReached(Entity target) {
+    private boolean villagerLimitReached(CreatureSpawnEvent event) {
         if (!plugin.getConfig().getBoolean("villagers.control.enabled", true)) {
             return false;
         }
@@ -198,12 +184,15 @@ public final class MonsterManager implements Listener {
                 .getDouble("villagers.control.radius", 9.0D));
         double radiusSquared = radius * radius;
 
-        Level level = target.getLevel();
+        Level level = event.getPosition().getLevel();
         if (level == null) return false;
+
+        double targetX = event.getPosition().getX();
+        double targetZ = event.getPosition().getZ();
 
         int count = 0;
         for (Entity entity : level.getEntities()) {
-            if (entity == target || !isVillager(entity)) continue;
+            if (!isVillager(entity)) continue;
 
             boolean trader = false;
             for (var tag : entity.getAllTags()) {
@@ -215,8 +204,8 @@ public final class MonsterManager implements Listener {
             }
             if (trader) continue;
 
-            double dx = entity.getX() - target.getX();
-            double dz = entity.getZ() - target.getZ();
+            double dx = entity.getX() - targetX;
+            double dz = entity.getZ() - targetZ;
             if ((dx * dx) + (dz * dz) <= radiusSquared) {
                 count++;
                 if (count >= max) return true;
