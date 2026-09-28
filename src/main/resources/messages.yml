@@ -446,7 +446,7 @@ messages:
     stats-total: "§eGesamteinnahmen:§r {amount}{symbol}"
     stats-successful: "Erfolgreiche Erhebungen: {amount}"
     stats-failed: "Fehlgeschlagene Erhebungen: {amount}"
-    stats-villagers: "Erfasste Dorfbewohner: {amount}"
+    stats-villagers: "Aktuelle Dorfbewohner im Claim: {amount}"
     stats-last-header: "§eLetzte Erhebung§r"
     stats-last-none: "Noch keine Steuererhebung"
     stats-last-time: "Zeit: {time}"
