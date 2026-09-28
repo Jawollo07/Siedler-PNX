@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.powernukkitx.level.Level;
 
 public class TaxManager {
     private final SiedlerPlugin plugin;
@@ -26,6 +27,8 @@ public class TaxManager {
     private final MessageManager messageManager;
     private TaskHandler task;
     private long lastRun;
+    private static final int TICKS_PER_MINECRAFT_DAY = 24_000;
+    private static final String TAX_DAY_PREFIX = "tax.last-game-day.";
 
     public TaxManager(SiedlerPlugin plugin) {
         this.plugin = plugin;
@@ -42,24 +45,14 @@ public class TaxManager {
             return;
         }
 
-        long hours = Math.max(1, plugin.getConfig().getInt("taxes.interval-hours", 24));
-
-        // Do not schedule the tax job once per tax interval. If nobody is online
-        // at that exact moment, the whole cycle would otherwise be delayed by
-        // another 24 hours. We check frequently and isDue() decides when a team
-        // is actually due.
-        int checkPeriodTicks = 20 * 60; // once per minute
+        // Daily tax follows the Minecraft day, not real time. This means sleeping
+        // / skipping the night can advance the tax cycle immediately.
+        int checkPeriodTicks = 20 * 60;
         task = plugin.getServer().getScheduler().scheduleRepeatingTask(
                 plugin, this::collectDueTaxes, checkPeriodTicks);
 
-        // Also perform an immediate check after startup. Teams without an existing
-        // successful tax transaction become due immediately; offline teams are
-        // simply checked again on the next minute.
-        plugin.getServer().getScheduler().scheduleDelayedTask(
-                plugin, this::collectDueTaxes, 20 * 5);
-
         plugin.getLogger().info(
-                "Tax system started: interval=" + hours + "h, due-check=60s"
+                "Tax system started: one tax per Minecraft day, due-check=60s"
         );
     }
 
@@ -117,6 +110,7 @@ public class TaxManager {
 
             if (amount == 0) {
                 recordTaxTransaction(team.id(), villagers, bonus, 0, true, "no_villagers");
+                markTaxGameDay(team.id(), getCurrentGameDay());
                 return new TaxResult(team.id(), villagers, bonus, 0, true, "no_villagers");
             }
 
@@ -129,6 +123,7 @@ public class TaxManager {
                     "Tagessteuer: " + villagers + " Dorfbewohner × TaxBonus " + bonus, null);
 
             recordTaxTransaction(team.id(), villagers, bonus, amount, true, "paid");
+            markTaxGameDay(team.id(), getCurrentGameDay());
             teamManager.notifyAllTeamMembers(team.id(),
                     format(messageManager.getMessage("messages.eco.tax-income"),
                             "amount", String.valueOf(amount),
@@ -156,21 +151,47 @@ public class TaxManager {
         return count;
     }
 
-    public boolean isDue(String teamId, long now, long intervalMillis) throws SQLException {
-        String sql = "SELECT created_at, successful FROM tax_transactions "
-                + "WHERE team_id = ? ORDER BY created_at DESC LIMIT 1";
+    public boolean isDue(String teamId, int currentGameDay) throws SQLException {
+        String sql = "SELECT value FROM settings WHERE key = ?";
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(sql)) {
-            statement.setString(1, teamId);
+            statement.setString(1, TAX_DAY_PREFIX + teamId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) return true;
-
-                long last = resultSet.getLong("created_at");
-                if (resultSet.getInt("successful") != 0) return now - last >= intervalMillis;
-
-                long retry = Math.max(1L,
-                        plugin.getConfig().getInt("taxes.retry-minutes", 60)) * 60L * 1000L;
-                return now - last >= retry;
+                try {
+                    return currentGameDay > Integer.parseInt(resultSet.getString("value"));
+                } catch (NumberFormatException ignored) {
+                    return true;
+                }
             }
+        }
+    }
+
+    private int getCurrentGameDay() {
+        for (Level level : plugin.getServer().getLevels().values()) {
+            if (level != null && level.isOverWorld()) {
+                return Math.max(0, level.getTime() / TICKS_PER_MINECRAFT_DAY);
+            }
+        }
+        return -1;
+    }
+
+    private void markTaxGameDay(String teamId, int gameDay) throws SQLException {
+        if (gameDay < 0) return;
+
+        String key = TAX_DAY_PREFIX + teamId;
+        String sql;
+        if ("mariadb".equalsIgnoreCase(plugin.getStorage().getActiveType())) {
+            sql = "INSERT INTO settings (key, value) VALUES (?, ?) " +
+                    "ON DUPLICATE KEY UPDATE value = VALUES(value)";
+        } else {
+            sql = "INSERT INTO settings (key, value) VALUES (?, ?) " +
+                    "ON CONFLICT(key) DO UPDATE SET value = excluded.value";
+        }
+
+        try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(sql)) {
+            statement.setString(1, key);
+            statement.setString(2, String.valueOf(gameDay));
+            statement.executeUpdate();
         }
     }
 
