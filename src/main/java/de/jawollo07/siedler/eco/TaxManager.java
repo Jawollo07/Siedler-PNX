@@ -43,10 +43,24 @@ public class TaxManager {
         }
 
         long hours = Math.max(1, plugin.getConfig().getInt("taxes.interval-hours", 24));
-        long period = Math.min(Integer.MAX_VALUE, hours * 60L * 60L * 20L);
+
+        // Do not schedule the tax job once per tax interval. If nobody is online
+        // at that exact moment, the whole cycle would otherwise be delayed by
+        // another 24 hours. We check frequently and isDue() decides when a team
+        // is actually due.
+        int checkPeriodTicks = 20 * 60; // once per minute
         task = plugin.getServer().getScheduler().scheduleRepeatingTask(
-                plugin, this::collectDueTaxes, (int) Math.max(20L, period));
-        plugin.getLogger().info("Tax system started: interval=" + hours + "h");
+                plugin, this::collectDueTaxes, checkPeriodTicks);
+
+        // Also perform an immediate check after startup. Teams without an existing
+        // successful tax transaction become due immediately; offline teams are
+        // simply checked again on the next minute.
+        plugin.getServer().getScheduler().scheduleDelayedTask(
+                plugin, this::collectDueTaxes, 20 * 5);
+
+        plugin.getLogger().info(
+                "Tax system started: interval=" + hours + "h, due-check=60s"
+        );
     }
 
     public void stop() {
