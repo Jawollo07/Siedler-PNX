@@ -56,6 +56,14 @@ public final class VillagerBreedingManager implements Runnable {
                 EntityVillagerV2 second = findPartner(level, first, entities, now);
                 if (second == null) continue;
 
+                // If both parents are already registered in the same PNX Village,
+                // leave breeding to PNX's native villager AI. The fallback is only
+                // needed for pairs outside a usable Village.
+                if (first.getVillageUuid() != null
+                        && first.getVillageUuid().equals(second.getVillageUuid())) {
+                    continue;
+                }
+
                 if (!hasFreeBedNear(level, first)) continue;
 
                 int maxPerRadius = Math.max(
