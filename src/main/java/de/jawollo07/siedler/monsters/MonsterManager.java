@@ -92,7 +92,7 @@ public final class MonsterManager implements Listener {
     public void onEntitySpawn(CreatureSpawnEvent event) {
         if (event == null || isBypassed()) return;
 
-        String identifier = org.powernukkitx.entity.registry.Registries.ENTITY
+        String identifier = org.powernukkitx.registry.Registries.ENTITY
                 .getEntityIdentifier(event.getEntityNetworkId());
         if (identifier == null || identifier.isBlank()) return;
 
