@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.Locale;
 
 public class InitDB {
-    private static final int CURRENT_SCHEMA_VERSION = 9;
+    private static final int CURRENT_SCHEMA_VERSION = 10;
 
     public void initDatabase() throws Exception {
         SiedlerPlugin plugin = SiedlerPlugin.getInstance();
@@ -56,6 +56,10 @@ public class InitDB {
             if (version < 9) {
                 migrateV8ToV9(connection);
                 setSchemaVersion(connection, 9);
+            }
+            if (version < 10) {
+                migrateV9ToV10(connection);
+                setSchemaVersion(connection, 10);
             }
         }
     }
@@ -118,6 +122,46 @@ public class InitDB {
 
     private void migrateV8ToV9(Connection connection) throws Exception {
         ensureColumnExists(connection, "raids", "remaining_mobs", "INTEGER NOT NULL DEFAULT 0");
+    }
+
+    /**
+     * MariaDB installations created from an older schema can have tax_transactions.created_at
+     * as TIMESTAMP/DATETIME. Siedler stores Unix time in milliseconds, so those column types
+     * overflow (TIMESTAMP also has a 2038 boundary on affected MariaDB/MySQL setups).
+     *
+     * Convert existing temporal values to Unix milliseconds before changing the column to BIGINT.
+     * SQLite already uses INTEGER and does not need a type migration.
+     */
+    private void migrateV9ToV10(Connection connection) throws Exception {
+        String dbProduct = connection.getMetaData().getDatabaseProductName().toLowerCase(Locale.ROOT);
+        if (!(dbProduct.contains("mysql") || dbProduct.contains("mariadb"))) {
+            return;
+        }
+
+        String columnType = null;
+        try (ResultSet columns = connection.getMetaData().getColumns(null, null, "tax_transactions", "created_at")) {
+            if (columns.next()) {
+                columnType = columns.getString("TYPE_NAME");
+            }
+        }
+
+        if (columnType == null) {
+            return;
+        }
+
+        String normalizedType = columnType.toLowerCase(Locale.ROOT);
+        if (normalizedType.contains("timestamp")
+                || normalizedType.contains("datetime")
+                || normalizedType.equals("date")) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(
+                    "UPDATE tax_transactions " +
+                    "SET created_at = UNIX_TIMESTAMP(created_at) * 1000"
+                );
+            }
+        }
+
+        updateColumnType(connection, "tax_transactions", "created_at", "BIGINT NOT NULL DEFAULT 0");
     }
 
     private void migrateV7ToV8(Connection connection) throws Exception {
