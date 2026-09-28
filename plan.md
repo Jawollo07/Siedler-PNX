@@ -32,8 +32,8 @@ Damit beschreibt die Versionsnummer jederzeit, **wo das Projekt im Migrationspla
 | `5.x.x` | Monster, Tokens & Outposts |
 | `6.x.x` | Soldiers |
 | `7.x.x` | Market & Traders |
-| `8.x.x` | Essentials & Statistics |
-| `9.x.x` | Minefield |
+| `8.x.x` | PvP |
+| `9.x.x` | Soldiers |
 | `10.x.x` | Migration & Release |
 
 Der erste stabile Gesamt-Release ist damit `10.0.0`.
@@ -247,20 +247,51 @@ Unterstützte Maßnahmen:
 - [x] optionale zusätzliche Materialkosten über `buy2`
 - [x] native PNX VillagerV2-Händler mit Siedler-Handels-GUI
 
-## Phase 8 – Minefield
+## Phase 8 – PvP
 
-- [ ] Mine-Item
-- [ ] persistente Minen
-- [ ] Minegruppen
-- [ ] Platzierungsvalidierung
-- [ ] Trigger-Modi
-- [ ] Warnung/Sound
-- [ ] verzögerte Detonation
-- [ ] Kettenreaktionen
-- [ ] Explosion ohne Blockschaden + Feuer
-- [ ] automatisches Wieder-Scharfmachen
-- [ ] Control-System
-- [ ] Team-/Diplomatie-Integration
+Das PvP-System bündelt die allgemeinen PvP-Regeln und das bereits vorhandene Turnier-/Match-System. Es soll sowohl reguläres PvP als auch vollständig getrennte Match- und Turnierbereiche unterstützen.
+
+### PvP-Grundsystem
+- [x] PvP-Schutz außerhalb aktiver Matches
+- [ ] konfigurierbare PvP-Regeln
+- [ ] Team-/Diplomatie-basierte PvP-Regeln
+- [ ] Schutz von Spielern in sicheren Bereichen
+- [ ] PvP-Aktivierung/Deaktivierung pro Welt oder Bereich
+- [ ] Combat-Tag / Kampfstatus
+- [ ] definierbare PvP-Cooldowns
+- [ ] Kill-/Death-Auswertung
+- [ ] PvP-Statistiken
+
+### PvP-Turnier- und Matchsystem
+- [x] Registrierungsphase mit Mindest-/Maximalteilnehmern
+- [x] zufälliges Seeding und automatische Freilose
+- [x] K.-o. / Knockout (Single Elimination)
+- [x] Double Elimination
+- [x] Round Robin
+- [x] mehrere gleichzeitig laufende Matches
+- [x] mehrere konfigurierte Arenen
+- [x] Arena-Zuweisung
+- [x] Match-Countdown
+- [x] Best-of-Serien
+- [x] Match-Zeitlimit
+- [x] Match-/Serien-Score
+- [x] automatische nächste Spiele und Runden
+- [x] Disconnect-Auflösung
+- [x] Spectator-Modus
+- [x] konfigurierbare Kits
+- [x] Sieger-Reward-Command
+- [x] Lobby-, Arena- und Spectator-Teleports
+- [x] Admin-Konfiguration
+- [x] Arena- und Kit-Verwaltung
+- [ ] mehrere vollständig unabhängige Turniere gleichzeitig
+- [ ] Gruppenphase → K.-o.-Phase
+- [ ] Swiss-System
+- [ ] persistente Turnierhistorie und Statistiken
+- [ ] Ready-System pro Match
+- [ ] Match-spezifische AFK-/Timeout-Regeln
+- [ ] Arena-Reset/World-Snapshot
+- [ ] Match-spezifische Regelprofile
+- [ ] erweiterte Zuschauer- und Bracket-Verwaltung
 
 ## Phase 9 – Soldiers
 
@@ -291,47 +322,6 @@ Unterstützte Maßnahmen:
 - [ ] Persistenz-/Restart-Tests
 - [ ] saubere Fehlerbehandlung
 - [ ] Release-Build
-
-## Cross-Cutting Feature – PvP-Turniersystem
-
-Der aktuelle `beta`-Stand enthält ein eigenständiges PvP-Turniersystem. Es wird als Cross-Cutting-Feature geführt.
-
-### Umgesetzt
-- [x] Registrierungsphase mit Mindest-/Maximalteilnehmern
-- [x] zufälliges Seeding und automatische Freilose
-- [x] K.-o. / Knockout (Single Elimination)
-- [x] Double Elimination
-- [x] Round Robin
-- [x] mehrere gleichzeitig laufende Matches
-- [x] mehrere konfigurierte Arenen
-- [x] Arena-Zuweisung
-- [x] Match-Countdown
-- [x] Best-of-Serien
-- [x] Match-Zeitlimit
-- [x] Match-/Serien-Score
-- [x] automatische nächste Spiele und Runden
-- [x] Disconnect-Auflösung
-- [x] Spectator-Modus
-- [x] PvP-Schutz außerhalb aktiver Matches
-- [x] konfigurierbare Kits
-- [x] Sieger-Reward-Command
-- [x] Lobby-, Arena- und Spectator-Teleports
-- [x] Admin-Konfiguration
-- [x] Arena- und Kit-Verwaltung
-- [x] Dokumentation in README und beiden Guides
-
-### Offene Erweiterungen
-- [ ] mehrere vollständig unabhängige Turniere gleichzeitig
-- [ ] Gruppenphase → K.-o.-Phase
-- [ ] Swiss-System
-- [ ] persistente Turnierhistorie und Statistiken
-- [ ] Ready-System pro Match
-- [ ] Match-spezifische AFK-/Timeout-Regeln
-- [ ] Arena-Reset/World-Snapshot
-- [ ] Match-spezifische Regelprofile
-- [ ] erweiterte Zuschauer- und Bracket-Verwaltung
-
-Das Turniersystem ist damit als funktionsfähiges PvP-Framework dokumentiert; die offenen Punkte sind Erweiterungen.
 
 ## Aktueller Stand
 
