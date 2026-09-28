@@ -48,10 +48,16 @@ public class TaxManager {
         }
 
         long hours = Math.max(1, plugin.getConfig().getInt("taxes.interval-hours", 24));
-        long period = Math.min(Integer.MAX_VALUE, hours * 60L * 60L * 20L);
+
+        // Check regularly instead of waiting the full tax interval for the first run.
+        // collectDueTaxes() uses the persisted last transaction timestamp to decide
+        // whether a team is actually due. This also makes overdue taxes run shortly
+        // after a server restart.
+        long checkPeriod = 60L * 20L; // once per minute
         task = plugin.getServer().getScheduler().scheduleRepeatingTask(
-                plugin, this::collectDueTaxes, (int) Math.max(20L, period));
-        plugin.getLogger().info("Tax system started: interval=" + hours + "h");
+                plugin, this::collectDueTaxes, (int) checkPeriod);
+        plugin.getLogger().info("Tax system started: interval=" + hours
+                + "h, due-check=60s");
     }
 
     public void stop() {
