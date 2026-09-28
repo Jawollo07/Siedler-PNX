@@ -9,7 +9,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.plugin.PluginBase;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -42,7 +41,7 @@ public final class VillagerBreedingManager implements Runnable {
             return;
         }
 
-        long now = getTick();
+        long now = System.currentTimeMillis();
         cooldownUntil.entrySet().removeIf(entry -> entry.getValue() <= now);
 
         for (Level level : plugin.getServer().getLevels().values()) {
@@ -90,11 +89,11 @@ public final class VillagerBreedingManager implements Runnable {
                 baby.spawnToAll();
 
                 long cooldown = Math.max(
-                        20L,
+                        1000L,
                         plugin.getConfig().getLong(
                                 "villagers.control.breeding.cooldown-seconds",
                                 DEFAULT_COOLDOWN_TICKS / 20L
-                        ) * 20L
+                        ) * 1000L
                 );
                 cooldownUntil.put(first.getId(), now + cooldown);
                 cooldownUntil.put(second.getId(), now + cooldown);
@@ -135,7 +134,7 @@ public final class VillagerBreedingManager implements Runnable {
     private boolean isBreedable(EntityVillagerV2 villager) {
         return !villager.isClosed()
                 && !villager.isBaby()
-                && !villager.containTag("siedler:trader")
+                && !isSiedlerTrader(villager)
                 && villager.getFoodPoints() >= FOOD_POINTS_REQUIRED;
     }
 
@@ -160,7 +159,7 @@ public final class VillagerBreedingManager implements Runnable {
     }
 
     private boolean isOrdinaryVillager(EntityVillagerV2 villager) {
-        return !villager.isClosed() && !villager.containTag("siedler:trader");
+        return !villager.isClosed() && !isSiedlerTrader(villager);
     }
 
     private boolean hasFreeBedNear(Level level, EntityVillagerV2 villager) {
@@ -178,8 +177,8 @@ public final class VillagerBreedingManager implements Runnable {
 
         int minX = villager.getFloorX() - radius;
         int maxX = villager.getFloorX() + radius;
-        int minY = Math.max(level.getMinHeight(), villager.getFloorY() - vertical);
-        int maxY = Math.min(level.getMaxHeight(), villager.getFloorY() + vertical);
+        int minY = Math.max(0, villager.getFloorY() - vertical);
+        int maxY = villager.getFloorY() + vertical;
         int minZ = villager.getFloorZ() - radius;
         int maxZ = villager.getFloorZ() + radius;
 
@@ -239,7 +238,16 @@ public final class VillagerBreedingManager implements Runnable {
         };
     }
 
-    private long getTick() {
-        return plugin.getServer().getTick();
+    private boolean isSiedlerTrader(EntityVillagerV2 villager) {
+        String[] traderTypes = {
+                "food", "building", "resources", "tools",
+                "weapons", "supplies", "soldiers", "enchantments"
+        };
+        for (String type : traderTypes) {
+            if (villager.containTag("siedler:trader:" + type)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
