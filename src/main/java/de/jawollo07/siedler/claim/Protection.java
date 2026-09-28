@@ -113,10 +113,11 @@ public class Protection implements Listener {
     @EventHandler
     public void onLiquidFlow(LiquidFlowEvent event) {
         if (!claimsProtectionEnabled) return;
-        Block target = event.getTo();
-        if (isBlockInClaim(target)) {
-            event.setCancelled(true);
-        }
+
+        // Natural liquid flow must NOT be blocked by claim protection.
+        // Claims protect player actions, not water/lava propagation.
+        // In particular, water placed by an authorized player must be able
+        // to spread normally inside the claim.
     }
 
     @EventHandler
