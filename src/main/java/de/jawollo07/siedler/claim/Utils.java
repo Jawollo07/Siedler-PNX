@@ -158,7 +158,10 @@ public class Utils {
             throw new IllegalStateException("Claim-Team konnte nicht ermittelt werden", exception);
         }
     }
-    /** Counts villagers in all chunks covered by the given claim. */
+    /**
+     * Counts ordinary villagers whose actual X/Z position is inside the claim.
+     * Both PNX villager identifiers are supported. Siedler traders are excluded.
+     */
     public Integer countVillagerInClaim(String claimID) {
         if (claimID == null || claimID.isBlank()) {
             throw new IllegalArgumentException("Claim-ID darf nicht leer sein");
@@ -171,23 +174,30 @@ public class Utils {
         if (level == null) return 0;
 
         int count = 0;
-        java.util.Set<String> counted = new java.util.HashSet<>();
+        java.util.Set<Long> counted = new java.util.HashSet<>();
 
-        for (int x = claim.min_x(); x <= claim.max_x(); x++) {
-            for (int z = claim.min_z(); z <= claim.max_z(); z++) {
-                IChunk chunk = level.getProvider().getLoadedChunk(x, z);
+        for (int chunkX = claim.min_x(); chunkX <= claim.max_x(); chunkX++) {
+            for (int chunkZ = claim.min_z(); chunkZ <= claim.max_z(); chunkZ++) {
+                IChunk chunk = level.getProvider().getLoadedChunk(chunkX, chunkZ);
                 boolean wasLoaded = chunk != null;
-                if (!wasLoaded && !level.getProvider().loadChunk(x, z, false)) continue;
-                if (!wasLoaded) chunk = level.getProvider().getLoadedChunk(x, z);
+                if (!wasLoaded && !level.getProvider().loadChunk(chunkX, chunkZ, false)) continue;
+                if (!wasLoaded) chunk = level.getProvider().getLoadedChunk(chunkX, chunkZ);
 
                 if (chunk != null) {
                     for (Entity entity : chunk.getEntities().values()) {
-                        if (entity instanceof EntityVillagerV2
-                                || entity instanceof EntityVillager
-                                || "minecraft:villager".equals(entity.getIdentifier())) {
-                            String key = claim.world() + ":" + entity.getId();
-                            if (counted.add(key)) count++;
+                        if (!isOrdinaryVillager(entity)) continue;
+
+                        // Claim bounds are chunk coordinates. Verify the entity's
+                        // real position as well, so boundary/cross-chunk entities
+                        // are assigned to the claim they are physically inside.
+                        int entityChunkX = (int) Math.floor(entity.getX() / 16.0D);
+                        int entityChunkZ = (int) Math.floor(entity.getZ() / 16.0D);
+                        if (entityChunkX < claim.min_x() || entityChunkX > claim.max_x()
+                                || entityChunkZ < claim.min_z() || entityChunkZ > claim.max_z()) {
+                            continue;
                         }
+
+                        if (counted.add(entity.getId())) count++;
                     }
                 }
 
@@ -196,5 +206,21 @@ public class Utils {
         }
         return count;
     }
-}
 
+    private boolean isOrdinaryVillager(Entity entity) {
+        if (entity == null) return false;
+        String identifier = entity.getIdentifier();
+        boolean villager = entity instanceof EntityVillagerV2
+                || entity instanceof EntityVillager
+                || "minecraft:villager".equalsIgnoreCase(identifier)
+                || "minecraft:villager_v2".equalsIgnoreCase(identifier);
+        if (!villager) return false;
+
+        for (var tag : entity.getAllTags()) {
+            if (tag != null && tag.data != null
+                    && tag.data.startsWith("siedler:trader:")) {
+                return false;
+            }
+        }
+        return true;
+    }
