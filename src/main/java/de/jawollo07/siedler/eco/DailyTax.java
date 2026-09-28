@@ -23,7 +23,7 @@ public class DailyTax extends Task {
             int time = level.getDayTime(); // dayTime geht in PNX von 0 bis 23999
 
             // Zeitfenster für den Morgen (0 - 200 Ticks)
-            if (time >= 0 && time < 200) {
+            if (time >= 0 && time < 1000) {
                 if (!alreadyTriggered) {
                     alreadyTriggered = true;
                     try {
