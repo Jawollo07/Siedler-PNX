@@ -88,11 +88,15 @@ public final class VillagerBreedingManager implements Runnable {
                         Entity.VILLAGER_V2,
                         first.getPosition()
                 );
-                if (!(babyEntity instanceof EntityVillagerV2 baby)) {
-                    if (babyEntity != null) baby.close();
+                if (babyEntity == null) {
+                    continue;
+                }
+                if (!(babyEntity instanceof EntityVillagerV2)) {
+                    babyEntity.close();
                     continue;
                 }
 
+                EntityVillagerV2 baby = (EntityVillagerV2) babyEntity;
                 baby.setBaby(true);
                 baby.spawnToAll();
 
