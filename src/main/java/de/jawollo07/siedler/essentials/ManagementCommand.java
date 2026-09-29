@@ -113,7 +113,7 @@ public class ManagementCommand extends Command {
                         .then(RouteNode.argument("index", new StringNode()).exec(context -> {
                             showDeathDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
                             return CommandResult.success();
-                        })));
+                        }))));
 
         tree.getRoot().then(RouteNode.literal("ec")
                 .then(RouteNode.literal("player")
