@@ -246,6 +246,55 @@ public class ManagementCommand extends Command {
         }
     }
 
+    private void showSnapshotDetail(CommandSender sender, String name, String indexText) {
+        try {
+            int index = Integer.parseInt(indexText) - 1;
+            String id = moderationManager.findPlayerIdByName(name);
+            if (id == null) { sender.sendMessage(prefix + "§cSpieler nicht gefunden."); return; }
+            List<InventorySnapshotManager.InventorySnapshot> snapshots = inventorySnapshotManager.getHistory(id, 50);
+            if (index < 0 || index >= snapshots.size()) { sender.sendMessage(prefix + "§cSnapshot-Index ungültig."); return; }
+            InventorySnapshotManager.InventorySnapshot s = snapshots.get(index);
+            sender.sendMessage(prefix + "§6Snapshot §e#" + (index + 1) + " §7(" + s.reason() + ")");
+            sender.sendMessage("§7Zeit: §f" + new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(s.capturedAt())));
+            sender.sendMessage("§7Position: §f" + s.world() + " " + formatCoordinate(s.x()) + "," + formatCoordinate(s.y()) + "," + formatCoordinate(s.z()));
+            sendStoredInventory(sender, s.inventoryData());
+        } catch (NumberFormatException exception) {
+            sender.sendMessage(prefix + "§cDer Index muss eine Zahl sein.");
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cSnapshot konnte nicht geladen werden: " + exception.getMessage());
+        }
+    }
+
+    private void showDeathDetail(CommandSender sender, String name, String indexText) {
+        try {
+            int index = Integer.parseInt(indexText) - 1;
+            String id = moderationManager.findPlayerIdByName(name);
+            if (id == null) { sender.sendMessage(prefix + "§cSpieler nicht gefunden."); return; }
+            List<DeathManager.DeathPoint> history = deathManager.getDeathHistory(id);
+            if (index < 0 || index >= history.size()) { sender.sendMessage(prefix + "§cTodeshistorie-Index ungültig."); return; }
+            DeathManager.DeathPoint p = history.get(index);
+            sender.sendMessage(prefix + "§6Tod §e#" + (index + 1));
+            sender.sendMessage("§7Zeit: §f" + new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(p.createdAt())));
+            sender.sendMessage("§7Position: §f" + p.world() + " " + formatCoordinate(p.x()) + "," + formatCoordinate(p.y()) + "," + formatCoordinate(p.z()));
+            sender.sendMessage("§7Rotation: §f" + formatCoordinate(p.yaw()) + " / " + formatCoordinate(p.pitch()));
+            sendStoredInventory(sender, p.inventoryData());
+        } catch (NumberFormatException exception) {
+            sender.sendMessage(prefix + "§cDer Index muss eine Zahl sein.");
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cTodesdaten konnten nicht geladen werden: " + exception.getMessage());
+        }
+    }
+
+    private void sendStoredInventory(CommandSender sender, String inventory) {
+        if (inventory == null || inventory.isBlank()) {
+            sender.sendMessage("§7Kein gespeichertes Inventar.");
+            return;
+        }
+        for (String line : inventory.split("\\\\n")) {
+            if (!line.isBlank()) sender.sendMessage("§8- §f" + unescapeInventoryValue(line));
+        }
+    }
+
     private void openPlayerEnderChestCommand(CommandSender sender, String name) {
         if (!(sender instanceof Player admin)) {
             sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
@@ -798,3 +847,15 @@ public class ManagementCommand extends Command {
         sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-help"));
     }
 }
+        tree.getRoot().then(RouteNode.literal("snapshot")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
+                            showSnapshotDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("death")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
+                            showDeathDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
+                            return CommandResult.success();
+                        }))));
