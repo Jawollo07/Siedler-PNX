@@ -27,6 +27,8 @@ Spielerfunktionen besitzen eigene Berechtigungen wie beispielsweise `siedler.com
 /verwaltung history <Spieler>
 /verwaltung deathhistory <Spieler>
 /verwaltung snapshots <Spieler>
+/verwaltung snapshot <Spieler> <Index>
+/verwaltung death <Spieler> <Index>
 /verwaltung ec player <Spieler>
 /verwaltung ec team <Team>
 ```
