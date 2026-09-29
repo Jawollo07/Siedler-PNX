@@ -152,7 +152,7 @@ public class TaxManager {
     }
 
     public boolean isDue(String teamId, int currentGameDay) throws SQLException {
-        String sql = "SELECT value FROM settings WHERE key = ?";
+        String sql = "SELECT value FROM settings WHERE `key` = ?";
         try (PreparedStatement statement = plugin.getStorage().getConnection().prepareStatement(sql)) {
             statement.setString(1, TAX_DAY_PREFIX + teamId);
             try (ResultSet resultSet = statement.executeQuery()) {
