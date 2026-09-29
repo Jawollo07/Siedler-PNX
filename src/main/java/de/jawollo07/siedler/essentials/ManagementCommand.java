@@ -10,7 +10,7 @@ import org.powernukkitx.command.CommandResult;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.route.RouteTree;
 import org.powernukkitx.command.route.node.RouteNode;
-import org.powernukkitx.command.node.StringNode;
+import org.powernukkitx.command.tree.node.StringNode;
 import org.powernukkitx.form.window.SimpleForm;
 
 import java.text.SimpleDateFormat;
