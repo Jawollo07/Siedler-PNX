@@ -70,13 +70,13 @@ public class TaxManager {
         if (lastRun != 0 && now - lastRun < 60_000L) return;
         lastRun = now;
 
-        long interval = Math.max(1L,
-                plugin.getConfig().getInt("taxes.interval-hours", 24)) * 60L * 60L * 1000L;
+        int gameDay = getCurrentGameDay();
+        if (gameDay < 0) return;
 
         try {
             for (Team team : teamManager.getTeams()) {
                 if (team.eliminated() != 0 || !isTeamMemberOnline(team.id())) continue;
-                if (isDue(team.id(), now, interval)) collectTax(team);
+                if (isDue(team.id(), gameDay)) collectTax(team);
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning("Tax cycle failed: " + exception.getMessage());
