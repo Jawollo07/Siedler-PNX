@@ -181,10 +181,10 @@ public class TaxManager {
         String key = TAX_DAY_PREFIX + teamId;
         String sql;
         if ("mariadb".equalsIgnoreCase(plugin.getStorage().getActiveType())) {
-            sql = "INSERT INTO settings (key, value) VALUES (?, ?) " +
+            sql = "INSERT INTO settings (`key`, value) VALUES (?, ?) " +
                     "ON DUPLICATE KEY UPDATE value = VALUES(value)";
         } else {
-            sql = "INSERT INTO settings (key, value) VALUES (?, ?) " +
+            sql = "INSERT INTO settings (`key`, value) VALUES (?, ?) " +
                     "ON CONFLICT(key) DO UPDATE SET value = excluded.value";
         }
 
