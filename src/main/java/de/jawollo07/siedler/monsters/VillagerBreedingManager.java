@@ -16,9 +16,9 @@ import java.util.Map;
 /**
  * Siedler-owned villager breeding fallback.
  *
- * PowerNukkitX's native villager breeder requires both parents to belong to
- * the same registered Village. This manager deliberately does not require a
- * Village: ordinary villagers can breed near a real, free bed anywhere.
+ * Breeding is deliberately independent of PowerNukkitX Village membership:
+ * two adult ordinary villagers + enough food + one free valid bed nearby
+ * are sufficient to create a baby villager anywhere in the world.
  *
  * Siedler traders are excluded by their persistent siedler:trader:* tags.
  */
@@ -55,28 +55,22 @@ public final class VillagerBreedingManager implements Runnable {
                 if (!isBreedable(first)) continue;
                 if (isCoolingDown(first.getId(), now)) continue;
 
-                EntityVillagerV2 second = findPartner(level, first, entities, now);
+                EntityVillagerV2 second = findPartner(first, entities, now);
                 if (second == null) continue;
 
+                // No Village/POI lookup is performed here. A free valid bed is
+                // the only bed requirement for the Siedler breeding fallback.
                 if (!hasFreeBedNear(level, first)) continue;
 
-                int maxPerRadius = Math.max(
-                        0,
-                        plugin.getConfig().getInt("villagers.control.max-per-radius", 5)
-                );
-                int radius = Math.max(
-                        1,
-                        plugin.getConfig().getInt("villagers.control.radius", DEFAULT_PAIR_RADIUS)
-                );
-
-                if (maxPerRadius > 0
-                        && countOrdinaryVillagers(level, first, radius) >= maxPerRadius) {
+                // Explicitly require enough actual food on both parents.
+                if (first.getFoodPoints() < FOOD_POINTS_REQUIRED
+                        || second.getFoodPoints() < FOOD_POINTS_REQUIRED) {
                     continue;
                 }
 
-                // PNX's native WillingnessExecutor consumes the food and sets
-                // WILLING=true. Do not require the food to still be present here.
-                if (!isWilling(first) || !isWilling(second)) {
+                // Consume the food as part of this breeding operation so the
+                // fallback has deterministic vanilla-like food requirements.
+                if (!consumeFood(first) || !consumeFood(second)) {
                     continue;
                 }
 
@@ -119,7 +113,6 @@ public final class VillagerBreedingManager implements Runnable {
     }
 
     private EntityVillagerV2 findPartner(
-            Level level,
             EntityVillagerV2 first,
             Entity[] entities,
             long now
@@ -151,37 +144,12 @@ public final class VillagerBreedingManager implements Runnable {
     private boolean isBreedable(EntityVillagerV2 villager) {
         return !villager.isClosed()
                 && !villager.isBaby()
-                && !isSiedlerTrader(villager)
-                && isWilling(villager);
-    }
-
-    private boolean isWilling(EntityVillagerV2 villager) {
-        Boolean willing = villager.getMemoryStorage().get(CoreMemoryTypes.WILLING);
-        return Boolean.TRUE.equals(willing) || villager.getFoodPoints() >= FOOD_POINTS_REQUIRED;
+                && !isSiedlerTrader(villager);
     }
 
     private boolean isCoolingDown(long entityId, long now) {
         Long until = cooldownUntil.get(entityId);
         return until != null && until > now;
-    }
-
-    private int countOrdinaryVillagers(Level level, EntityVillagerV2 center, int radius) {
-        int count = 0;
-        double maxDistanceSquared = radius * (double) radius;
-
-        for (Entity entity : level.getEntities()) {
-            if (!(entity instanceof EntityVillagerV2 villager)) continue;
-            if (!isOrdinaryVillager(villager)) continue;
-            if (villager.distanceSquared(center) <= maxDistanceSquared) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private boolean isOrdinaryVillager(EntityVillagerV2 villager) {
-        return !villager.isClosed() && !isSiedlerTrader(villager);
     }
 
     private boolean hasFreeBedNear(Level level, EntityVillagerV2 villager) {
