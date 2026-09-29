@@ -102,6 +102,19 @@ public class ManagementCommand extends Command {
                     showSnapshots(context.getSender(), context.getArg("name"));
                     return CommandResult.success();
                 })));
+        tree.getRoot().then(RouteNode.literal("snapshot")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
+                            showSnapshotDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("death")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
+                            showDeathDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
+                            return CommandResult.success();
+                        })));
+
         tree.getRoot().then(RouteNode.literal("ec")
                 .then(RouteNode.literal("player")
                         .then(RouteNode.argument("name", new StringNode()).exec(context -> {
@@ -847,15 +860,4 @@ public class ManagementCommand extends Command {
         sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-help"));
     }
 }
-        tree.getRoot().then(RouteNode.literal("snapshot")
-                .then(RouteNode.argument("name", new StringNode())
-                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
-                            showSnapshotDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
-                            return CommandResult.success();
-                        }))));
-        tree.getRoot().then(RouteNode.literal("death")
-                .then(RouteNode.argument("name", new StringNode())
-                        .then(RouteNode.argument("index", new StringNode()).exec(context -> {
-                            showDeathDetail(context.getSender(), context.getArg("name"), context.getArg("index"));
-                            return CommandResult.success();
-                        }))));
+
