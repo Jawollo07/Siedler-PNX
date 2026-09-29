@@ -10,6 +10,7 @@ import org.powernukkitx.command.CommandResult;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.route.RouteTree;
 import org.powernukkitx.command.route.node.RouteNode;
+import org.powernukkitx.command.node.StringNode;
 import org.powernukkitx.form.window.SimpleForm;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +50,237 @@ public class ManagementCommand extends Command {
             return CommandResult.success();
         }));
         tree.getRoot().then(RouteNode.literal("menu").exec(context -> open(context.getSender())));
+
+        tree.getRoot().then(RouteNode.literal("player")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    showPlayerInfo(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("warn")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("reason", new StringNode()).exec(context -> {
+                            runModeration(context.getSender(), context.getArg("name"), "warn", context.getArg("reason"));
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("kick")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("reason", new StringNode()).exec(context -> {
+                            runModeration(context.getSender(), context.getArg("name"), "kick", context.getArg("reason"));
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("ban")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("reason", new StringNode()).exec(context -> {
+                            runModeration(context.getSender(), context.getArg("name"), "ban", context.getArg("reason"));
+                            return CommandResult.success();
+                        }))));
+        tree.getRoot().then(RouteNode.literal("tempban")
+                .then(RouteNode.argument("name", new StringNode())
+                        .then(RouteNode.argument("minutes", new StringNode())
+                                .then(RouteNode.argument("reason", new StringNode()).exec(context -> {
+                                    runModeration(context.getSender(), context.getArg("name"),
+                                            "tempban" + context.getArg("minutes"), context.getArg("reason"));
+                                    return CommandResult.success();
+                                })))));
+        tree.getRoot().then(RouteNode.literal("unban")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    runUnban(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("history")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    showHistory(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("deathhistory")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    showDeathHistory(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("snapshots")
+                .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                    showSnapshots(context.getSender(), context.getArg("name"));
+                    return CommandResult.success();
+                })));
+        tree.getRoot().then(RouteNode.literal("ec")
+                .then(RouteNode.literal("player")
+                        .then(RouteNode.argument("name", new StringNode()).exec(context -> {
+                            openPlayerEnderChestCommand(context.getSender(), context.getArg("name"));
+                            return CommandResult.success();
+                        })))
+                .then(RouteNode.literal("team")
+                        .then(RouteNode.argument("team", new StringNode()).exec(context -> {
+                            openTeamEnderChestCommand(context.getSender(), context.getArg("team"));
+                            return CommandResult.success();
+                        }))));
+
         tree.getRoot().exec(context -> open(context.getSender()));
+    }
+
+    private Player findOnlinePlayer(String name) {
+        for (Player player : plugin.getServer().getOnlinePlayers().values()) {
+            if (player.getName().equalsIgnoreCase(name)) return player;
+        }
+        return null;
+    }
+
+    private void showPlayerInfo(CommandSender sender, String name) {
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
+            return;
+        }
+        Player target = findOnlinePlayer(name);
+        if (target == null) {
+            sender.sendMessage(prefix + "§cDer Spieler muss für /verwaltung player aktuell online sein.");
+            return;
+        }
+        openPlayerInfo(admin, target);
+    }
+
+    private void runModeration(CommandSender sender, String name, String action, String reason) {
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
+            return;
+        }
+        try {
+            String playerId = moderationManager.findPlayerIdByName(name);
+            Player target = findOnlinePlayer(name);
+            if (playerId == null) {
+                if (target == null) {
+                    sender.sendMessage(prefix + "§cSpieler wurde noch nicht in der Siedler-Datenbank gefunden.");
+                    return;
+                }
+                playerId = target.getUniqueId().toString();
+            }
+            String playerName = target == null ? name : target.getName();
+            String moderatorId = admin.getUniqueId().toString();
+            String moderatorName = admin.getName();
+
+            if ("warn".equals(action)) {
+                moderationManager.warn(playerId, playerName, reason, moderatorId, moderatorName);
+            } else if ("kick".equals(action)) {
+                moderationManager.kick(playerId, playerName, reason, moderatorId, moderatorName);
+            } else if ("ban".equals(action)) {
+                moderationManager.ban(playerId, playerName, reason, moderatorId, moderatorName);
+            } else if (action.startsWith("tempban")) {
+                long minutes = Long.parseLong(action.substring("tempban".length()));
+                if (minutes <= 0) throw new IllegalArgumentException("Die Dauer muss größer als 0 sein.");
+                moderationManager.tempBan(playerId, playerName, reason, moderatorId, moderatorName, minutes * 60_000L);
+            }
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-success")
+                    .replace("{type}", actionLabel(action)).replace("{player}", playerName));
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-action-error")
+                    .replace("{error}", exception.getMessage() == null ? messageManager.getMessage("messages.essentials.error-unknown") : exception.getMessage()));
+        }
+    }
+
+    private void runUnban(CommandSender sender, String name) {
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
+            return;
+        }
+        try {
+            String playerId = moderationManager.findPlayerIdByName(name);
+            if (playerId == null) {
+                sender.sendMessage(prefix + "§cSpieler wurde nicht gefunden.");
+                return;
+            }
+            boolean changed = moderationManager.unban(playerId, admin.getUniqueId().toString(), "Unban per Verwaltung-Command");
+            sender.sendMessage(prefix + (changed
+                    ? "§aSpieler §e" + name + " §awurde entbannt."
+                    : "§e" + name + " §7hat keine aktive Sperre."));
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cUnban fehlgeschlagen: " + exception.getMessage());
+        }
+    }
+
+    private void showHistory(CommandSender sender, String name) {
+        try {
+            String id = moderationManager.findPlayerIdByName(name);
+            if (id == null) { sender.sendMessage(prefix + "§cSpieler nicht gefunden."); return; }
+            List<ModerationManager.Punishment> history = moderationManager.getHistory(id);
+            sender.sendMessage(prefix + "§6Moderationsverlauf §7(" + name + "):");
+            if (history.isEmpty()) { sender.sendMessage("§7Keine Einträge."); return; }
+            for (ModerationManager.Punishment p : history) {
+                String date = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(p.createdAt()));
+                sender.sendMessage("§8- §e" + p.type() + " §7" + date + " §f" + p.reason()
+                        + " §8[" + (p.active() ? "aktiv" : "inaktiv") + "]");
+            }
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cVerlauf konnte nicht geladen werden: " + exception.getMessage());
+        }
+    }
+
+    private void showDeathHistory(CommandSender sender, String name) {
+        try {
+            String id = moderationManager.findPlayerIdByName(name);
+            if (id == null) { sender.sendMessage(prefix + "§cSpieler nicht gefunden."); return; }
+            List<DeathManager.DeathPoint> history = deathManager.getDeathHistory(id);
+            sender.sendMessage(prefix + "§6Todeshistorie §7(" + name + "):");
+            if (history.isEmpty()) { sender.sendMessage("§7Keine Einträge."); return; }
+            for (DeathManager.DeathPoint p : history) {
+                String date = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(p.createdAt()));
+                sender.sendMessage("§8- §e" + date + " §7" + p.world() + " §f"
+                        + formatCoordinate(p.x()) + ", " + formatCoordinate(p.y()) + ", " + formatCoordinate(p.z()));
+            }
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cTodeshistorie konnte nicht geladen werden: " + exception.getMessage());
+        }
+    }
+
+    private void showSnapshots(CommandSender sender, String name) {
+        try {
+            String id = moderationManager.findPlayerIdByName(name);
+            if (id == null) { sender.sendMessage(prefix + "§cSpieler nicht gefunden."); return; }
+            List<InventorySnapshotManager.InventorySnapshot> snapshots = inventorySnapshotManager.getHistory(id, 50);
+            sender.sendMessage(prefix + "§6Inventar-Snapshots §7(" + name + "):");
+            if (snapshots.isEmpty()) { sender.sendMessage("§7Keine Snapshots."); return; }
+            for (InventorySnapshotManager.InventorySnapshot s : snapshots) {
+                String date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date(s.capturedAt()));
+                sender.sendMessage("§8- §e" + date + " §7" + s.reason() + " §8@ " + s.world()
+                        + " " + formatCoordinate(s.x()) + "," + formatCoordinate(s.y()) + "," + formatCoordinate(s.z()));
+            }
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cSnapshots konnten nicht geladen werden: " + exception.getMessage());
+        }
+    }
+
+    private void openPlayerEnderChestCommand(CommandSender sender, String name) {
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
+            return;
+        }
+        Player target = findOnlinePlayer(name);
+        if (target == null) {
+            sender.sendMessage(prefix + "§cDer Zielspieler muss online sein.");
+            return;
+        }
+        int windowId = admin.addWindow(target.getEnderChestInventory());
+        if (windowId == -1) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error"));
+        }
+    }
+
+    private void openTeamEnderChestCommand(CommandSender sender, String teamName) {
+        if (!(sender instanceof Player admin)) {
+            sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.player-required"));
+            return;
+        }
+        try {
+            Team team = teamManager.getTeamByName(teamName);
+            if (team == null) {
+                sender.sendMessage(prefix + "§cTeam nicht gefunden: " + teamName);
+                return;
+            }
+            TeamEnderChestInventory inventory = teamEnderChestManager.getOrCreate(admin, team.id());
+            int windowId = admin.addWindow(inventory);
+            if (windowId == -1) {
+                sender.sendMessage(prefix + messageManager.getMessage("messages.essentials.management-enderchest-open-error"));
+            }
+        } catch (Exception exception) {
+            sender.sendMessage(prefix + "§cTeam-Enderchest konnte nicht geöffnet werden: " + exception.getMessage());
+        }
     }
 
     private CommandResult open(CommandSender sender) {
