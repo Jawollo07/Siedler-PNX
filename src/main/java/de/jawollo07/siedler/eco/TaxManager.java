@@ -169,7 +169,7 @@ public class TaxManager {
     private int getCurrentGameDay() {
         for (Level level : plugin.getServer().getLevels().values()) {
             if (level != null && level.isOverWorld()) {
-                return Math.max(0, level.getTime() / TICKS_PER_MINECRAFT_DAY);
+                return (int) Math.max(0L, level.getTime() / TICKS_PER_MINECRAFT_DAY);
             }
         }
         return -1;
