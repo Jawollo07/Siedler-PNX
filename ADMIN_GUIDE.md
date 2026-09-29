@@ -18,6 +18,17 @@ Spielerfunktionen besitzen eigene Berechtigungen wie beispielsweise `siedler.com
 /verwaltung
 /verwaltung menu
 /verwaltung help
+/verwaltung player <Spieler>
+/verwaltung warn <Spieler> <Grund>
+/verwaltung kick <Spieler> <Grund>
+/verwaltung ban <Spieler> <Grund>
+/verwaltung tempban <Spieler> <Minuten> <Grund>
+/verwaltung unban <Spieler>
+/verwaltung history <Spieler>
+/verwaltung deathhistory <Spieler>
+/verwaltung snapshots <Spieler>
+/verwaltung ec player <Spieler>
+/verwaltung ec team <Team>
 ```
 
 Das Verwaltungsmenü bietet aktuell unter anderem:
@@ -28,9 +39,13 @@ Das Verwaltungsmenü bietet aktuell unter anderem:
 - Moderationshistorie
 - Todeshistorie
 - Todesinventare
+- Inventar-Snapshots
 - persönliche Enderchests
 - Team-Enderchests
 
+Die bisherigen GUI-Funktionen sind zusätzlich direkt per Command erreichbar. Für `/verwaltung ec player` muss der Zielspieler online sein. Die Commands benötigen wie das Verwaltungsmenü die Berechtigung `siedler.admin`.
+
+Bei `<Grund>` wird aktuell ein einzelnes Command-Argument verwendet; für Gründe mit Leerzeichen kann der PNX-Parser je nach Eingabeformat eine gequotete Eingabe benötigen.
 ## 3. Spielerverwaltung und Moderation
 
 Über `/verwaltung → Spieler` kann ein Online-Spieler ausgewählt werden.
