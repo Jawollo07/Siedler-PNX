@@ -7,6 +7,8 @@ import org.powernukkitx.inventory.EntityEquipmentInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.plugin.PluginBase;
+import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,14 +58,6 @@ public final class VillagerBreedingManager implements Runnable {
                 EntityVillagerV2 second = findPartner(level, first, entities, now);
                 if (second == null) continue;
 
-                // If both parents are already registered in the same PNX Village,
-                // leave breeding to PNX's native villager AI. The fallback is only
-                // needed for pairs outside a usable Village.
-                if (first.getVillageUuid() != null
-                        && first.getVillageUuid().equals(second.getVillageUuid())) {
-                    continue;
-                }
-
                 if (!hasFreeBedNear(level, first)) continue;
 
                 int maxPerRadius = Math.max(
@@ -80,7 +74,9 @@ public final class VillagerBreedingManager implements Runnable {
                     continue;
                 }
 
-                if (!consumeFood(first) || !consumeFood(second)) {
+                // PNX's native WillingnessExecutor consumes the food and sets
+                // WILLING=true. Do not require the food to still be present here.
+                if (!isWilling(first) || !isWilling(second)) {
                     continue;
                 }
 
@@ -99,6 +95,15 @@ public final class VillagerBreedingManager implements Runnable {
                 EntityVillagerV2 baby = (EntityVillagerV2) babyEntity;
                 baby.setBaby(true);
                 baby.spawnToAll();
+
+                first.getMemoryStorage().put(CoreMemoryTypes.WILLING, false);
+                second.getMemoryStorage().put(CoreMemoryTypes.WILLING, false);
+                first.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
+                second.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
+                first.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, level.getTick());
+                second.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, level.getTick());
+                first.setDataFlag(ActorFlags.IN_LOVE, false);
+                second.setDataFlag(ActorFlags.IN_LOVE, false);
 
                 long cooldown = Math.max(
                         1000L,
@@ -147,7 +152,12 @@ public final class VillagerBreedingManager implements Runnable {
         return !villager.isClosed()
                 && !villager.isBaby()
                 && !isSiedlerTrader(villager)
-                && villager.getFoodPoints() >= FOOD_POINTS_REQUIRED;
+                && isWilling(villager);
+    }
+
+    private boolean isWilling(EntityVillagerV2 villager) {
+        Boolean willing = villager.getMemoryStorage().get(CoreMemoryTypes.WILLING);
+        return Boolean.TRUE.equals(willing) || villager.getFoodPoints() >= FOOD_POINTS_REQUIRED;
     }
 
     private boolean isCoolingDown(long entityId, long now) {
